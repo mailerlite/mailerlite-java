@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.NoSuchElementException;
 
@@ -78,6 +79,86 @@ public class MailerLiteApi {
         return this.handleApiResponse(responseObject, responseClass);
     }
     
+    
+    @SuppressWarnings("unchecked")
+	public <T extends MailerLiteResponse> T postRequest(String endpoint, String requestBody, Class<T> responseClass) throws MailerLiteException {
+    	
+        HttpRequest request = HttpRequest.newBuilder(URI.create(this.endpointBase.concat(endpoint)))
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer ".concat(this.apiToken))
+                .POST(BodyPublishers.ofString(requestBody))
+                .build();
+        
+        HttpResponse<String> responseObject = null;
+        
+        try {
+            
+            responseObject = this.client.send(request, BodyHandlers.ofString());
+                        
+        } catch (IOException | InterruptedException e) {
+
+        	MailerLiteException ex = (MailerLiteException) e;
+            
+            throw ex;
+        }
+        
+        if (responseClass == MailerLiteStringResponse.class) {
+            
+        	MailerLiteStringResponse response = new MailerLiteStringResponse();
+            response.responseString = responseObject.body().toString();
+            
+            return (T) response;
+        }
+        
+        return this.handleApiResponse(responseObject, responseClass);
+    }
+    
+    
+    /**
+     * Does a PUT request to the given endpoint of the MailerSend API
+     *
+     * @param endpoint The MailerLite API endpoint
+     * @param requestBody The body of the PUT request
+     * @param responseClass The class of the response object
+     * @return T
+     * @throws com.mailerlite.sdk.exceptions.MailerLiteException if an error is returned from the API this exception will contain the details
+     */
+    @SuppressWarnings("unchecked")
+	public <T extends MailerLiteResponse> T putRequest(String endpoint, String requestBody, Class<T> responseClass) throws MailerLiteException {
+       
+    	if (requestBody == null) {
+    		requestBody = "";
+    	}
+    	
+        HttpRequest request = HttpRequest.newBuilder(URI.create(this.endpointBase.concat(endpoint)))
+                .header("Content-type", "applicateion/json")
+                .header("Authorization", "Bearer ".concat(this.apiToken))
+                .PUT(BodyPublishers.ofString(requestBody))
+                .build();
+        
+        HttpResponse<String> responseObject = null;
+        
+        try {
+            
+            responseObject = this.client.send(request, BodyHandlers.ofString());
+                        
+        } catch (IOException | InterruptedException e) {
+
+        	MailerLiteException ex = (MailerLiteException) e;
+            
+            throw ex;
+        }
+        
+        if (responseClass == MailerLiteStringResponse.class) {
+            
+        	MailerLiteStringResponse response = new MailerLiteStringResponse();
+            response.responseString = responseObject.body().toString();
+            
+            return (T) response;
+        }
+        
+        return this.handleApiResponse(responseObject, responseClass);
+    }
     
     
     /**

@@ -5,7 +5,7 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.annotations.Expose;
 
 /**
- * Handles the serialization and deserialization strategy for all API objects (Email, Activity, etc.).
+ * Handles the serialization and deserialization strategy for all API objects (Email, Campaign, etc.).
  * If a field does not have the @Expose annotiation, it gets de/serialized normally.
  * If it has the @Expose annotation, the annotation's parameters determine the behaviour
  *

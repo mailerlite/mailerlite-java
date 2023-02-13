@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.util.ApiResource;
 import com.mailerlite.sdk.util.ParseDate;
 
-public class Email extends ApiResource {
+public class Email extends EmailBase {
 
 	@SerializedName("id")
 	public String id;
@@ -23,18 +23,9 @@ public class Email extends ApiResource {
 	@SerializedName("type")
 	public String type;
 	
-	@SerializedName("from")
-	public String from;
-	
-	@SerializedName("from_name")
-	public String fromName;
-	
 	@SerializedName("name")
 	public String name;
-	
-	@SerializedName("subject")
-	public String subject;
-	
+
 	@SerializedName("plain_text")
 	public String plainText;
 	

@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 public class ApiResource {
 
 	public void parseDates() {
@@ -24,8 +26,7 @@ public class ApiResource {
 						
 						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 						LocalDateTime date = LocalDateTime.parse(dateStr, formatter);
-		
-	
+			
 			            field.setAccessible(true);
 			            
 			            field.set(this, date);

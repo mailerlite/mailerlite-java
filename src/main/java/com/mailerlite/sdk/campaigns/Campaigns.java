@@ -6,7 +6,7 @@ import com.mailerlite.sdk.exceptions.MailerLiteException;
 
 public class Campaigns {
 
-	public MailerLite apiObjectReference;
+	private MailerLite apiObjectReference;
 	
 	public Campaigns(MailerLite apiReference)
 	{
@@ -17,5 +17,9 @@ public class Campaigns {
 	public CampaignRetriever retriever() {
 		
 		return new CampaignRetriever(apiObjectReference);
+	}
+	
+	public CampaignBuilder builder() {
+		return new CampaignBuilder(apiObjectReference);
 	}
 }
