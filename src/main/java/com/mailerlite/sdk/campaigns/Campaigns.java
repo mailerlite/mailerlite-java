@@ -28,6 +28,11 @@ public class Campaigns {
 		return new CampaignScheduler(apiObjectReference);
 	}
 	
+	public SubscriberActivity subscriberActivity()
+	{
+		return new SubscriberActivity(apiObjectReference);
+	}
+	
 	public MailerLiteResponse delete(String campaignId) throws MailerLiteException
 	{
 		String endpoint = "/campaigns/".concat(campaignId);
@@ -39,4 +44,5 @@ public class Campaigns {
         
         return response;
 	}
+
 }

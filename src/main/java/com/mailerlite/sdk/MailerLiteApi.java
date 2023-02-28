@@ -289,6 +289,8 @@ public class MailerLiteApi {
         
         response.responseStatusCode = responseObject.statusCode();
         
+        response.postDeserialize();
+        
         return response;
     }
 }

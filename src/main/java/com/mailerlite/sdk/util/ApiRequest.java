@@ -7,7 +7,7 @@ public class ApiRequest {
 
 	private HashMap<String, String> queryParameters = new HashMap<String, String>();
 	
-	public void AddQueryParameter(String name, String value)
+	public void addQueryParameter(String name, String value)
 	{
 		queryParameters.put(name, value);
 	}

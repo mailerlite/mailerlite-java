@@ -18,7 +18,7 @@ public class CampaignRetriever extends PaginatedRequest<CampaignRetriever> {
 	
 	public CampaignRetriever filter(String name, String value)
 	{
-		this.AddQueryParameter("filter[".concat(name).concat("]"), value);
+		this.addQueryParameter("filter[".concat(name).concat("]"), value);
 		
 		return this;
 	}

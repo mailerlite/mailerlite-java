@@ -6,14 +6,14 @@ public abstract class PaginatedRequest<T extends PaginatedRequest<T>> extends Ap
 	
 	public T page(int page)
 	{
-		this.AddQueryParameter("page", Integer.toString(page));
+		this.addQueryParameter("page", Integer.toString(page));
 
 		return getInstance();
 	}
 	
 	public T limit(int limit)
 	{
-		this.AddQueryParameter("limit", Integer.toString(limit));
+		this.addQueryParameter("limit", Integer.toString(limit));
 		
 		return getInstance();
 	}

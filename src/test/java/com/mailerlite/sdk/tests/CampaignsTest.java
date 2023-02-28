@@ -1,6 +1,7 @@
 package com.mailerlite.sdk.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -14,11 +15,11 @@ import com.mailerlite.sdk.MailerLiteResponse;
 import com.mailerlite.sdk.campaigns.Campaign;
 import com.mailerlite.sdk.campaigns.CampaignDelivery;
 import com.mailerlite.sdk.campaigns.CampaignScheduler;
+import com.mailerlite.sdk.campaigns.CampaignSubscriberActivityList;
 import com.mailerlite.sdk.campaigns.CampaignsList;
 import com.mailerlite.sdk.campaigns.SingleCampaign;
 import com.mailerlite.sdk.emails.EmailBase;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
-import com.mailerlite.sdk.vcr.VcrRecorder;
 
 public class CampaignsTest extends TestBase {
 
@@ -196,7 +197,6 @@ public class CampaignsTest extends TestBase {
 			SingleCampaign campaign = scheduler
 			.delivery(CampaignDelivery.SCHEDULED)
 			.schedule(newCampaign.campaign.id);
-
 			
 			assertEquals(200, campaign.responseStatusCode);
 			
@@ -227,6 +227,26 @@ public class CampaignsTest extends TestBase {
 			e.printStackTrace();
 			fail();
 		}
+	}
+	
+	
+	@Test
+	public void testGetSubscriberActivity()
+	{
+		try {
+			
+			CampaignsList campaigns = this.getMailerLite().campaigns().retriever().filter("status", "sent").get();
+			
+			CampaignSubscriberActivityList activity = this.getMailerLite().campaigns().subscriberActivity().get(campaigns.campaigns[0].id);
+			
+			assertTrue(activity.activity.length > 0);
+			
+			
+		} catch (MailerLiteException e) {
+			e.printStackTrace();
+			fail();
+		}
+		
 	}
 	
 	
