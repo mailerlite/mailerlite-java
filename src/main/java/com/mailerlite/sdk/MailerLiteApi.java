@@ -113,6 +113,38 @@ public class MailerLiteApi {
         return this.handleApiResponse(responseObject, responseClass);
     }
     
+    /**
+     * Does a DELETE request to the given endpoint of the MailerLite API
+     *
+     * @param endpoint The MailerLite API endpoint
+     * @param responseClass The class of the response object
+     * @return T
+     * @throws com.mailerlite.sdk.exceptions.MailerLiteException if an error is returned from the API this exception will contain the details
+     */
+    public <T extends MailerLiteResponse> T deleteRequest(String endpoint, Class<T> responseClass) throws MailerLiteException {
+        
+        HttpRequest request = HttpRequest.newBuilder(URI.create(this.endpointBase.concat(endpoint)))
+                .header("Content-type", "applicateion/json")
+                .header("Authorization", "Bearer ".concat(this.apiToken))
+                .DELETE()
+                .build();
+        
+        HttpResponse<String> responseObject = null;
+        
+        try {
+            
+            responseObject = this.client.send(request, BodyHandlers.ofString());
+                        
+        } catch (IOException | InterruptedException e) {
+
+        	MailerLiteException ex = (MailerLiteException) e;
+            
+            throw ex;
+        }
+        
+        return this.handleApiResponse(responseObject, responseClass);
+    }
+    
     
     /**
      * Does a PUT request to the given endpoint of the MailerSend API

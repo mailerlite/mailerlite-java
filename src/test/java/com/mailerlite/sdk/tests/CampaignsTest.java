@@ -10,7 +10,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
+import com.mailerlite.sdk.MailerLiteResponse;
 import com.mailerlite.sdk.campaigns.Campaign;
+import com.mailerlite.sdk.campaigns.CampaignDelivery;
+import com.mailerlite.sdk.campaigns.CampaignScheduler;
 import com.mailerlite.sdk.campaigns.CampaignsList;
 import com.mailerlite.sdk.campaigns.SingleCampaign;
 import com.mailerlite.sdk.emails.EmailBase;
@@ -110,13 +113,13 @@ public class CampaignsTest extends TestBase {
 			email.fromName = "test from name";
 			email.subject = "test email subject";
 			
-			CampaignsList campaigns = this.getMailerLite().campaigns().retriever().filter("status", "draft").get();
+			SingleCampaign newCampaign = this.createCampaign();;
 			
 			SingleCampaign updatedCampaign = this.getMailerLite().campaigns().builder()
 					.name("Updated campaign name")
 					.email(email)
 					.type("regular")
-					.update(campaigns.campaigns[0].id);
+					.update(newCampaign.campaign.id);
 			
 			assertEquals("Updated campaign name", updatedCampaign.campaign.name);
 			
@@ -124,5 +127,127 @@ public class CampaignsTest extends TestBase {
 			e.printStackTrace();
 			fail();
 		}
+	}
+	
+	
+	@Test
+	public void testSendCampaign()
+	{
+		try {
+			
+			SingleCampaign newCampaign = this.createCampaign("Campaign to send");
+			
+			SingleCampaign campaign = this.getMailerLite()
+					.campaigns()
+					.scheduler()
+					.delivery(CampaignDelivery.INSTANT)
+					.schedule(newCampaign.campaign.id);
+			
+			assertEquals(200, campaign.responseStatusCode);
+			
+		} catch (MailerLiteException e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void testScheduleCampaign()
+	{
+		try {
+			
+			SingleCampaign newCampaign = this.createCampaign("Campaign to schedule");
+			
+			CampaignScheduler scheduler = this.getMailerLite().campaigns().scheduler();
+			
+			scheduler.scheduleSettings()
+			.date("2023-03-01")
+			.hours("09:00")
+			.minutes("00:00");
+			
+			SingleCampaign campaign = scheduler
+			.delivery(CampaignDelivery.SCHEDULED)
+			.schedule(newCampaign.campaign.id);
+
+			
+			assertEquals(200, campaign.responseStatusCode);
+			
+		} catch (MailerLiteException e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	
+	@Test
+	public void testCancelCampaign()
+	{
+		try {
+			
+			SingleCampaign newCampaign = this.createCampaign("Campaign to cancel");
+			
+			CampaignScheduler scheduler = this.getMailerLite().campaigns().scheduler();
+			
+			scheduler.scheduleSettings()
+			.date("2023-03-01")
+			.hours("09")
+			.minutes("00");
+			
+			SingleCampaign campaign = scheduler
+			.delivery(CampaignDelivery.SCHEDULED)
+			.schedule(newCampaign.campaign.id);
+
+			
+			assertEquals(200, campaign.responseStatusCode);
+			
+			SingleCampaign canceledCampaign = this.getMailerLite().campaigns().scheduler().cancel(campaign.campaign.id);
+			
+			assertEquals(200, canceledCampaign.responseStatusCode);
+			
+		} catch (MailerLiteException e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	
+	@Test
+	public void testDeleteCampaign()
+	{
+		try {
+			
+			SingleCampaign newCampaign = this.createCampaign("Campaign to delete");
+			
+		
+			MailerLiteResponse response = this.getMailerLite().campaigns().delete(newCampaign.campaign.id);
+			
+			assertEquals(204, response.responseStatusCode);
+			
+		} catch (MailerLiteException e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	
+	private SingleCampaign createCampaign() throws MailerLiteException
+	{
+		return this.createCampaign("test campaign name");
+	}
+	
+	private SingleCampaign createCampaign(String name) throws MailerLiteException
+	{
+		EmailBase email = new EmailBase();
+		email.content = "<div>Test email content</div>";
+		email.from = TestHelper.fromEmail;
+		email.fromName = "test from name";
+		email.subject = name;
+		
+		return this.getMailerLite().campaigns().builder()
+		.name(name)
+		.email(email)
+		.type("regular")
+		.groupId(TestHelper.groupId)
+		.create();
 	}
 }
