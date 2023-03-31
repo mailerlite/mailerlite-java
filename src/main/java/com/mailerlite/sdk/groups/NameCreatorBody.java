@@ -1,6 +1,6 @@
 package com.mailerlite.sdk.groups;
 
-public class GroupCreatorBody {
+public class NameCreatorBody {
 
 	public String name;
 }

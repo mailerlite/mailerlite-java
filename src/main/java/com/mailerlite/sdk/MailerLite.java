@@ -9,6 +9,7 @@ package com.mailerlite.sdk;
 
 import com.mailerlite.sdk.campaigns.Campaigns;
 import com.mailerlite.sdk.groups.Groups;
+import com.mailerlite.sdk.segments.Segments;
 import com.mailerlite.sdk.susbcribers.Subscribers;
 
 public class MailerLite 
@@ -20,6 +21,8 @@ public class MailerLite
 	protected Subscribers subscribers;
 	
 	protected Groups groups;
+	
+	protected Segments segments;
 	
 	public Campaigns campaigns()
 	{
@@ -49,6 +52,16 @@ public class MailerLite
 		}
 		
 		return groups;
+	}
+	
+	public Segments segments()
+	{
+		if (segments == null) {
+			
+			segments = new Segments(this);
+		}
+		
+		return segments;
 	}
 	
 	/**

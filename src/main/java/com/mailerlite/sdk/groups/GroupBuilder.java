@@ -21,7 +21,7 @@ public class GroupBuilder {
 		MailerLiteApi api = new MailerLiteApi();
         api.setToken(apiObjectReference.getToken());
         
-        GroupCreatorBody requestBody = new GroupCreatorBody();
+        NameCreatorBody requestBody = new NameCreatorBody();
         requestBody.name = groupName;
         
         Gson gson = new GsonBuilder()
@@ -43,7 +43,7 @@ public class GroupBuilder {
 		MailerLiteApi api = new MailerLiteApi();
         api.setToken(apiObjectReference.getToken());
         
-        GroupCreatorBody requestBody = new GroupCreatorBody();
+        NameCreatorBody requestBody = new NameCreatorBody();
         requestBody.name = newGroupName;
         
         Gson gson = new GsonBuilder()

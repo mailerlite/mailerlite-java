@@ -27,7 +27,7 @@ public class GroupSubscribers extends PaginatedRequest<GroupSubscribers> {
 	
 	public GroupSubscribersList get() throws MailerLiteException
 	{
-		String endpoint = "/groups/".concat(this.groupId).concat("/subscribers");
+		String endpoint = "/groups/".concat(this.groupId).concat("/subscribers").concat(this.getQueryParameters());
 		
 		MailerLiteApi api = new MailerLiteApi();
 		api.setToken(apiObjectReference.getToken());
