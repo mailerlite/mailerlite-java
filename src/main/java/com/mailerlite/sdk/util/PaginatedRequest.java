@@ -1,5 +1,6 @@
 package com.mailerlite.sdk.util;
 
+
 public abstract class PaginatedRequest<T extends PaginatedRequest<T>> extends ApiRequest {
 
 	protected abstract T getInstance();
