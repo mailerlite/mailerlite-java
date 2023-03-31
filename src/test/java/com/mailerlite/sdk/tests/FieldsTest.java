@@ -15,13 +15,6 @@ import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.fields.Field;
 import com.mailerlite.sdk.fields.FieldList;
 import com.mailerlite.sdk.fields.SingleField;
-import com.mailerlite.sdk.groups.Group;
-import com.mailerlite.sdk.groups.GroupSubscribersList;
-import com.mailerlite.sdk.groups.GroupsList;
-import com.mailerlite.sdk.groups.SingleGroup;
-import com.mailerlite.sdk.susbcribers.Subscriber;
-import com.mailerlite.sdk.susbcribers.SubscriberImportStatusEntry;
-import com.mailerlite.sdk.susbcribers.SubscribersList;
 
 public class FieldsTest extends TestBase {
 
