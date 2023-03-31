@@ -26,7 +26,7 @@ public class ApiResource {
 						
 						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 						LocalDateTime date = LocalDateTime.parse(dateStr, formatter);
-			
+						
 			            field.setAccessible(true);
 			            
 			            field.set(this, date);

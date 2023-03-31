@@ -1,12 +1,12 @@
 package com.mailerlite.sdk.util;
 
-public abstract class PaginatedRequest<T extends PaginatedRequest<T>> extends ApiRequest {
+public abstract class CursorPaginatedRequest<T extends CursorPaginatedRequest<T>> extends ApiRequest {
 
 	protected abstract T getInstance();
 	
-	public T cursor(String cursor)
+	public T page(int page)
 	{
-		this.addQueryParameter("cursor", cursor);
+		this.addQueryParameter("page", Integer.toString(page));
 
 		return getInstance();
 	}

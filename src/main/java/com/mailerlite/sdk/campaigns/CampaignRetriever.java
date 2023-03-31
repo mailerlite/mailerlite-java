@@ -46,6 +46,8 @@ public class CampaignRetriever extends PaginatedRequest<CampaignRetriever> {
 		
 		SingleCampaign campaign = api.getRequest(endpoint, SingleCampaign.class);
 		
+		campaign.campaign.parseDates();
+		
 		return campaign;
 	}
 

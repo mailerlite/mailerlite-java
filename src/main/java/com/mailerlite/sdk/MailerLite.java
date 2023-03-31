@@ -8,12 +8,15 @@
 package com.mailerlite.sdk;
 
 import com.mailerlite.sdk.campaigns.Campaigns;
+import com.mailerlite.sdk.susbcribers.Subscribers;
 
 public class MailerLite 
 {
 	protected String token;
 	
 	protected Campaigns campaigns;
+	
+	protected Subscribers subscribers;
 	
 	public Campaigns campaigns()
 	{
@@ -24,6 +27,16 @@ public class MailerLite
 		}
 		
 		return campaigns;
+	}
+	
+	public Subscribers subscribers()
+	{
+		if (subscribers == null) {
+			
+			subscribers = new Subscribers(this);
+		}
+		
+		return subscribers;
 	}
 	
 	/**
