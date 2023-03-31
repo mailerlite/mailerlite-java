@@ -37,6 +37,8 @@ public class SubscriberBuilder {
         
         SingleSubscriber subscriber = api.postRequest("/subscribers", json, SingleSubscriber.class);
         
+        subscriber.subscriber.parseDates();
+        
         return subscriber;
 	}
 	
@@ -53,6 +55,8 @@ public class SubscriberBuilder {
         String json = gson.toJson(builderBody);
         
         SingleSubscriber subscriber = api.putRequest("/subscribers/".concat(id), json, SingleSubscriber.class);
+        
+        subscriber.subscriber.parseDates();
         
         return subscriber;
 	}
