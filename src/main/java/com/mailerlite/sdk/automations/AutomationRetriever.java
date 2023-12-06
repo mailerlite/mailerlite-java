@@ -31,7 +31,7 @@ public class AutomationRetriever extends PaginatedRequest<AutomationRetriever> {
 		return this;
 	}
 	
-	public void get() throws MailerLiteException
+	public List<Automation> get() throws MailerLiteException
 	{
 		String endpoint = "/automations/".concat(this.getQueryParameters());
 	
@@ -59,10 +59,10 @@ public class AutomationRetriever extends PaginatedRequest<AutomationRetriever> {
 			
 			JsonObject ob = obj.getAsJsonObject();
 			
-			Automation auto = gson.fromJson(ob, Automation.class);
+			automations.add(gson.fromJson(ob, Automation.class));
 		}
 		
-		int a =5 ;
+		return automations;
 	}
 
 	@Override
