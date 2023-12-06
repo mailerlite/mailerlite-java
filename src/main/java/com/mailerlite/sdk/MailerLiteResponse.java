@@ -15,4 +15,9 @@ public class MailerLiteResponse {
 		// intentionally left empty
 		
 	}
+	
+	public Boolean successful()
+	{
+		return responseStatusCode >= 200 && responseStatusCode < 300;
+	}
 }

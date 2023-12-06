@@ -13,7 +13,7 @@ public class MailerLiteException extends Exception  {
     public HashMap<String, String[]> errors = new HashMap<String, String[]>();
     
     /**
-     * <p>Constructor for MailerSendException.</p>
+     * <p>Constructor for MailerListException.</p>
      *
      * @param message a {@link java.lang.String} object.
      */

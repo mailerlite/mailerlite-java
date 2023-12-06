@@ -12,10 +12,8 @@ import com.google.gson.JsonParser;
 import com.mailerlite.sdk.MailerLite;
 import com.mailerlite.sdk.MailerLiteApi;
 import com.mailerlite.sdk.MailerLiteStringResponse;
-import com.mailerlite.sdk.automations.Automation;
-import com.mailerlite.sdk.automations.AutomationDeserializer;
-import com.mailerlite.sdk.automations.AutomationRetriever;
 import com.mailerlite.sdk.automations.AutomationStepDeserializer;
+import com.mailerlite.sdk.exceptions.JsonResponseError;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.util.JsonSerializationDeserializationStrategy;
 import com.mailerlite.sdk.util.PaginatedRequest;
@@ -43,6 +41,11 @@ public class AutomationSubscriberActivityRetriever extends PaginatedRequest<Auto
 	{
 		String endpoint = "/automations/".concat(automationId).concat("/activity").concat(this.getQueryParameters());
 	
+        Gson gson = new GsonBuilder()
+                .addSerializationExclusionStrategy(new JsonSerializationDeserializationStrategy(false))
+                .addDeserializationExclusionStrategy(new JsonSerializationDeserializationStrategy(true))
+                .create();
+		
 		MailerLiteApi api = new MailerLiteApi();
 		api.setToken(apiObjectReference.getToken());
 		
@@ -50,19 +53,29 @@ public class AutomationSubscriberActivityRetriever extends PaginatedRequest<Auto
 		
 		String response = responseObj.responseString;
 		
+		if (!responseObj.successful()) {
+			
+        	JsonResponseError error = gson.fromJson(response, JsonResponseError.class);
+            
+        	MailerLiteException ex = new MailerLiteException(error.message);
+         
+            ex.errors = error.errors;
+			
+			throw ex;
+		}
+		
 		JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         
 		JsonArray data = jsonObject.getAsJsonArray("data");
 		
 		ArrayList<SubscriberActivity> activity = new ArrayList<SubscriberActivity>();
-		
-        Gson gson = new GsonBuilder()
-                .addSerializationExclusionStrategy(new JsonSerializationDeserializationStrategy(false))
-                .addDeserializationExclusionStrategy(new JsonSerializationDeserializationStrategy(true))
-                .create();
+	
         
 		AutomationStepDeserializer automationStepDeserializer = new AutomationStepDeserializer();
         
+		if (data == null) {
+			return null;
+		}
         
 		for(JsonElement obj : data) {
 			
