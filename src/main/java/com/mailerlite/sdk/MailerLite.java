@@ -7,6 +7,7 @@
  **************************************************/
 package com.mailerlite.sdk;
 
+import com.mailerlite.sdk.automations.Automations;
 import com.mailerlite.sdk.campaigns.Campaigns;
 import com.mailerlite.sdk.fields.Fields;
 import com.mailerlite.sdk.groups.Groups;
@@ -26,6 +27,8 @@ public class MailerLite
 	protected Segments segments;
 	
 	protected Fields fields;
+	
+	protected Automations automations;
 	
 	public Campaigns campaigns()
 	{
@@ -74,6 +77,15 @@ public class MailerLite
 		}
 		
 		return fields;
+	}
+	
+	public Automations automations()
+	{
+		if (automations == null) {
+			automations = new Automations(this);
+		}
+		
+		return automations;
 	}
 	
 	/**

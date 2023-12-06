@@ -1,9 +1,7 @@
 package com.mailerlite.sdk.automations;
 
 import java.time.LocalDateTime;
-
 import com.google.gson.annotations.SerializedName;
-import com.mailerlite.sdk.automations.steps.AutomationStep;
 import com.mailerlite.sdk.automations.triggers.AutomationTrigger;
 import com.mailerlite.sdk.util.ParseDate;
 
@@ -21,9 +19,10 @@ public class Automation {
 	@SerializedName("trigger_data")
 	public TriggerData triggerData;
 	
-	public AutomationStep[] steps;
+
+	public transient Object[] steps;
 	
-	public AutomationTrigger[] triggers;
+	public transient Object[] triggers;
 	
 	
 	@SerializedName("complete")
@@ -55,4 +54,7 @@ public class Automation {
 	
 	@ParseDate("createdAtStr")
 	public LocalDateTime createdAt;
+	
+	
+
 }

@@ -3,7 +3,7 @@ package com.mailerlite.sdk.automations.steps.action;
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.fields.Field;
 
-public class UpdateCustomFieldAction extends ActionStepBase {
+public class UpdateCustomFieldAction extends ActionStep {
 
 	@SerializedName("field_id")
 	public String fieldId;

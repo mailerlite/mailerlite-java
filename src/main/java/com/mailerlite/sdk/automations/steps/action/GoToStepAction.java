@@ -2,7 +2,7 @@ package com.mailerlite.sdk.automations.steps.action;
 
 import com.google.gson.annotations.SerializedName;
 
-public class GoToStepAction extends ActionStepBase {
+public class GoToStepAction extends ActionStep {
 
 	@SerializedName("go_to_step_type")
 	public String goToStepType;

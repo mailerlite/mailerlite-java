@@ -11,6 +11,7 @@ import java.util.NoSuchElementException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.util.MailerLiteHttpClientFactory;
 import com.mailerlite.sdk.exceptions.JsonResponseError;
@@ -37,6 +38,11 @@ public class MailerLiteApi {
     }
     
     
+    public <T extends MailerLiteResponse> T getRequest(String endpoint, Class<T> responseClass) throws MailerLiteException {
+    	
+    	return getRequest(endpoint, responseClass, null);
+    }
+    
     /**
      * Does a GET request to the given endpoint of the MailerLite API
      *
@@ -46,7 +52,7 @@ public class MailerLiteApi {
      * @throws MailerLiteException if an error is returned from the API this exception will contain the details
      */
     @SuppressWarnings("unchecked")
-    public <T extends MailerLiteResponse> T getRequest(String endpoint, Class<T> responseClass) throws MailerLiteException {
+    public <T extends MailerLiteResponse> T getRequest(String endpoint, Class<T> responseClass, JsonDeserializer<T> customDeserializer) throws MailerLiteException {
         
         HttpRequest request = HttpRequest.newBuilder(URI.create(this.endpointBase.concat(endpoint)))
                 .header("Content-type", "applicateion/json")
@@ -76,12 +82,16 @@ public class MailerLiteApi {
         }
         
         
-        return this.handleApiResponse(responseObject, responseClass);
+        return this.handleApiResponse(responseObject, responseClass, customDeserializer);
+    }
+        
+    
+    public <T extends MailerLiteResponse> T postRequest(String endpoint, String requestBody, Class<T> responseClass) throws MailerLiteException {
+    	return postRequest(endpoint, requestBody, responseClass, null);
     }
     
-    
     @SuppressWarnings("unchecked")
-	public <T extends MailerLiteResponse> T postRequest(String endpoint, String requestBody, Class<T> responseClass) throws MailerLiteException {
+	public <T extends MailerLiteResponse> T postRequest(String endpoint, String requestBody, Class<T> responseClass, JsonDeserializer<T> customDeserializer) throws MailerLiteException {
     	
         HttpRequest request = HttpRequest.newBuilder(URI.create(this.endpointBase.concat(endpoint)))
                 .header("Content-type", "application/json")
@@ -110,8 +120,14 @@ public class MailerLiteApi {
             return (T) response;
         }
         
-        return this.handleApiResponse(responseObject, responseClass);
+        return this.handleApiResponse(responseObject, responseClass, customDeserializer);
     }
+    
+    public <T extends MailerLiteResponse> T deleteRequest(String endpoint, Class<T> responseClass) throws MailerLiteException {
+    	
+    	return deleteRequest(endpoint, responseClass, null);
+    }
+    
     
     /**
      * Does a DELETE request to the given endpoint of the MailerLite API
@@ -121,7 +137,7 @@ public class MailerLiteApi {
      * @return T
      * @throws com.mailerlite.sdk.exceptions.MailerLiteException if an error is returned from the API this exception will contain the details
      */
-    public <T extends MailerLiteResponse> T deleteRequest(String endpoint, Class<T> responseClass) throws MailerLiteException {
+    public <T extends MailerLiteResponse> T deleteRequest(String endpoint, Class<T> responseClass, JsonDeserializer<T> customDeserializer) throws MailerLiteException {
         
         HttpRequest request = HttpRequest.newBuilder(URI.create(this.endpointBase.concat(endpoint)))
                 .header("Content-type", "applicateion/json")
@@ -142,9 +158,14 @@ public class MailerLiteApi {
             throw ex;
         }
         
-        return this.handleApiResponse(responseObject, responseClass);
+        return this.handleApiResponse(responseObject, responseClass, customDeserializer);
     }
     
+    
+    public <T extends MailerLiteResponse> T putRequest(String endpoint, String requestBody, Class<T> responseClass) throws MailerLiteException {
+    	
+    	return putRequest(endpoint, requestBody, responseClass, null);
+    }
     
     /**
      * Does a PUT request to the given endpoint of the MailerSend API
@@ -152,11 +173,12 @@ public class MailerLiteApi {
      * @param endpoint The MailerLite API endpoint
      * @param requestBody The body of the PUT request
      * @param responseClass The class of the response object
+     * @param customDeserializer
      * @return T
      * @throws com.mailerlite.sdk.exceptions.MailerLiteException if an error is returned from the API this exception will contain the details
      */
     @SuppressWarnings("unchecked")
-	public <T extends MailerLiteResponse> T putRequest(String endpoint, String requestBody, Class<T> responseClass) throws MailerLiteException {
+	public <T extends MailerLiteResponse> T putRequest(String endpoint, String requestBody, Class<T> responseClass, JsonDeserializer<T> customDeserializer) throws MailerLiteException {
        
     	if (requestBody == null) {
     		requestBody = "";
@@ -189,7 +211,7 @@ public class MailerLiteApi {
             return (T) response;
         }
         
-        return this.handleApiResponse(responseObject, responseClass);
+        return this.handleApiResponse(responseObject, responseClass, customDeserializer);
     }
     
     
@@ -201,14 +223,21 @@ public class MailerLiteApi {
      * @return T
      * @throws MailerLiteException
      */
-    private <T extends MailerLiteResponse> T handleApiResponse(HttpResponse<String> responseObject, Class<T> responseClass) throws MailerLiteException {
+    private <T extends MailerLiteResponse> T handleApiResponse(HttpResponse<String> responseObject, Class<T> responseClass, JsonDeserializer<T> customDeserializer) throws MailerLiteException {
         
         String stringResponse = "";
         
-        Gson gson = new GsonBuilder()
+        GsonBuilder gsonBuilder = new GsonBuilder()
                 .addSerializationExclusionStrategy(new JsonSerializationDeserializationStrategy(false))
-                .addDeserializationExclusionStrategy(new JsonSerializationDeserializationStrategy(true))
-                .create();
+                .addDeserializationExclusionStrategy(new JsonSerializationDeserializationStrategy(true));
+        
+        
+        if (customDeserializer != null) {
+        	
+        	gsonBuilder.registerTypeAdapter(responseClass, customDeserializer);
+        }
+        
+        Gson gson = gsonBuilder.create();
         
         int[] successCodes = {200, 201, 202, 204};
         
