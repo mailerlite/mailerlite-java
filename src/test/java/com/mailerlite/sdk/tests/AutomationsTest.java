@@ -88,7 +88,11 @@ public class AutomationsTest extends TestBase {
 			
 			List<Automation> automations = this.getMailerLite().automations().retriever().get();
 		
-			List<SubscriberActivity> activity = this.getMailerLite().automations().subscriberActivityRetriever().get(automations.get(0).id);
+			List<SubscriberActivity> activity = this.getMailerLite()
+					.automations()
+					.subscriberActivityRetriever()
+					.filter("status", "completed")
+					.get(automations.get(0).id);
 			
 			for (SubscriberActivity act : activity) {
 				System.out.println(act.id);

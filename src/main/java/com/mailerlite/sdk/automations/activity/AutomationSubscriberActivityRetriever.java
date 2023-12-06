@@ -83,11 +83,17 @@ public class AutomationSubscriberActivityRetriever extends PaginatedRequest<Auto
 			
 			SubscriberActivity subscriberActivity = gson.fromJson(obj, SubscriberActivity.class);
 			
-			JsonObject nextStep = ob.get("nextStep").getAsJsonObject();
-			JsonObject currentStep = ob.get("currentStep").getAsJsonObject();
+			if (ob.get("nextStep") != null) {
+				
+				JsonObject nextStep = ob.get("nextStep").getAsJsonObject();
+				subscriberActivity.nextStep = automationStepDeserializer.deserializeAutomationStep(nextStep, gson);	
+			}
 			
-			subscriberActivity.currentStep = automationStepDeserializer.deserializeAutomationStep(currentStep, gson);
-			subscriberActivity.nextStep = automationStepDeserializer.deserializeAutomationStep(nextStep, gson);	
+			if (ob.get("currentStep") != null) {
+				
+				JsonObject currentStep = ob.get("currentStep").getAsJsonObject();
+				subscriberActivity.currentStep = automationStepDeserializer.deserializeAutomationStep(currentStep, gson);
+			}			
 			
 			activity.add(subscriberActivity);
 		}

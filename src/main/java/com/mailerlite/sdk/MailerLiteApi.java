@@ -77,6 +77,7 @@ public class MailerLiteApi {
             
         	MailerLiteStringResponse response = new MailerLiteStringResponse();
             response.responseString = responseObject.body().toString();
+            response.responseStatusCode = responseObject.statusCode();
             
             return (T) response;
         }
