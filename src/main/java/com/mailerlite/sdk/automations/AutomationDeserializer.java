@@ -22,7 +22,13 @@ import com.mailerlite.sdk.automations.steps.action.MarkUnsubscribedAction;
 import com.mailerlite.sdk.automations.steps.action.MoveToGroupAction;
 import com.mailerlite.sdk.automations.steps.action.RemoveFromGroupAction;
 import com.mailerlite.sdk.automations.steps.action.UpdateCustomFieldAction;
+import com.mailerlite.sdk.automations.steps.condition.CampaignActivityCondition;
+import com.mailerlite.sdk.automations.steps.condition.ConditionBase;
 import com.mailerlite.sdk.automations.steps.condition.ConditionStep;
+import com.mailerlite.sdk.automations.steps.condition.CustomFieldsCondition;
+import com.mailerlite.sdk.automations.steps.condition.GroupMembershipCondition;
+import com.mailerlite.sdk.automations.steps.condition.SegmentMembershipCondition;
+import com.mailerlite.sdk.automations.steps.condition.WorkflowActivityCondition;
 import com.mailerlite.sdk.util.JsonSerializationDeserializationStrategy;
 
 public class AutomationDeserializer implements JsonDeserializer<Automation> {
@@ -119,7 +125,47 @@ public class AutomationDeserializer implements JsonDeserializer<Automation> {
 	private ConditionStep deserializeConditionStep(JsonObject stepObj, Gson gson)
 	{
 		
-		return null;
+		ConditionStep step = gson.fromJson(stepObj, ConditionStep.class);
+		
+		JsonArray conditions = stepObj.get("conditions").getAsJsonArray();
+		
+		ArrayList<ConditionBase> conditionItems = new ArrayList<ConditionBase>();
+		
+		
+		for (JsonElement el : conditions) {
+			
+			JsonObject conditionObj = el.getAsJsonObject();
+			
+			String conditionType = conditionObj.get("type").getAsString();
+			
+			switch (conditionType) {
+			
+			case "workflow_activity":
+				conditionItems.add(gson.fromJson(conditionObj, WorkflowActivityCondition.class));
+				break;
+				
+			case "campaign_activity":
+				conditionItems.add(gson.fromJson(conditionObj, CampaignActivityCondition.class));
+				break;
+				
+			case "custom_fields":
+				conditionItems.add(gson.fromJson(conditionObj, CustomFieldsCondition.class));
+				break;
+				
+			case "segment_membership":
+				conditionItems.add(gson.fromJson(conditionObj, SegmentMembershipCondition.class));
+				break;
+				
+			case "group_membership":
+				conditionItems.add(gson.fromJson(conditionObj, GroupMembershipCondition.class));
+				break;
+			}
+		}
+		
+		
+		step.conditions = conditionItems.toArray();
+		
+		return step;
 	}
 
 }

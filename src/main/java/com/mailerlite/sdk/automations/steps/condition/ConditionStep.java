@@ -13,4 +13,7 @@ public class ConditionStep extends AutomationStep {
 	
 	@SerializedName("matching_type")
 	public String matchingType;
+	
+	
+	public transient Object[] conditions;
 }
