@@ -24,12 +24,14 @@ public class AutomationRetriever extends PaginatedRequest<AutomationRetriever> {
 		apiObjectReference = apiReference;
 	}
 	
+	
 	public AutomationRetriever filter(String name, String value)
 	{
 		this.addQueryParameter("filter[".concat(name).concat("]"), value);
 		
 		return this;
 	}
+	
 	
 	public List<Automation> get() throws MailerLiteException
 	{
@@ -64,7 +66,33 @@ public class AutomationRetriever extends PaginatedRequest<AutomationRetriever> {
 		
 		return automations;
 	}
+	
+	
+	public Automation getSingle(String id) throws MailerLiteException
+	{
+		String endpoint = "/automations/".concat(id);
+		
+		MailerLiteApi api = new MailerLiteApi();
+		api.setToken(apiObjectReference.getToken());
+		
+		MailerLiteStringResponse responseObj = api.getRequest(endpoint, MailerLiteStringResponse.class);
+		
+		String response = responseObj.responseString;
+		
+		JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
+        
+		JsonObject data = jsonObject.get("data").getAsJsonObject();
+		
+        Gson gson = new GsonBuilder()
+                .addSerializationExclusionStrategy(new JsonSerializationDeserializationStrategy(false))
+                .addDeserializationExclusionStrategy(new JsonSerializationDeserializationStrategy(true))
+                .registerTypeAdapter(Automation.class, new AutomationDeserializer())
+                .create();
+        
+        return gson.fromJson(data, Automation.class);
+	}
 
+	
 	@Override
 	protected AutomationRetriever getInstance() {
 		
