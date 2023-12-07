@@ -3,9 +3,10 @@ package com.mailerlite.sdk.automations;
 import java.time.LocalDateTime;
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.automations.triggers.AutomationTrigger;
+import com.mailerlite.sdk.util.ApiResource;
 import com.mailerlite.sdk.util.ParseDate;
 
-public class Automation {
+public class Automation extends ApiResource {
 
 	@SerializedName("id")
 	public String id;

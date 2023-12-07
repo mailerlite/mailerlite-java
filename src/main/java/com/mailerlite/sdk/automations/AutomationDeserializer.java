@@ -58,6 +58,8 @@ public class AutomationDeserializer implements JsonDeserializer<Automation> {
 		
 		Automation automation = gson.fromJson(json, Automation.class);
 		
+		automation.parseDates();
+		
 		ArrayList<AutomationStep> steps = new ArrayList<AutomationStep>();
 		
 		AutomationStepDeserializer stepDeserializer = new AutomationStepDeserializer();

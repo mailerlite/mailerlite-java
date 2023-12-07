@@ -34,19 +34,29 @@ public class AutomationStepDeserializer {
 		switch (type) {
 		
 			case "email":
-				return gson.fromJson(stepObj, EmailStep.class);
+				EmailStep emailStep = gson.fromJson(stepObj, EmailStep.class);
+				emailStep.parseDates();
+				return emailStep;
 				
 			case "delay":
-				return gson.fromJson(stepObj, DelayStep.class);
+				DelayStep delayStep = gson.fromJson(stepObj, DelayStep.class);
+				delayStep.parseDates();
+				return delayStep;
 				
 			case "abtest":
-				return gson.fromJson(stepObj, AbStep.class);
+				AbStep abStep = gson.fromJson(stepObj, AbStep.class);
+				abStep.parseDates();
+				return abStep;
 
 			case "action":
-				return deserializeActionStep(stepObj, gson);
+				ActionStep actionStep = deserializeActionStep(stepObj, gson);
+				actionStep.parseDates();
+				return actionStep;
 
 			case "condition":
-				return deserializeConditionStep(stepObj, gson);
+				ConditionStep conditionStep = deserializeConditionStep(stepObj, gson);
+				conditionStep.parseDates();
+				return conditionStep;
 		}
 		
 		return null;
