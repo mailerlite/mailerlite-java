@@ -13,6 +13,7 @@ import com.mailerlite.sdk.fields.Fields;
 import com.mailerlite.sdk.groups.Groups;
 import com.mailerlite.sdk.segments.Segments;
 import com.mailerlite.sdk.susbcribers.Subscribers;
+import com.mailerlite.sdk.webhooks.Webhooks;
 
 public class MailerLite 
 {
@@ -29,6 +30,8 @@ public class MailerLite
 	protected Fields fields;
 	
 	protected Automations automations;
+	
+	protected Webhooks webhooks;
 	
 	public Campaigns campaigns()
 	{
@@ -86,6 +89,15 @@ public class MailerLite
 		}
 		
 		return automations;
+	}
+	
+	public Webhooks webhooks()
+	{
+		if (webhooks == null) {
+			webhooks = new Webhooks(this);
+		}
+		
+		return webhooks;
 	}
 	
 	/**
