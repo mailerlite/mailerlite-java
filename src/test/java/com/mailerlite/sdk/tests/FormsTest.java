@@ -35,7 +35,7 @@ public class FormsTest extends TestBase {
 		
 		try {
 			
-			FormsList forms = this.getMailerLite().forms().retriever().get();
+			FormsList forms = this.getMailerLite().forms().retriever().get("embedded");
 			
 			for (Form f : forms.forms) {
 				
@@ -56,7 +56,7 @@ public class FormsTest extends TestBase {
 	{
 		try {
 			
-			FormsList forms = this.getMailerLite().forms().retriever().get();
+			FormsList forms = this.getMailerLite().forms().retriever().get("embedded");
 			
 			SubscribersList list = this.getMailerLite().forms().subscribers().get(forms.forms[0].id);
 			
@@ -78,7 +78,7 @@ public class FormsTest extends TestBase {
 	{
 		try {
 					
-			FormsList forms = this.getMailerLite().forms().retriever().get();
+			FormsList forms = this.getMailerLite().forms().retriever().get("embedded");
 			
 			SingleForm form = this.getMailerLite().forms().update(forms.forms[0].id, "new form name");
 			
@@ -99,7 +99,7 @@ public class FormsTest extends TestBase {
 	{
 		try {
 			
-			FormsList forms = this.getMailerLite().forms().retriever().get();
+			FormsList forms = this.getMailerLite().forms().retriever().get("embedded");
 			
 			MailerLiteResponse response = this.getMailerLite().forms().delete(forms.forms[0].id);
 			

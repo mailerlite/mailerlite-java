@@ -27,9 +27,9 @@ private MailerLite apiObjectReference;
 		return this;
 	}
 	
-	public FormsList get() throws MailerLiteException
+	public FormsList get(String type) throws MailerLiteException
 	{
-		String endpoint = "/forms".concat(this.getQueryParameters());
+		String endpoint = "/forms/".concat(type).concat(this.getQueryParameters());
 		
 		MailerLiteApi api = new MailerLiteApi();
 		api.setToken(apiObjectReference.getToken());
