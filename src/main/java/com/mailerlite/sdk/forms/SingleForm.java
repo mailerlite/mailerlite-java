@@ -1,10 +1,11 @@
-package com.mailerlite.sdk.webhooks;
+package com.mailerlite.sdk.forms;
 
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.MailerLiteResponse;
 
-public class SingleWebhook extends MailerLiteResponse {
+public class SingleForm  extends MailerLiteResponse {
 
 	@SerializedName("data")
-	public Webhook webhook;
+	public Form form;
+	
 }

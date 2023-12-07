@@ -10,6 +10,7 @@ package com.mailerlite.sdk;
 import com.mailerlite.sdk.automations.Automations;
 import com.mailerlite.sdk.campaigns.Campaigns;
 import com.mailerlite.sdk.fields.Fields;
+import com.mailerlite.sdk.forms.Forms;
 import com.mailerlite.sdk.groups.Groups;
 import com.mailerlite.sdk.segments.Segments;
 import com.mailerlite.sdk.susbcribers.Subscribers;
@@ -33,6 +34,8 @@ public class MailerLite
 	
 	protected Webhooks webhooks;
 	
+	protected Forms forms;
+	
 	public Campaigns campaigns()
 	{
 		
@@ -44,6 +47,7 @@ public class MailerLite
 		return campaigns;
 	}
 	
+	
 	public Subscribers subscribers()
 	{
 		if (subscribers == null) {
@@ -54,6 +58,7 @@ public class MailerLite
 		return subscribers;
 	}
 	
+	
 	public Groups groups()
 	{
 		if (groups == null) {
@@ -62,6 +67,7 @@ public class MailerLite
 		
 		return groups;
 	}
+	
 	
 	public Segments segments()
 	{
@@ -73,6 +79,7 @@ public class MailerLite
 		return segments;
 	}
 	
+	
 	public Fields fields()
 	{
 		if (fields == null) {
@@ -81,6 +88,7 @@ public class MailerLite
 		
 		return fields;
 	}
+	
 	
 	public Automations automations()
 	{
@@ -91,6 +99,7 @@ public class MailerLite
 		return automations;
 	}
 	
+	
 	public Webhooks webhooks()
 	{
 		if (webhooks == null) {
@@ -99,6 +108,17 @@ public class MailerLite
 		
 		return webhooks;
 	}
+	
+	
+	public Forms forms()
+	{
+		if (forms == null) {
+			forms = new Forms(this);
+		}
+		
+		return forms;
+	}
+	
 	
 	/**
 	 * Sets the MailerLite API token

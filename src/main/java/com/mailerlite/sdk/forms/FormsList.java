@@ -1,18 +1,17 @@
-package com.mailerlite.sdk.webhooks;
+package com.mailerlite.sdk.forms;
 
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.util.PaginatedResponse;
 
-public class WebhooksList extends PaginatedResponse {
-
-
+public class FormsList extends PaginatedResponse {
+	
 	@SerializedName("data")
-	public Webhook[] webhooks;
+	public Form[] forms;
 	
 	public void postDeserialise()
 	{
-		for (Webhook w : webhooks) {
-			w.parseDates();
+		for (Form f : forms) {
+			f.parseDates();
 		}
 	}
 }
