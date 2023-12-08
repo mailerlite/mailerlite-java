@@ -1,3 +1,10 @@
+/*************************************************
+ * MailerLite Java SDK
+ * https://github.com/mailerlite/mailerlite-java
+ * 
+ * @author MailerLite <support@mailerlite.com>
+ * https://mailerlite.com
+ **************************************************/
 package com.mailerlite.sdk.tests;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -12,8 +19,6 @@ import org.junit.jupiter.api.TestInfo;
 
 import com.mailerlite.sdk.automations.Automation;
 import com.mailerlite.sdk.automations.activity.SubscriberActivity;
-import com.mailerlite.sdk.campaigns.Campaign;
-import com.mailerlite.sdk.campaigns.CampaignsList;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 
 public class AutomationsTest extends TestBase {

@@ -1,3 +1,10 @@
+/*************************************************
+ * MailerLite Java SDK
+ * https://github.com/mailerlite/mailerlite-java
+ * 
+ * @author MailerLite <support@mailerlite.com>
+ * https://mailerlite.com
+ **************************************************/
 package com.mailerlite.sdk.automations;
 
 import java.lang.reflect.Type;
@@ -11,24 +18,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mailerlite.sdk.automations.steps.AbStep;
 import com.mailerlite.sdk.automations.steps.AutomationStep;
-import com.mailerlite.sdk.automations.steps.DelayStep;
-import com.mailerlite.sdk.automations.steps.EmailStep;
-import com.mailerlite.sdk.automations.steps.action.ActionStep;
-import com.mailerlite.sdk.automations.steps.action.CopyToGroupAction;
-import com.mailerlite.sdk.automations.steps.action.GoToStepAction;
-import com.mailerlite.sdk.automations.steps.action.MarkUnsubscribedAction;
-import com.mailerlite.sdk.automations.steps.action.MoveToGroupAction;
-import com.mailerlite.sdk.automations.steps.action.RemoveFromGroupAction;
-import com.mailerlite.sdk.automations.steps.action.UpdateCustomFieldAction;
-import com.mailerlite.sdk.automations.steps.condition.CampaignActivityCondition;
-import com.mailerlite.sdk.automations.steps.condition.ConditionBase;
-import com.mailerlite.sdk.automations.steps.condition.ConditionStep;
-import com.mailerlite.sdk.automations.steps.condition.CustomFieldsCondition;
-import com.mailerlite.sdk.automations.steps.condition.GroupMembershipCondition;
-import com.mailerlite.sdk.automations.steps.condition.SegmentMembershipCondition;
-import com.mailerlite.sdk.automations.steps.condition.WorkflowActivityCondition;
 import com.mailerlite.sdk.automations.triggers.AutomationTrigger;
 import com.mailerlite.sdk.automations.triggers.TriggerAbandonedCart;
 import com.mailerlite.sdk.automations.triggers.TriggerClicksLink;

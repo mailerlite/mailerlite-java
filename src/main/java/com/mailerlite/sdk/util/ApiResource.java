@@ -1,11 +1,18 @@
+/*************************************************
+ * MailerLite Java SDK
+ * https://github.com/mailerlite/mailerlite-java
+ * 
+ * @author MailerLite <support@mailerlite.com>
+ * https://mailerlite.com
+ **************************************************/
 package com.mailerlite.sdk.util;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
+
 public class ApiResource {
 
 	public void parseDates() {

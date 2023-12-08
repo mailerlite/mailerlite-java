@@ -1,3 +1,10 @@
+/*************************************************
+ * MailerLite Java SDK
+ * https://github.com/mailerlite/mailerlite-java
+ * 
+ * @author MailerLite <support@mailerlite.com>
+ * https://mailerlite.com
+ **************************************************/
 package com.mailerlite.sdk;
 
 import java.io.IOException;
@@ -169,7 +176,7 @@ public class MailerLiteApi {
     }
     
     /**
-     * Does a PUT request to the given endpoint of the MailerSend API
+     * Does a PUT request to the given endpoint of the MailerLite API
      *
      * @param endpoint The MailerLite API endpoint
      * @param requestBody The body of the PUT request

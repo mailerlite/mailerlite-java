@@ -1,9 +1,9 @@
 /*************************************************
- * MailerSend Java SDK
- * https://github.com/mailersend/mailersend-java
+ * MailerLite Java SDK
+ * https://github.com/mailerlite/mailerlite-java
  * 
- * @author MailerSend <support@mailersend.com>
- * https://mailersend.com
+ * @author MailerLite <support@mailerlite.com>
+ * https://mailerlite.com
  **************************************************/
 package com.mailerlite.sdk.vcr;
 

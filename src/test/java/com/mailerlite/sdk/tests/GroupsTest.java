@@ -1,3 +1,10 @@
+/*************************************************
+ * MailerLite Java SDK
+ * https://github.com/mailerlite/mailerlite-java
+ * 
+ * @author MailerLite <support@mailerlite.com>
+ * https://mailerlite.com
+ **************************************************/
 package com.mailerlite.sdk.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,7 +16,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-
 import com.mailerlite.sdk.MailerLiteResponse;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.groups.Group;
@@ -17,7 +23,6 @@ import com.mailerlite.sdk.groups.GroupSubscribersList;
 import com.mailerlite.sdk.groups.GroupsList;
 import com.mailerlite.sdk.groups.SingleGroup;
 import com.mailerlite.sdk.susbcribers.Subscriber;
-import com.mailerlite.sdk.susbcribers.SubscriberImportStatusEntry;
 import com.mailerlite.sdk.susbcribers.SubscribersList;
 
 public class GroupsTest extends TestBase {

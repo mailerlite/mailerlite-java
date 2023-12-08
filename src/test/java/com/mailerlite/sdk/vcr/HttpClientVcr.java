@@ -1,3 +1,10 @@
+/*************************************************
+ * MailerLite Java SDK
+ * https://github.com/mailerlite/mailerlite-java
+ * 
+ * @author MailerLite <support@mailerlite.com>
+ * https://mailerlite.com
+ **************************************************/
 package com.mailerlite.sdk.vcr;
 
 import java.io.IOException;
@@ -29,7 +36,7 @@ public class HttpClientVcr extends HttpClient {
 	private VcrTape tape;
 	
 	/**
-	 * Replacement for the HttpClient class so that we can record and replay the MailerSend API responses
+	 * Replacement for the HttpClient class so that we can record and replay the MailerLite API responses
 	 */
 	public HttpClientVcr()
 	{
@@ -159,7 +166,7 @@ public class HttpClientVcr extends HttpClient {
 	}
 
 	/*
-	 * We don't use sendAsync in the MailerSend SDK, we keep these methods for completeness
+	 * We don't use sendAsync in the MailerLite SDK, we keep these methods for completeness
 	 */
 	@Override
 	public <T> CompletableFuture<HttpResponse<T>> sendAsync(HttpRequest request, BodyHandler<T> responseBodyHandler) {

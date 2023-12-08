@@ -1,9 +1,15 @@
+/*************************************************
+ * MailerLite Java SDK
+ * https://github.com/mailerlite/mailerlite-java
+ * 
+ * @author MailerLite <support@mailerlite.com>
+ * https://mailerlite.com
+ **************************************************/
 package com.mailerlite.sdk.emails;
 
 import java.time.LocalDateTime;
 
 import com.google.gson.annotations.SerializedName;
-import com.mailerlite.sdk.util.ApiResource;
 import com.mailerlite.sdk.util.ParseDate;
 
 public class Email extends EmailBase {

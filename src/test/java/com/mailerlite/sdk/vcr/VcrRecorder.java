@@ -1,4 +1,10 @@
-
+/*************************************************
+ * MailerLite Java SDK
+ * https://github.com/mailerlite/mailerlite-java
+ * 
+ * @author MailerLite <support@mailerlite.com>
+ * https://mailerlite.com
+ **************************************************/
 package com.mailerlite.sdk.vcr;
 
 import java.io.IOException;
@@ -12,7 +18,7 @@ public class VcrRecorder {
 	private static VcrTape tape;
 	
 	/**
-	 * Loads the tape and sets up HttpClientVcr to the MaielrSendHttpClientFactory
+	 * Loads the tape and sets up HttpClientVcr to the MaielrLiteHttpClientFactory
 	 * @param tapeName
 	 * @throws IOException
 	 */
