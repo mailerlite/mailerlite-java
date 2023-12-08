@@ -59,6 +59,26 @@ public class FormsTest extends TestBase {
 	}
 	
 	@Test
+	public void TestGetSingleForm()
+	{
+		try {
+			
+			FormsList forms = this.getMailerLite().forms().retriever().get("embedded");
+			
+			SingleForm f = this.getMailerLite().forms().retriever().getSingle(forms.forms[0].id);
+			
+			System.out.println(f.form.id);
+			System.out.println(f.form.name);
+			
+			
+		} catch (MailerLiteException e) {
+			
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
 	public void TestGetFormSubscribers()
 	{
 		try {
