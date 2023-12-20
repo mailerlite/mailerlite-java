@@ -5,7 +5,7 @@
 	<artifactId>mailerlite-java</artifactId>
 	<version>0.0.1</version>
 	<name>MailerLite Java SDK</name>
-	<description>An SDK for MailerSend API</description>
+	<description>An SDK for MailerLite API</description>
 	<url>https://github.com/mailerlite/mailerlite-java</url>
 
 	<properties>
@@ -23,7 +23,7 @@
 
 	<developers>
 		<developer>
-			<name>MailerSend</name>
+			<name>MailerLite</name>
 			<email>info@mailerlite.com</email>
 			<organization>MailerLite</organization>
 			<organizationUrl>https://mailerlite.com</organizationUrl>
