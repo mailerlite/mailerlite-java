@@ -1237,7 +1237,7 @@ class Example {
 
 # Testing
 
-Change the properties in the `TestHelper` class of the `com.mailerlite.sdk.tests` package to correspond to your account details, then simply run
+Change the properties in the `TestHelper` class of the `com.mailerlite.tests` package to correspond to your account details, then simply run
 ```
 mvn test
 ```
