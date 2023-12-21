@@ -7,7 +7,7 @@
  **************************************************/
 package com.mailerlite.sdk.susbcribers;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.util.ApiResource;
@@ -91,29 +91,29 @@ public class SubscriberImport extends ApiResource {
 	public String updatedAtStr;
 	
 	@ParseDate("updatedAtStr")
-	public LocalDateTime updatedAt;
+	public Date updatedAt;
 	
 	@SerializedName("undone_at")
 	public String undoneAtStr;
 	
 	@ParseDate("undoneAtStr")
-	public LocalDateTime undoneAt;
+	public Date undoneAt;
 	
 	@SerializedName("stopped_at")
 	public String stoppedAtStr;
 	
 	@ParseDate("stoppedAtStr")
-	public LocalDateTime stoppedAt;
+	public Date stoppedAt;
 
 	@SerializedName("undo_started_at")
 	public String undoStartedAtStr;
 	
 	@ParseDate("undoStartedAtStr")
-	public LocalDateTime undoStartedAt;
+	public Date undoStartedAt;
 	
 	@SerializedName("finished_at")
 	public String finishedAtStr;
 	
 	@ParseDate("finishedAtStr")
-	public LocalDateTime finishedAt;
+	public Date finishedAt;
 }

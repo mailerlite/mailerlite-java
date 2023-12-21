@@ -7,7 +7,7 @@
  **************************************************/
 package com.mailerlite.sdk.emails;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.util.ApiResource;
@@ -25,5 +25,5 @@ public class DelayValue extends ApiResource {
 	public String dateStr;
 	
 	@ParseDate("dateStr")
-	public LocalDateTime delayDate;
+	public Date delayDate;
 }

@@ -7,7 +7,7 @@
  **************************************************/
 package com.mailerlite.sdk.forms;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 
 import com.google.gson.annotations.SerializedName;
@@ -31,7 +31,7 @@ public class Form extends ApiResource {
 	@SerializedName("created_at")
 	public String createdAtStr;
 		
-	public LocalDateTime createdAt;
+	public Date createdAt;
 	
 	@SerializedName("conversions_count")
 	public int conversionsCount;
@@ -48,7 +48,7 @@ public class Form extends ApiResource {
 	@SerializedName("last_registration_at")
 	public String lastRegistrationAtStr;
 	
-	public LocalDateTime lastRegistrationAt;
+	public Date lastRegistrationAt;
 	
 	@SerializedName("active")
 	public Boolean active;

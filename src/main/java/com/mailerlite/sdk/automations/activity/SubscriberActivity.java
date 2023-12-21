@@ -7,7 +7,8 @@
  **************************************************/
 package com.mailerlite.sdk.automations.activity;
 
-import java.time.LocalDateTime;
+
+import java.util.Date;
 
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.util.ParseDate;
@@ -24,7 +25,7 @@ public class SubscriberActivity {
 	public String dateStr;
 	
 	@ParseDate("dateStr")
-	public LocalDateTime activityDate;
+	public Date activityDate;
 	
 	@SerializedName("reason")
 	public String reason;

@@ -7,7 +7,7 @@
  **************************************************/
 package com.mailerlite.sdk.susbcribers;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 
 import com.google.gson.annotations.SerializedName;
@@ -50,31 +50,31 @@ public class Subscriber extends ApiResource {
 	public String subscribedAtStr;
 	
 	@ParseDate("subscribedAtStr")
-	public LocalDateTime subscribedAt;
+	public Date subscribedAt;
 	
 	@SerializedName("unsubscribed_at")
 	public String unsubscribedAtStr;
 	
 	@ParseDate("unsubscribedAtStr")
-	public LocalDateTime unsubscribedAt;
+	public Date unsubscribedAt;
 	
 	@SerializedName("created_at")
 	public String createdAtStr;
 	
 	@ParseDate("createdAtStr")
-	public LocalDateTime createdAt;
+	public Date createdAt;
 	
 	@SerializedName("updated_at")
 	public String updatedAtStr;
 	
 	@ParseDate("updatedAtStr")
-	public LocalDateTime updatedAt;
+	public Date updatedAt;
 	
 	@SerializedName("opted_in_at")
 	public String optedInAtStr;
 	
 	@ParseDate("optedInAtStr")
-	public LocalDateTime optedInAt;
+	public Date optedInAt;
 	
 	@SerializedName("optin_ip")
 	public String optinIp;

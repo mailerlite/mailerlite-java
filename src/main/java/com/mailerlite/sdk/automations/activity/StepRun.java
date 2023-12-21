@@ -7,7 +7,7 @@
  **************************************************/
 package com.mailerlite.sdk.automations.activity;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.util.ParseDate;
@@ -27,5 +27,5 @@ public class StepRun {
 	public String scheduledForStr;
 	
 	@ParseDate("scheduledForStr")
-	public LocalDateTime scheduledFor;
+	public Date scheduledFor;
 }

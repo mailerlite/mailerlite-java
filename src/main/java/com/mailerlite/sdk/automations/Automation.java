@@ -7,7 +7,8 @@
  **************************************************/
 package com.mailerlite.sdk.automations;
 
-import java.time.LocalDateTime;
+import java.util.Date;
+
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.util.ApiResource;
 import com.mailerlite.sdk.util.ParseDate;
@@ -60,7 +61,7 @@ public class Automation extends ApiResource {
 	public String createdAtStr;
 	
 	@ParseDate("createdAtStr")
-	public LocalDateTime createdAt;
+	public Date createdAt;
 	
 	
 

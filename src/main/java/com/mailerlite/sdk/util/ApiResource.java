@@ -10,8 +10,9 @@ package com.mailerlite.sdk.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ApiResource {
 
@@ -31,8 +32,8 @@ public class ApiResource {
 											
 						String dateStr = dateStrField.get(this).toString();
 						
-						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-						LocalDateTime date = LocalDateTime.parse(dateStr, formatter);
+						SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						Date date = formatter.parse(dateStr);
 						
 			            field.setAccessible(true);
 			            
@@ -49,6 +50,8 @@ public class ApiResource {
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
 
+					e.printStackTrace();
+				} catch (ParseException e) {
 					e.printStackTrace();
 				}
 

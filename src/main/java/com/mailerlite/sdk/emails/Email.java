@@ -7,7 +7,8 @@
  **************************************************/
 package com.mailerlite.sdk.emails;
 
-import java.time.LocalDateTime;
+
+import java.util.Date;
 
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.util.ParseDate;
@@ -46,14 +47,14 @@ public class Email extends EmailBase {
 	public String createdAtStr;
 	
 	@ParseDate("createdAtStr")
-	public LocalDateTime createdAt;
+	public Date createdAt;
 	
 	
 	@SerializedName("updated_at")
 	public String updatedAtStr;
 	
 	@ParseDate("updatedAtStr")
-	public LocalDateTime updatedAt;
+	public Date updatedAt;
 	
 	@SerializedName("is_designed")
 	public boolean isDesigned;

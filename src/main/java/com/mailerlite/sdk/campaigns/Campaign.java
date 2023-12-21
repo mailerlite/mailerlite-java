@@ -7,7 +7,7 @@
  **************************************************/
 package com.mailerlite.sdk.campaigns;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
@@ -53,49 +53,49 @@ public class Campaign extends ApiResource {
 	public String createdAtStr;
 	
 	@ParseDate("createdAtStr")
-	public LocalDateTime createdAt;
+	public Date createdAt;
 	
 	
 	@SerializedName("updated_at")
 	public String updatedAtStr;
 	
 	@ParseDate("updatedAtStr")
-	public LocalDateTime updatedAt;
+	public Date updatedAt;
 	
 	
 	@SerializedName("scheduled_for")
 	public String scheduledForStr;
 	
 	@ParseDate("scheduledForStr")
-	public LocalDateTime scheduledFor;
+	public Date scheduledFor;
 	
 	
 	@SerializedName("queued_at")
 	public String queuedAtStr;
 	
 	@ParseDate("queuedAtStr")
-	public LocalDateTime queuedAt;
+	public Date queuedAt;
 	
 	
 	@SerializedName("started_at")
 	public String startedAtStr;
 	
 	@ParseDate("startedAtStr")
-	public LocalDateTime startedAt;
+	public Date startedAt;
 	
 	
 	@SerializedName("finished_at")
 	public String finishedAtStr;
 	
 	@ParseDate("finishedAtStr")
-	public LocalDateTime finishedAt;
+	public Date finishedAt;
 	
 	
 	@SerializedName("stopped_at")
 	public String stoppedAtStr;
 	
 	@ParseDate("stoppedAtStr")
-	public LocalDateTime stoppedAt;
+	public Date stoppedAt;
 	
 	
 	@SerializedName("default_email_id")
@@ -129,7 +129,7 @@ public class Campaign extends ApiResource {
 	public String winnerSelectedManuallyAtStr;
 	
 	@ParseDate("winnerSelectedManuallyAtStr")
-	public LocalDateTime winnerSelectedManuallyAt;
+	public Date winnerSelectedManuallyAt;
 	
 	@SerializedName("uses_ecommerce")
 	public Boolean usesEcommerce;
@@ -147,5 +147,5 @@ public class Campaign extends ApiResource {
 	public String initialCreatedAtStr;
 	
 	@ParseDate("initialCreatedAtStr")
-	public LocalDateTime initialCreatedAt;
+	public Date initialCreatedAt;
 }

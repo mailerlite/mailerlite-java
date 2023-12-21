@@ -7,7 +7,7 @@
  **************************************************/
 package com.mailerlite.sdk.segments;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.util.ApiResource;
@@ -35,5 +35,5 @@ public class Segment extends ApiResource {
 	public String createdAtStr;
 	
 	@ParseDate("createdAtStr")
-	public LocalDateTime createdAt;
+	public Date createdAt;
 }

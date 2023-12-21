@@ -7,9 +7,10 @@
  **************************************************/
 package com.mailerlite.sdk.susbcribers;
 
-import java.time.LocalDateTime;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import com.google.gson.Gson;
@@ -104,10 +105,10 @@ public class SubscriberBuilder {
 		return this;
 	}
 	
-	public SubscriberBuilder subscribedAt(LocalDateTime subscribedAt)
+	public SubscriberBuilder subscribedAt(Date subscribedAt)
 	{
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		builderBody.subscribedAt = subscribedAt.format(formatter);
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		builderBody.subscribedAt = formatter.format(subscribedAt);
 		return this;
 	}
 	
@@ -117,10 +118,10 @@ public class SubscriberBuilder {
 		return this;
 	}
 	
-	public SubscriberBuilder optedInAt(LocalDateTime optedInAt)
+	public SubscriberBuilder optedInAt(Date optedInAt)
 	{
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		builderBody.optedInAt = optedInAt.format(formatter);
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		builderBody.optedInAt = formatter.format(optedInAt);
 		return this;
 	}
 	
@@ -130,10 +131,11 @@ public class SubscriberBuilder {
 		return this;
 	}
 	
-	public SubscriberBuilder unsubscribedAt(LocalDateTime unsubscribedAt)
+	public SubscriberBuilder unsubscribedAt(Date unsubscribedAt)
 	{
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		builderBody.unsubscribedAt = unsubscribedAt.format(formatter);
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		builderBody.unsubscribedAt = formatter.format(unsubscribedAt);
 		return this;
 	}
 }
