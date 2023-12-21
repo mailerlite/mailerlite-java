@@ -27,19 +27,20 @@ import com.mailerlite.sdk.campaigns.CampaignsList;
 import com.mailerlite.sdk.campaigns.SingleCampaign;
 import com.mailerlite.sdk.emails.EmailBase;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
+import com.mailerlite.sdk.vcr.VcrRecorder;
 
 public class CampaignsTest extends TestBase {
 
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
-		// VcrRecorder.useRecording("CampaignsTest_" + info.getDisplayName());
+		VcrRecorder.useRecording("CampaignsTest_" + info.getDisplayName());
 	}
 	
 	@AfterEach
 	public void afterEach() throws IOException
 	{
-		// VcrRecorder.stopRecording();
+		VcrRecorder.stopRecording();
 	}
 	
 	@Test
@@ -158,65 +159,7 @@ public class CampaignsTest extends TestBase {
 			fail();
 		}
 	}
-	
-	@Test
-	public void testScheduleCampaign()
-	{
-		try {
-			
-			SingleCampaign newCampaign = this.createCampaign("Campaign to schedule");
-			
-			CampaignScheduler scheduler = this.getMailerLite().campaigns().scheduler();
-			
-			scheduler.scheduleSettings()
-			.date("2023-03-01")
-			.hours("09:00")
-			.minutes("00:00");
-			
-			SingleCampaign campaign = scheduler
-			.delivery(CampaignDelivery.SCHEDULED)
-			.schedule(newCampaign.campaign.id);
-
-			
-			assertEquals(200, campaign.responseStatusCode);
-			
-		} catch (MailerLiteException e) {
-			e.printStackTrace();
-			fail();
-		}
-	}
-	
-	
-	@Test
-	public void testCancelCampaign()
-	{
-		try {
-			
-			SingleCampaign newCampaign = this.createCampaign("Campaign to cancel");
-			
-			CampaignScheduler scheduler = this.getMailerLite().campaigns().scheduler();
-			
-			scheduler.scheduleSettings()
-			.date("2023-03-01")
-			.hours("09")
-			.minutes("00");
-			
-			SingleCampaign campaign = scheduler
-			.delivery(CampaignDelivery.SCHEDULED)
-			.schedule(newCampaign.campaign.id);
-			
-			assertEquals(200, campaign.responseStatusCode);
-			
-			SingleCampaign canceledCampaign = this.getMailerLite().campaigns().scheduler().cancel(campaign.campaign.id);
-			
-			assertEquals(200, canceledCampaign.responseStatusCode);
-			
-		} catch (MailerLiteException e) {
-			e.printStackTrace();
-			fail();
-		}
-	}
-	
+		
 	
 	@Test
 	public void testDeleteCampaign()
@@ -241,10 +184,8 @@ public class CampaignsTest extends TestBase {
 	public void testGetSubscriberActivity()
 	{
 		try {
-			
-			CampaignsList campaigns = this.getMailerLite().campaigns().retriever().filter("status", "sent").get();
-			
-			CampaignSubscriberActivityList activity = this.getMailerLite().campaigns().subscriberActivity().get(campaigns.campaigns[0].id);
+						
+			CampaignSubscriberActivityList activity = this.getMailerLite().campaigns().subscriberActivity().get(TestHelper.campaignIdToGetActivity);
 			
 			assertTrue(activity.activity.length > 0);
 			

@@ -22,19 +22,20 @@ import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.fields.Field;
 import com.mailerlite.sdk.fields.FieldList;
 import com.mailerlite.sdk.fields.SingleField;
+import com.mailerlite.sdk.vcr.VcrRecorder;
 
 public class FieldsTest extends TestBase {
 
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
-		// VcrRecorder.useRecording("FieldsTest_" + info.getDisplayName());
+		VcrRecorder.useRecording("FieldsTest_" + info.getDisplayName());
 	}
 	
 	@AfterEach
 	public void afterEach() throws IOException
 	{
-		// VcrRecorder.stopRecording();
+		VcrRecorder.stopRecording();
 	}
 	
 	@Test
@@ -64,7 +65,7 @@ public class FieldsTest extends TestBase {
 	{
 		try {
 			
-			SingleField field = this.getMailerLite().fields().builder().create("test field", "text");
+			SingleField field = this.getMailerLite().fields().builder().create("test create field", "text");
 			
 			System.out.println(field.field.id);
 			System.out.println(field.field.name);

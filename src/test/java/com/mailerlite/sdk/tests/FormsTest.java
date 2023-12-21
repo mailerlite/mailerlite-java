@@ -21,19 +21,20 @@ import com.mailerlite.sdk.forms.FormsList;
 import com.mailerlite.sdk.forms.SingleForm;
 import com.mailerlite.sdk.susbcribers.Subscriber;
 import com.mailerlite.sdk.susbcribers.SubscribersList;
+import com.mailerlite.sdk.vcr.VcrRecorder;
 
 public class FormsTest extends TestBase {
 
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
-		// VcrRecorder.useRecording("FormsTest_" + info.getDisplayName());
+		VcrRecorder.useRecording("FormsTest_" + info.getDisplayName());
 	}
 	
 	@AfterEach
 	public void afterEach() throws IOException
 	{
-		// VcrRecorder.stopRecording();
+		VcrRecorder.stopRecording();
 	}
 
 	@Test

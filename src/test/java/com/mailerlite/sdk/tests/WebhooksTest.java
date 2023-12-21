@@ -19,6 +19,7 @@ import org.junit.jupiter.api.TestInfo;
 
 import com.mailerlite.sdk.MailerLiteResponse;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
+import com.mailerlite.sdk.vcr.VcrRecorder;
 import com.mailerlite.sdk.webhooks.SingleWebhook;
 import com.mailerlite.sdk.webhooks.Webhook;
 import com.mailerlite.sdk.webhooks.WebhooksList;
@@ -28,13 +29,13 @@ public class WebhooksTest extends TestBase {
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
-		// VcrRecorder.useRecording("WebhooksTest_" + info.getDisplayName());
+		VcrRecorder.useRecording("WebhooksTest_" + info.getDisplayName());
 	}
 	
 	@AfterEach
 	public void afterEach() throws IOException
 	{
-		// VcrRecorder.stopRecording();
+		VcrRecorder.stopRecording();
 	}
 
 	@Test

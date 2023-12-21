@@ -25,19 +25,20 @@ import com.mailerlite.sdk.susbcribers.SubscriberCount;
 import com.mailerlite.sdk.susbcribers.SubscriberImport;
 import com.mailerlite.sdk.susbcribers.SubscriberImportList;
 import com.mailerlite.sdk.susbcribers.SubscribersList;
+import com.mailerlite.sdk.vcr.VcrRecorder;
 
 public class SubscribersTest extends TestBase {
 
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
-		// VcrRecorder.useRecording("SubscribersTest_" + info.getDisplayName());
+		VcrRecorder.useRecording("SubscribersTest_" + info.getDisplayName());
 	}
 	
 	@AfterEach
 	public void afterEach() throws IOException
 	{
-		// VcrRecorder.stopRecording();
+		VcrRecorder.stopRecording();
 	}
 	
 	@Test
@@ -88,7 +89,7 @@ public class SubscribersTest extends TestBase {
 	{
 		try {
 			
-			Subscriber subscriber = this.getMailerLite().subscribers().builder().email("test+email@mailerlite.com")
+			Subscriber subscriber = this.getMailerLite().subscribers().builder().email("test+email2@mailerlite.com")
 					.addField("name", "test name")
 					.create()
 					.subscriber;

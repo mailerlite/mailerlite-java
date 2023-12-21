@@ -24,19 +24,20 @@ import com.mailerlite.sdk.groups.GroupsList;
 import com.mailerlite.sdk.groups.SingleGroup;
 import com.mailerlite.sdk.susbcribers.Subscriber;
 import com.mailerlite.sdk.susbcribers.SubscribersList;
+import com.mailerlite.sdk.vcr.VcrRecorder;
 
 public class GroupsTest extends TestBase {
 
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
-		// VcrRecorder.useRecording("GroupsTest_" + info.getDisplayName());
+		VcrRecorder.useRecording("GroupsTest_" + info.getDisplayName());
 	}
 	
 	@AfterEach
 	public void afterEach() throws IOException
 	{
-		// VcrRecorder.stopRecording();
+		VcrRecorder.stopRecording();
 	}
 	
 	@Test
@@ -87,7 +88,7 @@ public class GroupsTest extends TestBase {
 	{
 		try {
 			
-			SingleGroup group = this.getMailerLite().groups().builder().create("new group name");
+			SingleGroup group = this.getMailerLite().groups().builder().create("create new group name");
 			
 			System.out.println(group.group.id);
 			System.out.println(group.group.name);
@@ -107,7 +108,7 @@ public class GroupsTest extends TestBase {
 			
 			GroupsList groups = this.getMailerLite().groups().retriever().get();
 			
-			SingleGroup group = this.getMailerLite().groups().builder().update(groups.groups[0].id, "updated group name");
+			SingleGroup group = this.getMailerLite().groups().builder().update(groups.groups[0].id, "updated a group name");
 			
 			System.out.println(group.group.id);
 			System.out.println(group.group.name);

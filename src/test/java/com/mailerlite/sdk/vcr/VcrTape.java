@@ -14,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodySubscriber;
 import java.net.http.HttpResponse.BodySubscribers;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -137,8 +138,8 @@ public class VcrTape {
 		String method = request.method();
 		
 		Optional<String> body = request.bodyPublisher().map(p -> {
-			var bodySubscriber = BodySubscribers.ofString(StandardCharsets.UTF_8);
-			var flowSubscriber = new StringSubscriber(bodySubscriber);
+			BodySubscriber<String> bodySubscriber = BodySubscribers.ofString(StandardCharsets.UTF_8);
+			StringSubscriber flowSubscriber = new StringSubscriber(bodySubscriber);
 			p.subscribe(flowSubscriber);
 			return bodySubscriber.getBody().toCompletableFuture().join();
 		});

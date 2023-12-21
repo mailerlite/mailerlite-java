@@ -9,6 +9,7 @@ package com.mailerlite.sdk.campaigns;
 
 import java.time.LocalDateTime;
 
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.emails.Email;
 import com.mailerlite.sdk.util.ApiResource;
@@ -34,11 +35,13 @@ public class Campaign extends ApiResource {
 	@SerializedName("missing_data")
 	public String[] missingData;
 	
+	/**
+	 * Settings will be an empty array if there are no settings
+	 * or an object if there are.
+	 */
 	@SerializedName("settings")
-	public CampaignSettings settings;
-	
-	// TODO: filter and filter_for_humans
-	
+	public JsonElement settings;
+
 	@SerializedName("delivery_schedule")
 	public String deliverySchedule;
 	

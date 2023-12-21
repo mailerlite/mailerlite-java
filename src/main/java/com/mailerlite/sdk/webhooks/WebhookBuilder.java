@@ -89,7 +89,7 @@ public class WebhookBuilder {
        
         String json = gson.toJson(builderBody);
         
-        SingleWebhook webhook = api.postRequest("/webhooks/".concat(webhookId), json, SingleWebhook.class);
+        SingleWebhook webhook = api.putRequest("/webhooks/".concat(webhookId), json, SingleWebhook.class);
         
         webhook.webhook.parseDates();
         

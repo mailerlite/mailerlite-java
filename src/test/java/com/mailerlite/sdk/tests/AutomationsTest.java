@@ -20,19 +20,20 @@ import org.junit.jupiter.api.TestInfo;
 import com.mailerlite.sdk.automations.Automation;
 import com.mailerlite.sdk.automations.activity.SubscriberActivity;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
+import com.mailerlite.sdk.vcr.VcrRecorder;
 
 public class AutomationsTest extends TestBase {
 
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
-		// VcrRecorder.useRecording("AutomationsTest_" + info.getDisplayName());
+		VcrRecorder.useRecording("AutomationsTest_" + info.getDisplayName());
 	}
 	
 	@AfterEach
 	public void afterEach() throws IOException
 	{
-		// VcrRecorder.stopRecording();
+		VcrRecorder.stopRecording();
 	}
 	
 	@Test

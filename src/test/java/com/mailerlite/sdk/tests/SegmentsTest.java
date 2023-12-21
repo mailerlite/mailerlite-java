@@ -24,6 +24,7 @@ import com.mailerlite.sdk.segments.SegmentSubscribersList;
 import com.mailerlite.sdk.segments.SegmentsList;
 import com.mailerlite.sdk.segments.SingleSegment;
 import com.mailerlite.sdk.susbcribers.Subscriber;
+import com.mailerlite.sdk.vcr.VcrRecorder;
 
 
 public class SegmentsTest extends TestBase {
@@ -31,13 +32,13 @@ public class SegmentsTest extends TestBase {
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
-		// VcrRecorder.useRecording("SegmentsTest_" + info.getDisplayName());
+		VcrRecorder.useRecording("SegmentsTest_" + info.getDisplayName());
 	}
 	
 	@AfterEach
 	public void afterEach() throws IOException
 	{
-		// VcrRecorder.stopRecording();
+		VcrRecorder.stopRecording();
 	}
 	
 	@Test
