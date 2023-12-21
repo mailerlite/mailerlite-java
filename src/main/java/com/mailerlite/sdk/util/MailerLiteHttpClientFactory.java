@@ -26,7 +26,7 @@ public class MailerLiteHttpClientFactory {
 	/**
 	 * <p>Getter for the field <code>instance</code>.</p>
 	 *
-	 * @return a {@link com.MailerLiteHttpClientFactory.sdk.util.MailerSendHttpClientFactory} object.
+	 * @return MailerLiteHttpClientFactory object.
 	 */
 	public static MailerLiteHttpClientFactory getInstance()
 	{
