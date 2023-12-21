@@ -14,18 +14,33 @@ import com.mailerlite.sdk.MailerLiteApi;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.util.JsonSerializationDeserializationStrategy;
 
+/**
+ * The Class WebhookBuilder.
+ */
 public class WebhookBuilder {
 
+	/** The builder body. */
 	private WebhookBuilderBody builderBody = new WebhookBuilderBody();
 	
+	/** The api object reference. */
 	private MailerLite apiObjectReference;
 	
+	/**
+	 * Instantiates a new webhook builder.
+	 *
+	 * @param apiRef the api ref
+	 */
 	public WebhookBuilder(MailerLite apiRef)
 	{
 		apiObjectReference = apiRef;
 	}
 	
 	
+	/**
+	 * Clear.
+	 *
+	 * @return the webhook builder
+	 */
 	public WebhookBuilder clear()
 	{
 		builderBody = new WebhookBuilderBody();
@@ -33,30 +48,60 @@ public class WebhookBuilder {
 		return this;
 	}
 	
+	/**
+	 * Adds the event.
+	 *
+	 * @param event the event
+	 * @return the webhook builder
+	 */
 	public WebhookBuilder addEvent(String event)
 	{
 		builderBody.events.add(event);
 		return this;
 	}
 	
+	/**
+	 * Name.
+	 *
+	 * @param name the name
+	 * @return the webhook builder
+	 */
 	public WebhookBuilder name(String name)
 	{
 		builderBody.name = name;
 		return this;
 	}
 	
+	/**
+	 * Enabled.
+	 *
+	 * @param enabled the enabled
+	 * @return the webhook builder
+	 */
 	public WebhookBuilder enabled(Boolean enabled)
 	{
 		builderBody.enabled = enabled;
 		return this;
 	}
 	
+	/**
+	 * Url.
+	 *
+	 * @param url the url
+	 * @return the webhook builder
+	 */
 	public WebhookBuilder url(String url)
 	{
 		builderBody.url = url;
 		return this;
 	}
 	
+	/**
+	 * Creates the.
+	 *
+	 * @return the single webhook
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public SingleWebhook create() throws MailerLiteException
 	{
 		MailerLiteApi api = new MailerLiteApi();
@@ -77,6 +122,13 @@ public class WebhookBuilder {
 	}
 	
 	
+	/**
+	 * Update.
+	 *
+	 * @param webhookId the webhook id
+	 * @return the single webhook
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public SingleWebhook update(String webhookId) throws MailerLiteException
 	{
 		MailerLiteApi api = new MailerLiteApi();

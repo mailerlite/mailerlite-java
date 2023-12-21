@@ -24,20 +24,37 @@ import com.mailerlite.sdk.webhooks.SingleWebhook;
 import com.mailerlite.sdk.webhooks.Webhook;
 import com.mailerlite.sdk.webhooks.WebhooksList;
 
+/**
+ * The Class WebhooksTest.
+ */
 public class WebhooksTest extends TestBase {
 
+	/**
+	 * Sets the up each.
+	 *
+	 * @param info the new up each
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
 		VcrRecorder.useRecording("WebhooksTest_" + info.getDisplayName());
 	}
 	
+	/**
+	 * After each.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@AfterEach
 	public void afterEach() throws IOException
 	{
 		VcrRecorder.stopRecording();
 	}
 
+	/**
+	 * Test get webhooks.
+	 */
 	@Test
 	public void TestGetWebhooks()
 	{
@@ -62,6 +79,9 @@ public class WebhooksTest extends TestBase {
 	}
 	
 	
+	/**
+	 * Test get single webhook.
+	 */
 	@Test
 	public void TestGetSingleWebhook()
 	{
@@ -83,6 +103,9 @@ public class WebhooksTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test create webhook.
+	 */
 	@Test
 	public void TestCreateWebhook()
 	{
@@ -109,6 +132,9 @@ public class WebhooksTest extends TestBase {
 	}
 	
 	
+	/**
+	 * Test update webhook.
+	 */
 	@Test
 	public void TestUpdateWebhook()
 	{
@@ -130,6 +156,9 @@ public class WebhooksTest extends TestBase {
 	}
 	
 	
+	/**
+	 * Test delete webhook.
+	 */
 	@Test
 	public void TestDeleteWebhook()
 	{

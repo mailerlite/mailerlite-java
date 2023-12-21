@@ -9,8 +9,12 @@ package com.mailerlite.sdk.automations.steps.condition;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * The Class ConditionBase.
+ */
 public class ConditionBase {
 
+	/** The type. */
 	@SerializedName("type")
 	public String type;
 }

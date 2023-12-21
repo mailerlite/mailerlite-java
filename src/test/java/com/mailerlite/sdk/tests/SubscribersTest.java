@@ -27,20 +27,37 @@ import com.mailerlite.sdk.susbcribers.SubscriberImportList;
 import com.mailerlite.sdk.susbcribers.SubscribersList;
 import com.mailerlite.sdk.vcr.VcrRecorder;
 
+/**
+ * The Class SubscribersTest.
+ */
 public class SubscribersTest extends TestBase {
 
+	/**
+	 * Sets the up each.
+	 *
+	 * @param info the new up each
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
 		VcrRecorder.useRecording("SubscribersTest_" + info.getDisplayName());
 	}
 	
+	/**
+	 * After each.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@AfterEach
 	public void afterEach() throws IOException
 	{
 		VcrRecorder.stopRecording();
 	}
 	
+	/**
+	 * Test get subscribers.
+	 */
 	@Test
 	public void TestGetSubscribers()
 	{
@@ -65,6 +82,9 @@ public class SubscribersTest extends TestBase {
 	}
 	
 	
+	/**
+	 * Test get single subscriber.
+	 */
 	@Test
 	public void TestGetSingleSubscriber()
 	{
@@ -84,6 +104,9 @@ public class SubscribersTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test create subscriber.
+	 */
 	@Test
 	public void TestCreateSubscriber()
 	{
@@ -104,6 +127,9 @@ public class SubscribersTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test update subscriber.
+	 */
 	@Test
 	public void TestUpdateSubscriber()
 	{
@@ -127,6 +153,9 @@ public class SubscribersTest extends TestBase {
 	}
 	
 	
+	/**
+	 * Test subscriber count.
+	 */
 	@Test
 	public void TestSubscriberCount()
 	{
@@ -144,6 +173,9 @@ public class SubscribersTest extends TestBase {
 	}
 	
 	
+	/**
+	 * Test delete subscriber.
+	 */
 	@Test
 	public void TestDeleteSubscriber()
 	{
@@ -163,6 +195,9 @@ public class SubscribersTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test get subscriber imports.
+	 */
 	@Test
 	public void TestGetSubscriberImports()
 	{
@@ -183,6 +218,9 @@ public class SubscribersTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test get single subscriber import.
+	 */
 	@Test
 	public void TestGetSingleSubscriberImport()
 	{

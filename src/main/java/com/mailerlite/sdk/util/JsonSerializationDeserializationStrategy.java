@@ -20,6 +20,7 @@ import com.google.gson.annotations.Expose;
  */
 public class JsonSerializationDeserializationStrategy implements ExclusionStrategy {
 
+    /** The deserialize. */
     private boolean deserialize = false;
 
     /**
@@ -41,7 +42,6 @@ public class JsonSerializationDeserializationStrategy implements ExclusionStrate
      */
     @Override
     public boolean shouldSkipClass(Class<?> sClass) {
-        // TODO Auto-generated method stub
         return false;
     }
 

@@ -26,20 +26,37 @@ import com.mailerlite.sdk.susbcribers.Subscriber;
 import com.mailerlite.sdk.susbcribers.SubscribersList;
 import com.mailerlite.sdk.vcr.VcrRecorder;
 
+/**
+ * The Class GroupsTest.
+ */
 public class GroupsTest extends TestBase {
 
+	/**
+	 * Sets the up each.
+	 *
+	 * @param info the new up each
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
 		VcrRecorder.useRecording("GroupsTest_" + info.getDisplayName());
 	}
 	
+	/**
+	 * After each.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@AfterEach
 	public void afterEach() throws IOException
 	{
 		VcrRecorder.stopRecording();
 	}
 	
+	/**
+	 * Test get groups.
+	 */
 	@Test
 	public void TestGetGroups()
 	{
@@ -63,6 +80,9 @@ public class GroupsTest extends TestBase {
 	}
 	
 	
+	/**
+	 * Test get single group.
+	 */
 	@Test
 	public void TestGetSingleGroup()
 	{
@@ -83,6 +103,9 @@ public class GroupsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test create group.
+	 */
 	@Test
 	public void TestCreateGroup()
 	{
@@ -101,6 +124,9 @@ public class GroupsTest extends TestBase {
 	}
 	
 	
+	/**
+	 * Test update group.
+	 */
 	@Test
 	public void TestUpdateGroup()
 	{
@@ -121,6 +147,9 @@ public class GroupsTest extends TestBase {
 	}
 	
 	
+	/**
+	 * Test delete group.
+	 */
 	@Test
 	public void TestDeleteGroup()
 	{
@@ -140,6 +169,9 @@ public class GroupsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test get group subscribers.
+	 */
 	@Test
 	public void TestGetGroupSubscribers()
 	{
@@ -165,6 +197,9 @@ public class GroupsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test assign subscriber to group.
+	 */
 	@Test
 	public void TestAssignSubscriberToGroup()
 	{
@@ -184,6 +219,9 @@ public class GroupsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test un assign subscriber to group.
+	 */
 	@Test
 	public void TestUnAssignSubscriberToGroup()
 	{

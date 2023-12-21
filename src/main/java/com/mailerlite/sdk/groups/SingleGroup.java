@@ -10,8 +10,12 @@ package com.mailerlite.sdk.groups;
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.MailerLiteResponse;
 
+/**
+ * The Class SingleGroup.
+ */
 public class SingleGroup extends MailerLiteResponse {
 
+	/** The group. */
 	@SerializedName("data")
 	public Group group;
 }

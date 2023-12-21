@@ -13,14 +13,19 @@ import java.nio.file.Paths;
 
 import com.mailerlite.sdk.util.MailerLiteHttpClientFactory;
 
+/**
+ * The Class VcrRecorder.
+ */
 public class VcrRecorder {
 
+	/** The tape. */
 	private static VcrTape tape;
 	
 	/**
-	 * Loads the tape and sets up HttpClientVcr to the MaielrLiteHttpClientFactory
-	 * @param tapeName
-	 * @throws IOException
+	 * Loads the tape and sets up HttpClientVcr to the MaielrLiteHttpClientFactory.
+	 *
+	 * @param tapeName the tape name
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static void useRecording(String tapeName) throws IOException
 	{
@@ -41,8 +46,9 @@ public class VcrRecorder {
 	}
 	
 	/**
-	 * Stops the recording and saves the tape
-	 * @throws IOException
+	 * Stops the recording and saves the tape.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static void stopRecording() throws IOException
 	{

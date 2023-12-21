@@ -14,31 +14,59 @@ import com.mailerlite.sdk.MailerLiteApi;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.util.JsonSerializationDeserializationStrategy;
 
+/**
+ * The Class CampaignScheduler.
+ */
 public class CampaignScheduler {
 
+	/** The api object reference. */
 	private MailerLite apiObjectReference;
 	
+	/** The campaign scheduler body. */
 	private CampaignSchedulerBody campaignSchedulerBody = new CampaignSchedulerBody();
 	
+	/** The schedule settings. */
 	private CampaignScheduleSettings scheduleSettings = new CampaignScheduleSettings();
 	
+	/** The resend settings. */
 	private CampaignScheduleSettings resendSettings = new CampaignScheduleSettings();
 	
+	/**
+	 * Instantiates a new campaign scheduler.
+	 *
+	 * @param apiReference the api reference
+	 */
 	public CampaignScheduler(MailerLite apiReference)
 	{
 		this.apiObjectReference = apiReference;
 	}
 	
+	/**
+	 * Schedule settings.
+	 *
+	 * @return the campaign schedule settings
+	 */
 	public CampaignScheduleSettings scheduleSettings()
 	{
 		return this.scheduleSettings;
 	}
 	
+	/**
+	 * Resend settings.
+	 *
+	 * @return the campaign schedule settings
+	 */
 	public CampaignScheduleSettings resendSettings()
 	{
 		return this.resendSettings;
 	}
 	
+	/**
+	 * Delivery.
+	 *
+	 * @param delivery the delivery
+	 * @return the campaign scheduler
+	 */
 	public CampaignScheduler delivery(String delivery)
 	{
 		this.campaignSchedulerBody.delivery = delivery;
@@ -46,6 +74,13 @@ public class CampaignScheduler {
 	}
 	
 	
+	/**
+	 * Schedule.
+	 *
+	 * @param campaignId the campaign id
+	 * @return the single campaign
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public SingleCampaign schedule(String campaignId) throws MailerLiteException
 	{
 		String endpoint = "/campaigns/".concat(campaignId).concat("/schedule");
@@ -69,6 +104,13 @@ public class CampaignScheduler {
 	}
 	
 	
+	/**
+	 * Cancel.
+	 *
+	 * @param campaignId the campaign id
+	 * @return the single campaign
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public SingleCampaign cancel(String campaignId) throws MailerLiteException
 	{
 		String endpoint = "/campaigns/".concat(campaignId).concat("/cancel");

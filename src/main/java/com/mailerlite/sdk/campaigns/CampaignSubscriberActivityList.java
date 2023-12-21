@@ -10,11 +10,18 @@ package com.mailerlite.sdk.campaigns;
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.util.PaginatedResponse;
 
+/**
+ * The Class CampaignSubscriberActivityList.
+ */
 public class CampaignSubscriberActivityList extends PaginatedResponse {
 	
+	/** The activity. */
 	@SerializedName("data")
 	public CampaignSubscriberActivity[] activity;
 	
+	/**
+	 * Post deserialize.
+	 */
 	@Override
 	public void postDeserialize()
 	{

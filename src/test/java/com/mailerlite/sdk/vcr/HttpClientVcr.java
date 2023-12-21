@@ -29,14 +29,19 @@ import java.util.concurrent.Flow.Subscription;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 
+/**
+ * The Class HttpClientVcr.
+ */
 public class HttpClientVcr extends HttpClient {
 
+	/** The client. */
 	private HttpClient client;
 	
+	/** The tape. */
 	private VcrTape tape;
 	
 	/**
-	 * Replacement for the HttpClient class so that we can record and replay the MailerLite API responses
+	 * Replacement for the HttpClient class so that we can record and replay the MailerLite API responses.
 	 */
 	public HttpClientVcr()
 	{
@@ -45,8 +50,9 @@ public class HttpClientVcr extends HttpClient {
 	}
 	
 	/**
-	 * Sets the recording tape
-	 * @param tape
+	 * Sets the recording tape.
+	 *
+	 * @param tape the new tape
 	 */
 	public void setTape(VcrTape tape)
 	{
@@ -57,6 +63,11 @@ public class HttpClientVcr extends HttpClient {
 	 * All the Overrides below are needed by the HttpClient abstract class
 	 */
 	
+	/**
+	 * Cookie handler.
+	 *
+	 * @return the optional
+	 */
 	@Override
 	public Optional<CookieHandler> cookieHandler() {
 		
@@ -64,6 +75,11 @@ public class HttpClientVcr extends HttpClient {
 	}
 
 	
+	/**
+	 * Connect timeout.
+	 *
+	 * @return the optional
+	 */
 	@Override
 	public Optional<Duration> connectTimeout() {
 		
@@ -71,6 +87,11 @@ public class HttpClientVcr extends HttpClient {
 	}
 
 	
+	/**
+	 * Follow redirects.
+	 *
+	 * @return the redirect
+	 */
 	@Override
 	public Redirect followRedirects() {
 		
@@ -78,6 +99,11 @@ public class HttpClientVcr extends HttpClient {
 	}
 
 	
+	/**
+	 * Proxy.
+	 *
+	 * @return the optional
+	 */
 	@Override
 	public Optional<ProxySelector> proxy() {
 		
@@ -85,6 +111,11 @@ public class HttpClientVcr extends HttpClient {
 	}
 
 	
+	/**
+	 * Ssl context.
+	 *
+	 * @return the SSL context
+	 */
 	@Override
 	public SSLContext sslContext() {
 		
@@ -92,6 +123,11 @@ public class HttpClientVcr extends HttpClient {
 	}
 
 	
+	/**
+	 * Ssl parameters.
+	 *
+	 * @return the SSL parameters
+	 */
 	@Override
 	public SSLParameters sslParameters() {
 		
@@ -99,6 +135,11 @@ public class HttpClientVcr extends HttpClient {
 	}
 
 	
+	/**
+	 * Authenticator.
+	 *
+	 * @return the optional
+	 */
 	@Override
 	public Optional<Authenticator> authenticator() {
 		
@@ -106,6 +147,11 @@ public class HttpClientVcr extends HttpClient {
 	}
 
 	
+	/**
+	 * Version.
+	 *
+	 * @return the version
+	 */
 	@Override
 	public Version version() {
 		
@@ -113,6 +159,11 @@ public class HttpClientVcr extends HttpClient {
 	}
 
 	
+	/**
+	 * Executor.
+	 *
+	 * @return the optional
+	 */
 	@Override
 	public Optional<Executor> executor() {
 		
@@ -120,19 +171,52 @@ public class HttpClientVcr extends HttpClient {
 	}
 	
 	
+    /**
+     * The Class StringSubscriber.
+     */
     static final class StringSubscriber implements Subscriber<ByteBuffer> {
+        
+        /** The wrapped. */
         final BodySubscriber<String> wrapped;
+        
+        /**
+         * Instantiates a new string subscriber.
+         *
+         * @param wrapped the wrapped
+         */
         StringSubscriber(BodySubscriber<String> wrapped) {
             this.wrapped = wrapped;
         }
+        
+        /**
+         * On subscribe.
+         *
+         * @param subscription the subscription
+         */
         @Override
         public void onSubscribe(Subscription subscription) {
             wrapped.onSubscribe(subscription);
         }
+        
+        /**
+         * On next.
+         *
+         * @param item the item
+         */
         @Override
         public void onNext(ByteBuffer item) { wrapped.onNext(List.of(item)); }
+        
+        /**
+         * On error.
+         *
+         * @param throwable the throwable
+         */
         @Override
         public void onError(Throwable throwable) { wrapped.onError(throwable); }
+        
+        /**
+         * On complete.
+         */
         @Override
         public void onComplete() { wrapped.onComplete(); }
     }
@@ -140,8 +224,13 @@ public class HttpClientVcr extends HttpClient {
     /**
      * Checks the tape for a recorded response of the request.
      * If it doesn't exist, it runs the request and adds the response to the tape
-     * @param request
-     * @param responseBodyHandler
+     *
+     * @param <T> the generic type
+     * @param request the request
+     * @param responseBodyHandler the response body handler
+     * @return the http response
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws InterruptedException the interrupted exception
      */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -165,6 +254,14 @@ public class HttpClientVcr extends HttpClient {
 		return response;
 	}
 
+	/**
+	 * Send async.
+	 *
+	 * @param <T> the generic type
+	 * @param request the request
+	 * @param responseBodyHandler the response body handler
+	 * @return the completable future
+	 */
 	/*
 	 * We don't use sendAsync in the MailerLite SDK, we keep these methods for completeness
 	 */
@@ -175,6 +272,15 @@ public class HttpClientVcr extends HttpClient {
 	}
 
 	
+	/**
+	 * Send async.
+	 *
+	 * @param <T> the generic type
+	 * @param request the request
+	 * @param responseBodyHandler the response body handler
+	 * @param pushPromiseHandler the push promise handler
+	 * @return the completable future
+	 */
 	@Override
 	public <T> CompletableFuture<HttpResponse<T>> sendAsync(HttpRequest request, BodyHandler<T> responseBodyHandler,
 			PushPromiseHandler<T> pushPromiseHandler) {

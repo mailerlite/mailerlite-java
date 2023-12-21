@@ -24,37 +24,62 @@ import com.mailerlite.sdk.util.MailerLiteHttpClientFactory;
 import com.mailerlite.sdk.exceptions.JsonResponseError;
 import com.mailerlite.sdk.util.JsonSerializationDeserializationStrategy;
 
+/**
+ * The Class MailerLiteApi.
+ */
 public class MailerLiteApi {
 	
+    /** The endpoint base. */
     private final String endpointBase = "https://connect.mailerlite.com/api";
     
+    /** The api token. */
     private String apiToken = "";
     
+    /** The client. */
     private HttpClient client;
     
     
+    /**
+     * Instantiates a new mailer lite api.
+     */
     public MailerLiteApi() {
     	
     	this.client = MailerLiteHttpClientFactory.getInstance().createClient();
     }
     
     
+    /**
+     * Sets the token.
+     *
+     * @param token the new token
+     */
     public void setToken(String token) {
         
         this.apiToken = token;
     }
     
     
+    /**
+     * Gets the request.
+     *
+     * @param <T> the generic type
+     * @param endpoint the endpoint
+     * @param responseClass the response class
+     * @return the request
+     * @throws MailerLiteException the mailer lite exception
+     */
     public <T extends MailerLiteResponse> T getRequest(String endpoint, Class<T> responseClass) throws MailerLiteException {
     	
     	return getRequest(endpoint, responseClass, null);
     }
     
     /**
-     * Does a GET request to the given endpoint of the MailerLite API
+     * Does a GET request to the given endpoint of the MailerLite API.
      *
+     * @param <T> the generic type
      * @param endpoint The MailerLite API endpoint
      * @param responseClass The class of the response object
+     * @param customDeserializer the custom deserializer
      * @return T
      * @throws MailerLiteException if an error is returned from the API this exception will contain the details
      */
@@ -94,10 +119,31 @@ public class MailerLiteApi {
     }
         
     
+    /**
+     * Post request.
+     *
+     * @param <T> the generic type
+     * @param endpoint the endpoint
+     * @param requestBody the request body
+     * @param responseClass the response class
+     * @return the t
+     * @throws MailerLiteException the mailer lite exception
+     */
     public <T extends MailerLiteResponse> T postRequest(String endpoint, String requestBody, Class<T> responseClass) throws MailerLiteException {
     	return postRequest(endpoint, requestBody, responseClass, null);
     }
     
+    /**
+     * Post request.
+     *
+     * @param <T> the generic type
+     * @param endpoint the endpoint
+     * @param requestBody the request body
+     * @param responseClass the response class
+     * @param customDeserializer the custom deserializer
+     * @return the t
+     * @throws MailerLiteException the mailer lite exception
+     */
     @SuppressWarnings("unchecked")
 	public <T extends MailerLiteResponse> T postRequest(String endpoint, String requestBody, Class<T> responseClass, JsonDeserializer<T> customDeserializer) throws MailerLiteException {
     	
@@ -131,6 +177,15 @@ public class MailerLiteApi {
         return this.handleApiResponse(responseObject, responseClass, customDeserializer);
     }
     
+    /**
+     * Delete request.
+     *
+     * @param <T> the generic type
+     * @param endpoint the endpoint
+     * @param responseClass the response class
+     * @return the t
+     * @throws MailerLiteException the mailer lite exception
+     */
     public <T extends MailerLiteResponse> T deleteRequest(String endpoint, Class<T> responseClass) throws MailerLiteException {
     	
     	return deleteRequest(endpoint, responseClass, null);
@@ -138,12 +193,14 @@ public class MailerLiteApi {
     
     
     /**
-     * Does a DELETE request to the given endpoint of the MailerLite API
+     * Does a DELETE request to the given endpoint of the MailerLite API.
      *
+     * @param <T> the generic type
      * @param endpoint The MailerLite API endpoint
      * @param responseClass The class of the response object
+     * @param customDeserializer the custom deserializer
      * @return T
-     * @throws com.mailerlite.sdk.exceptions.MailerLiteException if an error is returned from the API this exception will contain the details
+     * @throws MailerLiteException the mailer lite exception
      */
     public <T extends MailerLiteResponse> T deleteRequest(String endpoint, Class<T> responseClass, JsonDeserializer<T> customDeserializer) throws MailerLiteException {
         
@@ -170,20 +227,31 @@ public class MailerLiteApi {
     }
     
     
+    /**
+     * Put request.
+     *
+     * @param <T> the generic type
+     * @param endpoint the endpoint
+     * @param requestBody the request body
+     * @param responseClass the response class
+     * @return the t
+     * @throws MailerLiteException the mailer lite exception
+     */
     public <T extends MailerLiteResponse> T putRequest(String endpoint, String requestBody, Class<T> responseClass) throws MailerLiteException {
     	
     	return putRequest(endpoint, requestBody, responseClass, null);
     }
     
     /**
-     * Does a PUT request to the given endpoint of the MailerLite API
+     * Does a PUT request to the given endpoint of the MailerLite API.
      *
+     * @param <T> the generic type
      * @param endpoint The MailerLite API endpoint
      * @param requestBody The body of the PUT request
      * @param responseClass The class of the response object
-     * @param customDeserializer
+     * @param customDeserializer the custom deserializer
      * @return T
-     * @throws com.mailerlite.sdk.exceptions.MailerLiteException if an error is returned from the API this exception will contain the details
+     * @throws MailerLiteException the mailer lite exception
      */
     @SuppressWarnings("unchecked")
 	public <T extends MailerLiteResponse> T putRequest(String endpoint, String requestBody, Class<T> responseClass, JsonDeserializer<T> customDeserializer) throws MailerLiteException {
@@ -225,11 +293,13 @@ public class MailerLiteApi {
     
     /**
      * Handles the response from the MailerLite API. It deserializes the JSON response into an object with the given type
+     *
      * @param <T> The type of what the response will be deserialized to
      * @param responseObject The HttpResponse object of the request
      * @param responseClass The class of the response object
+     * @param customDeserializer the custom deserializer
      * @return T
-     * @throws MailerLiteException
+     * @throws MailerLiteException the mailer lite exception
      */
     private <T extends MailerLiteResponse> T handleApiResponse(HttpResponse<String> responseObject, Class<T> responseClass, JsonDeserializer<T> customDeserializer) throws MailerLiteException {
         

@@ -12,15 +12,31 @@ import com.mailerlite.sdk.MailerLiteApi;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.util.CursorPaginatedRequest;
 
+/**
+ * The Class SubscriberRetriever.
+ */
 public class SubscriberRetriever extends CursorPaginatedRequest<SubscriberRetriever> {
 
+	/** The api object reference. */
 	private MailerLite apiObjectReference;
 	
+	/**
+	 * Instantiates a new subscriber retriever.
+	 *
+	 * @param apiRef the api ref
+	 */
 	public SubscriberRetriever(MailerLite apiRef)
 	{
 		apiObjectReference = apiRef;
 	}
 	
+	/**
+	 * Filter.
+	 *
+	 * @param name the name
+	 * @param value the value
+	 * @return the subscriber retriever
+	 */
 	public SubscriberRetriever filter(String name, String value)
 	{
 		this.addQueryParameter("filter[".concat(name).concat("]"), value);
@@ -28,6 +44,12 @@ public class SubscriberRetriever extends CursorPaginatedRequest<SubscriberRetrie
 		return this;
 	}
 	
+	/**
+	 * Gets the.
+	 *
+	 * @return the subscribers list
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public SubscribersList get() throws MailerLiteException
 	{
 		String endpoint = "/subscribers".concat(this.getQueryParameters());
@@ -42,6 +64,13 @@ public class SubscriberRetriever extends CursorPaginatedRequest<SubscriberRetrie
 		return list;
 	}
 	
+	/**
+	 * Gets the single.
+	 *
+	 * @param idOrEmail the id or email
+	 * @return the single
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public SingleSubscriber getSingle(String idOrEmail) throws MailerLiteException
 	{
 		String endpoint = "/subscribers/".concat(idOrEmail);
@@ -56,6 +85,12 @@ public class SubscriberRetriever extends CursorPaginatedRequest<SubscriberRetrie
 		return subscriber;
 	}
 	
+	/**
+	 * Count.
+	 *
+	 * @return the subscriber count
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public SubscriberCount count() throws MailerLiteException
 	{
 		this.limit(0);
@@ -70,6 +105,11 @@ public class SubscriberRetriever extends CursorPaginatedRequest<SubscriberRetrie
 		return count;
 	}
 
+	/**
+	 * Gets the single instance of SubscriberRetriever.
+	 *
+	 * @return single instance of SubscriberRetriever
+	 */
 	@Override
 	protected SubscriberRetriever getInstance() {
 		return this;

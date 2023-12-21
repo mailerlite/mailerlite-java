@@ -23,20 +23,37 @@ import com.mailerlite.sdk.susbcribers.Subscriber;
 import com.mailerlite.sdk.susbcribers.SubscribersList;
 import com.mailerlite.sdk.vcr.VcrRecorder;
 
+/**
+ * The Class FormsTest.
+ */
 public class FormsTest extends TestBase {
 
+	/**
+	 * Sets the up each.
+	 *
+	 * @param info the new up each
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
 		VcrRecorder.useRecording("FormsTest_" + info.getDisplayName());
 	}
 	
+	/**
+	 * After each.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@AfterEach
 	public void afterEach() throws IOException
 	{
 		VcrRecorder.stopRecording();
 	}
 
+	/**
+	 * Test get forms.
+	 */
 	@Test
 	public void TestGetForms()
 	{
@@ -59,6 +76,9 @@ public class FormsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test get single form.
+	 */
 	@Test
 	public void TestGetSingleForm()
 	{
@@ -79,6 +99,9 @@ public class FormsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test get form subscribers.
+	 */
 	@Test
 	public void TestGetFormSubscribers()
 	{
@@ -101,6 +124,9 @@ public class FormsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test update form.
+	 */
 	@Test
 	public void TestUpdateForm()
 	{
@@ -122,6 +148,9 @@ public class FormsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test delete form.
+	 */
 	@Test
 	public void TestDeleteForm()
 	{

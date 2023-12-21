@@ -16,28 +16,55 @@ import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.groups.NameCreatorBody;
 import com.mailerlite.sdk.util.JsonSerializationDeserializationStrategy;
 
+/**
+ * The Class Forms.
+ */
 public class Forms {
 
+	/** The api object reference. */
 	private MailerLite apiObjectReference;
 	
+	/**
+	 * Instantiates a new forms.
+	 *
+	 * @param apiRef the api ref
+	 */
 	public Forms(MailerLite apiRef)
 	{
 		apiObjectReference = apiRef;
 	}
 	
 	
+	/**
+	 * Retriever.
+	 *
+	 * @return the forms retriever
+	 */
 	public FormsRetriever retriever()
 	{
 		return new FormsRetriever(apiObjectReference);
 	}
 	
 	
+	/**
+	 * Subscribers.
+	 *
+	 * @return the subscribers retriever
+	 */
 	public SubscribersRetriever subscribers()
 	{
 		return new SubscribersRetriever(apiObjectReference);
 	}
 	
 	
+	/**
+	 * Update.
+	 *
+	 * @param formId the form id
+	 * @param newFormName the new form name
+	 * @return the single form
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public SingleForm update(String formId, String newFormName) throws MailerLiteException
 	{
 		MailerLiteApi api = new MailerLiteApi();
@@ -61,6 +88,13 @@ public class Forms {
 	}
 	
 	
+	/**
+	 * Delete.
+	 *
+	 * @param formId the form id
+	 * @return the mailer lite response
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public MailerLiteResponse delete(String formId) throws MailerLiteException
 	{
 		String endpoint = "/forms/".concat(formId);

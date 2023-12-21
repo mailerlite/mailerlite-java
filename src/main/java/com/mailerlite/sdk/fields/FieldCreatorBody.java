@@ -9,11 +9,16 @@ package com.mailerlite.sdk.fields;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * The Class FieldCreatorBody.
+ */
 public class FieldCreatorBody {
 	
+	/** The name. */
 	@SerializedName("name")
 	public String name;
 	
+	/** The type. */
 	@SerializedName("type")
 	public String type;
 }

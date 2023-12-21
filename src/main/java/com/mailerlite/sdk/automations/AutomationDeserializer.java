@@ -31,8 +31,20 @@ import com.mailerlite.sdk.automations.triggers.TriggerPurchasedSpecificProduct;
 import com.mailerlite.sdk.automations.triggers.TriggerSubscriberJoinsGroup;
 import com.mailerlite.sdk.util.JsonSerializationDeserializationStrategy;
 
+/**
+ * The Class AutomationDeserializer.
+ */
 public class AutomationDeserializer implements JsonDeserializer<Automation> {
 
+	/**
+	 * Deserialize.
+	 *
+	 * @param json the json
+	 * @param typeOfT the type of T
+	 * @param context the context
+	 * @return the automation
+	 * @throws JsonParseException the json parse exception
+	 */
 	@Override
 	public Automation deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
 			throws JsonParseException {

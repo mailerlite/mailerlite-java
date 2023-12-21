@@ -32,8 +32,18 @@ import com.mailerlite.sdk.automations.steps.condition.GroupMembershipCondition;
 import com.mailerlite.sdk.automations.steps.condition.SegmentMembershipCondition;
 import com.mailerlite.sdk.automations.steps.condition.WorkflowActivityCondition;
 
+/**
+ * The Class AutomationStepDeserializer.
+ */
 public class AutomationStepDeserializer {
 
+	/**
+	 * Deserialize automation step.
+	 *
+	 * @param stepObj the step obj
+	 * @param gson the gson
+	 * @return the automation step
+	 */
 	public AutomationStep deserializeAutomationStep(JsonObject stepObj, Gson gson)
 	{
 		String type = stepObj.get("type").getAsString();
@@ -70,6 +80,13 @@ public class AutomationStepDeserializer {
 	}
 	
 	
+	/**
+	 * Deserialize action step.
+	 *
+	 * @param stepObj the step obj
+	 * @param gson the gson
+	 * @return the action step
+	 */
 	private ActionStep deserializeActionStep(JsonObject stepObj, Gson gson)
 	{
 		if (stepObj == null || stepObj.get("action_type") == null) {
@@ -108,6 +125,13 @@ public class AutomationStepDeserializer {
 		return null;
 	}
 	
+	/**
+	 * Deserialize condition step.
+	 *
+	 * @param stepObj the step obj
+	 * @param gson the gson
+	 * @return the condition step
+	 */
 	private ConditionStep deserializeConditionStep(JsonObject stepObj, Gson gson)
 	{
 		

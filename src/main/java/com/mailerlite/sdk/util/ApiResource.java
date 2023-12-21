@@ -14,8 +14,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * The Class ApiResource.
+ */
 public class ApiResource {
 
+	/**
+	 * Parses the dates.
+	 */
 	public void parseDates() {
 		
 		for (Field field : this.getClass().getDeclaredFields()) {

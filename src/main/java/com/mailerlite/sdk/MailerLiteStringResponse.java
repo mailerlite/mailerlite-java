@@ -7,7 +7,11 @@
  **************************************************/
 package com.mailerlite.sdk;
 
+/**
+ * The Class MailerLiteStringResponse.
+ */
 public class MailerLiteStringResponse extends MailerLiteResponse {
 
+	/** The response string. */
 	public String responseString;
 }

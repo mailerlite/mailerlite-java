@@ -25,17 +25,33 @@ import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.util.JsonSerializationDeserializationStrategy;
 import com.mailerlite.sdk.util.PaginatedRequest;
 
+/**
+ * The Class AutomationSubscriberActivityRetriever.
+ */
 public class AutomationSubscriberActivityRetriever extends PaginatedRequest<AutomationSubscriberActivityRetriever>  {
 
 	
+	/** The api object reference. */
 	private MailerLite apiObjectReference;
 	
+	/**
+	 * Instantiates a new automation subscriber activity retriever.
+	 *
+	 * @param apiReference the api reference
+	 */
 	public AutomationSubscriberActivityRetriever(MailerLite apiReference)
 	{
 		apiObjectReference = apiReference;
 	}
 	
 	
+	/**
+	 * Filter.
+	 *
+	 * @param name the name
+	 * @param value the value
+	 * @return the automation subscriber activity retriever
+	 */
 	public AutomationSubscriberActivityRetriever filter(String name, String value)
 	{
 		this.addQueryParameter("filter[".concat(name).concat("]"), value);
@@ -44,6 +60,13 @@ public class AutomationSubscriberActivityRetriever extends PaginatedRequest<Auto
 	}
 	
 	
+	/**
+	 * Gets the.
+	 *
+	 * @param automationId the automation id
+	 * @return the list
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public List<SubscriberActivity> get(String automationId) throws MailerLiteException
 	{
 		String endpoint = "/automations/".concat(automationId).concat("/activity").concat(this.getQueryParameters());
@@ -109,6 +132,11 @@ public class AutomationSubscriberActivityRetriever extends PaginatedRequest<Auto
 	}
 	
 	
+	/**
+	 * Gets the single instance of AutomationSubscriberActivityRetriever.
+	 *
+	 * @return single instance of AutomationSubscriberActivityRetriever
+	 */
 	@Override
 	protected AutomationSubscriberActivityRetriever getInstance() {
 		return this;

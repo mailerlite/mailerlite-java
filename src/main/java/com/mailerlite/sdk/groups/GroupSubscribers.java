@@ -13,18 +13,35 @@ import com.mailerlite.sdk.MailerLiteResponse;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.util.PaginatedRequest;
 
+/**
+ * The Class GroupSubscribers.
+ */
 public class GroupSubscribers extends PaginatedRequest<GroupSubscribers> {
 
+	/** The api object reference. */
 	private MailerLite apiObjectReference;
 	
+	/** The group id. */
 	private String groupId;
 	
+	/**
+	 * Instantiates a new group subscribers.
+	 *
+	 * @param apiRef the api ref
+	 * @param forGroupId the for group id
+	 */
 	public GroupSubscribers(MailerLite apiRef, String forGroupId)
 	{
 		apiObjectReference = apiRef;
 		groupId = forGroupId;
 	}
 	
+	/**
+	 * Status filter.
+	 *
+	 * @param statusFilter the status filter
+	 * @return the group subscribers
+	 */
 	public GroupSubscribers statusFilter(String statusFilter)
 	{
 		this.addQueryParameter("filter[status]", statusFilter);
@@ -32,6 +49,12 @@ public class GroupSubscribers extends PaginatedRequest<GroupSubscribers> {
 		return this;
 	}
 	
+	/**
+	 * Gets the.
+	 *
+	 * @return the group subscribers list
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public GroupSubscribersList get() throws MailerLiteException
 	{
 		String endpoint = "/groups/".concat(this.groupId).concat("/subscribers").concat(this.getQueryParameters());
@@ -46,6 +69,13 @@ public class GroupSubscribers extends PaginatedRequest<GroupSubscribers> {
 		return list;
 	}
 	
+	/**
+	 * Assign.
+	 *
+	 * @param subscriberId the subscriber id
+	 * @return the single group
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public SingleGroup assign(String subscriberId) throws MailerLiteException
 	{
 		String endpoint = "/subscribers/".concat(subscriberId).concat("/groups/").concat(groupId);
@@ -60,6 +90,13 @@ public class GroupSubscribers extends PaginatedRequest<GroupSubscribers> {
 		return group;
 	}
 	
+	/**
+	 * Unassign.
+	 *
+	 * @param subscriberId the subscriber id
+	 * @return the mailer lite response
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public MailerLiteResponse unassign(String subscriberId) throws MailerLiteException
 	{
 		String endpoint = "/subscribers/".concat(subscriberId).concat("/groups/").concat(groupId);
@@ -72,6 +109,11 @@ public class GroupSubscribers extends PaginatedRequest<GroupSubscribers> {
 		return response;
 	}
 
+	/**
+	 * Gets the single instance of GroupSubscribers.
+	 *
+	 * @return single instance of GroupSubscribers
+	 */
 	@Override
 	protected GroupSubscribers getInstance() {
 		return this;

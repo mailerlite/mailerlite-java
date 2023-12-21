@@ -7,6 +7,9 @@
  **************************************************/
 package com.mailerlite.sdk.automations.steps.action;
 
+/**
+ * The Class MarkUnsubscribedAction.
+ */
 public class MarkUnsubscribedAction extends ActionStep {
 
 	// intentionally left empty

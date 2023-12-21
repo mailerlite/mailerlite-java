@@ -22,20 +22,37 @@ import com.mailerlite.sdk.automations.activity.SubscriberActivity;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.vcr.VcrRecorder;
 
+/**
+ * The Class AutomationsTest.
+ */
 public class AutomationsTest extends TestBase {
 
+	/**
+	 * Sets the up each.
+	 *
+	 * @param info the new up each
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
 		VcrRecorder.useRecording("AutomationsTest_" + info.getDisplayName());
 	}
 	
+	/**
+	 * After each.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@AfterEach
 	public void afterEach() throws IOException
 	{
 		VcrRecorder.stopRecording();
 	}
 	
+	/**
+	 * Test get automations.
+	 */
 	@Test
 	public void TestGetAutomations()
 	{
@@ -60,6 +77,9 @@ public class AutomationsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test get single automation.
+	 */
 	@Test
 	public void TestGetSingleAutomation()
 	{
@@ -87,6 +107,9 @@ public class AutomationsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test get automation subscriber activity.
+	 */
 	@Test
 	public void TestGetAutomationSubscriberActivity()
 	{

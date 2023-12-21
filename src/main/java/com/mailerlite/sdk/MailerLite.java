@@ -16,26 +16,44 @@ import com.mailerlite.sdk.segments.Segments;
 import com.mailerlite.sdk.susbcribers.Subscribers;
 import com.mailerlite.sdk.webhooks.Webhooks;
 
+/**
+ * The Class MailerLite.
+ */
 public class MailerLite 
 {
+	
+	/** The token. */
 	protected String token;
 	
+	/** The campaigns. */
 	protected Campaigns campaigns;
 	
+	/** The subscribers. */
 	protected Subscribers subscribers;
 	
+	/** The groups. */
 	protected Groups groups;
 	
+	/** The segments. */
 	protected Segments segments;
 	
+	/** The fields. */
 	protected Fields fields;
 	
+	/** The automations. */
 	protected Automations automations;
 	
+	/** The webhooks. */
 	protected Webhooks webhooks;
 	
+	/** The forms. */
 	protected Forms forms;
 	
+	/**
+	 * Campaigns.
+	 *
+	 * @return the campaigns
+	 */
 	public Campaigns campaigns()
 	{
 		
@@ -48,6 +66,11 @@ public class MailerLite
 	}
 	
 	
+	/**
+	 * Subscribers.
+	 *
+	 * @return the subscribers
+	 */
 	public Subscribers subscribers()
 	{
 		if (subscribers == null) {
@@ -59,6 +82,11 @@ public class MailerLite
 	}
 	
 	
+	/**
+	 * Groups.
+	 *
+	 * @return the groups
+	 */
 	public Groups groups()
 	{
 		if (groups == null) {
@@ -69,6 +97,11 @@ public class MailerLite
 	}
 	
 	
+	/**
+	 * Segments.
+	 *
+	 * @return the segments
+	 */
 	public Segments segments()
 	{
 		if (segments == null) {
@@ -80,6 +113,11 @@ public class MailerLite
 	}
 	
 	
+	/**
+	 * Fields.
+	 *
+	 * @return the fields
+	 */
 	public Fields fields()
 	{
 		if (fields == null) {
@@ -90,6 +128,11 @@ public class MailerLite
 	}
 	
 	
+	/**
+	 * Automations.
+	 *
+	 * @return the automations
+	 */
 	public Automations automations()
 	{
 		if (automations == null) {
@@ -100,6 +143,11 @@ public class MailerLite
 	}
 	
 	
+	/**
+	 * Webhooks.
+	 *
+	 * @return the webhooks
+	 */
 	public Webhooks webhooks()
 	{
 		if (webhooks == null) {
@@ -110,6 +158,11 @@ public class MailerLite
 	}
 	
 	
+	/**
+	 * Forms.
+	 *
+	 * @return the forms
+	 */
 	public Forms forms()
 	{
 		if (forms == null) {
@@ -121,8 +174,9 @@ public class MailerLite
 	
 	
 	/**
-	 * Sets the MailerLite API token
-	 * @param token
+	 * Sets the MailerLite API token.
+	 *
+	 * @param token the new token
 	 */
 	public void setToken(String token)
 	{
@@ -131,7 +185,7 @@ public class MailerLite
 	
 	
     /**
-     * Returns the MailerLite token
+     * Returns the MailerLite token.
      *
      * @return the MailerLite token
      */

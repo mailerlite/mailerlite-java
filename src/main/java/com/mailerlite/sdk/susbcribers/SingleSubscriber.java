@@ -10,8 +10,12 @@ package com.mailerlite.sdk.susbcribers;
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.MailerLiteResponse;
 
+/**
+ * The Class SingleSubscriber.
+ */
 public class SingleSubscriber extends MailerLiteResponse {
 
+	/** The subscriber. */
 	@SerializedName("data")
 	public Subscriber subscriber;
 }

@@ -11,8 +11,12 @@ import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.emails.EmailStats;
 import com.mailerlite.sdk.util.FloatStat;
 
+/**
+ * The Class CampaignStats.
+ */
 public class CampaignStats extends EmailStats {
 	
+	/** The click to open rate. */
 	@SerializedName("click_to_open_rate")
 	public FloatStat clickToOpenRate;
 	

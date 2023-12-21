@@ -10,8 +10,12 @@ package com.mailerlite.sdk.susbcribers;
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.MailerLiteResponse;
 
+/**
+ * The Class SubscriberCount.
+ */
 public class SubscriberCount extends MailerLiteResponse {
 
+	/** The count. */
 	@SerializedName("total")
 	public int count;
 }

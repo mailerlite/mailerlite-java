@@ -27,20 +27,37 @@ import com.mailerlite.sdk.susbcribers.Subscriber;
 import com.mailerlite.sdk.vcr.VcrRecorder;
 
 
+/**
+ * The Class SegmentsTest.
+ */
 public class SegmentsTest extends TestBase {
 
+	/**
+	 * Sets the up each.
+	 *
+	 * @param info the new up each
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
 		VcrRecorder.useRecording("SegmentsTest_" + info.getDisplayName());
 	}
 	
+	/**
+	 * After each.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@AfterEach
 	public void afterEach() throws IOException
 	{
 		VcrRecorder.stopRecording();
 	}
 	
+	/**
+	 * Test get segments.
+	 */
 	@Test
 	public void TestGetSegments()
 	{
@@ -64,6 +81,9 @@ public class SegmentsTest extends TestBase {
 	}
 	
 	
+	/**
+	 * Test get single segment.
+	 */
 	@Test
 	public void TestGetSingleSegment()
 	{
@@ -84,6 +104,9 @@ public class SegmentsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test get segment subscribers.
+	 */
 	@Test
 	public void TestGetSegmentSubscribers()
 	{
@@ -111,6 +134,9 @@ public class SegmentsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test update segment.
+	 */
 	@Test
 	public void TestUpdateSegment()
 	{
@@ -129,6 +155,9 @@ public class SegmentsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test delete segment.
+	 */
 	@Test
 	public void TestDeleteSegment()
 	{

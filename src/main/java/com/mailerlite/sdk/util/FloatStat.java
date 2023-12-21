@@ -9,11 +9,16 @@ package com.mailerlite.sdk.util;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * The Class FloatStat.
+ */
 public class FloatStat {
 
+	/** The float value. */
 	@SerializedName("float")
 	public float floatValue;
 	
+	/** The string value. */
 	@SerializedName("string")
 	public String stringValue;
 }

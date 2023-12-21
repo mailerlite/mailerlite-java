@@ -29,20 +29,37 @@ import com.mailerlite.sdk.emails.EmailBase;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.vcr.VcrRecorder;
 
+/**
+ * The Class CampaignsTest.
+ */
 public class CampaignsTest extends TestBase {
 
+	/**
+	 * Sets the up each.
+	 *
+	 * @param info the new up each
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
 		VcrRecorder.useRecording("CampaignsTest_" + info.getDisplayName());
 	}
 	
+	/**
+	 * After each.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@AfterEach
 	public void afterEach() throws IOException
 	{
 		VcrRecorder.stopRecording();
 	}
 	
+	/**
+	 * Test get campaigns.
+	 */
 	@Test
 	public void TestGetCampaigns()
 	{
@@ -66,6 +83,9 @@ public class CampaignsTest extends TestBase {
 	}
 	
 	
+	/**
+	 * Test get single campaign.
+	 */
 	@Test
 	public void TestGetSingleCampaign()
 	{
@@ -85,6 +105,9 @@ public class CampaignsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test create campaign.
+	 */
 	@Test
 	public void TestCreateCampaign()
 	{
@@ -111,6 +134,9 @@ public class CampaignsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test update campaign.
+	 */
 	@Test
 	public void testUpdateCampaign()
 	{
@@ -139,6 +165,9 @@ public class CampaignsTest extends TestBase {
 	}
 	
 	
+	/**
+	 * Test send campaign.
+	 */
 	@Test
 	public void testSendCampaign()
 	{
@@ -161,6 +190,9 @@ public class CampaignsTest extends TestBase {
 	}
 		
 	
+	/**
+	 * Test delete campaign.
+	 */
 	@Test
 	public void testDeleteCampaign()
 	{
@@ -180,6 +212,9 @@ public class CampaignsTest extends TestBase {
 	}
 	
 	
+	/**
+	 * Test get subscriber activity.
+	 */
 	@Test
 	public void testGetSubscriberActivity()
 	{
@@ -198,11 +233,24 @@ public class CampaignsTest extends TestBase {
 	}
 	
 	
+	/**
+	 * Creates the campaign.
+	 *
+	 * @return the single campaign
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	private SingleCampaign createCampaign() throws MailerLiteException
 	{
 		return this.createCampaign("test campaign name");
 	}
 	
+	/**
+	 * Creates the campaign.
+	 *
+	 * @param name the name
+	 * @return the single campaign
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	private SingleCampaign createCampaign(String name) throws MailerLiteException
 	{
 		EmailBase email = new EmailBase();

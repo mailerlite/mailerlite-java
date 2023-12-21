@@ -9,14 +9,20 @@ package com.mailerlite.sdk.automations.steps.condition;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * The Class WorkflowConditionIdName.
+ */
 public class WorkflowConditionIdName {
 
+	/** The id. */
 	@SerializedName("id")
 	public String id;
 	
+	/** The name. */
 	@SerializedName("name")
 	public String name;
 	
+	/** The type. */
 	@SerializedName("type")
 	public String type;
 }

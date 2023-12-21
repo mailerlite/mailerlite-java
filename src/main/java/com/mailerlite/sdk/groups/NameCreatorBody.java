@@ -7,7 +7,11 @@
  **************************************************/
 package com.mailerlite.sdk.groups;
 
+/**
+ * The Class NameCreatorBody.
+ */
 public class NameCreatorBody {
 
+	/** The name. */
 	public String name;
 }

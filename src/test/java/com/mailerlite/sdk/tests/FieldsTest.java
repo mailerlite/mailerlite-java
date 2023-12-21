@@ -24,20 +24,37 @@ import com.mailerlite.sdk.fields.FieldList;
 import com.mailerlite.sdk.fields.SingleField;
 import com.mailerlite.sdk.vcr.VcrRecorder;
 
+/**
+ * The Class FieldsTest.
+ */
 public class FieldsTest extends TestBase {
 
+	/**
+	 * Sets the up each.
+	 *
+	 * @param info the new up each
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@BeforeEach
 	public void setupEach(TestInfo info) throws IOException
 	{
 		VcrRecorder.useRecording("FieldsTest_" + info.getDisplayName());
 	}
 	
+	/**
+	 * After each.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@AfterEach
 	public void afterEach() throws IOException
 	{
 		VcrRecorder.stopRecording();
 	}
 	
+	/**
+	 * Test get fields.
+	 */
 	@Test
 	public void TestGetFields()
 	{
@@ -60,6 +77,9 @@ public class FieldsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test create field.
+	 */
 	@Test
 	public void TestCreateField()
 	{
@@ -78,6 +98,9 @@ public class FieldsTest extends TestBase {
 	}
 	
 	
+	/**
+	 * Test update field.
+	 */
 	@Test
 	public void TestUpdateField()
 	{
@@ -97,6 +120,9 @@ public class FieldsTest extends TestBase {
 		}
 	}
 	
+	/**
+	 * Test delete field.
+	 */
 	@Test
 	public void TestDeleteField()
 	{

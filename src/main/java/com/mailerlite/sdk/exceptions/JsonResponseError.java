@@ -9,8 +9,14 @@ package com.mailerlite.sdk.exceptions;
 
 import java.util.HashMap;
 
+/**
+ * The Class JsonResponseError.
+ */
 public class JsonResponseError {
 
+    /** The message. */
     public String message = "";
+    
+    /** The errors. */
     public HashMap<String, String[]> errors = new HashMap<String, String[]>();
 }

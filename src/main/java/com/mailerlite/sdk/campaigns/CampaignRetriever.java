@@ -13,16 +13,32 @@ import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.util.PaginatedRequest;
 
 
+/**
+ * The Class CampaignRetriever.
+ */
 public class CampaignRetriever extends PaginatedRequest<CampaignRetriever> {
 
+	/** The api object reference. */
 	private MailerLite apiObjectReference;
 	
+	/**
+	 * Instantiates a new campaign retriever.
+	 *
+	 * @param apiRefernce the api refernce
+	 */
 	public CampaignRetriever(MailerLite apiRefernce)
 	{
 		apiObjectReference = apiRefernce;
 	}
 	
 	
+	/**
+	 * Filter.
+	 *
+	 * @param name the name
+	 * @param value the value
+	 * @return the campaign retriever
+	 */
 	public CampaignRetriever filter(String name, String value)
 	{
 		this.addQueryParameter("filter[".concat(name).concat("]"), value);
@@ -30,6 +46,12 @@ public class CampaignRetriever extends PaginatedRequest<CampaignRetriever> {
 		return this;
 	}
 		
+	/**
+	 * Gets the.
+	 *
+	 * @return the campaigns list
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public CampaignsList get() throws MailerLiteException
 	{
 		String endpoint = "/campaigns/".concat(this.getQueryParameters());
@@ -44,6 +66,13 @@ public class CampaignRetriever extends PaginatedRequest<CampaignRetriever> {
 		return campaigns;
 	}
 	
+	/**
+	 * Gets the single.
+	 *
+	 * @param id the id
+	 * @return the single
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public SingleCampaign getSingle(String id) throws MailerLiteException
 	{
 		String endpoint = "/campaigns/".concat(id);
@@ -59,6 +88,11 @@ public class CampaignRetriever extends PaginatedRequest<CampaignRetriever> {
 	}
 
 
+	/**
+	 * Gets the single instance of CampaignRetriever.
+	 *
+	 * @return single instance of CampaignRetriever
+	 */
 	@Override
 	protected CampaignRetriever getInstance() {
 		

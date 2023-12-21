@@ -33,18 +33,25 @@ import com.google.gson.reflect.TypeToken;
 import com.mailerlite.sdk.util.JsonSerializationDeserializationStrategy;
 import com.mailerlite.sdk.vcr.HttpClientVcr.StringSubscriber;
 
+/**
+ * The Class VcrTape.
+ */
 public class VcrTape {
 
+	/** The tape path. */
 	private Path tapePath;
 	
+	/** The recorded responses. */
 	private HashMap<String, HttpClientVcrResponse> recordedResponses = new HashMap<String, HttpClientVcrResponse>();
 	
+	/** The has new recordings. */
 	private boolean hasNewRecordings = false;
 	
 	/**
-	 * Searches the recorded responses for a response matching the hash of the given request
-	 * @param request
-	 * @return
+	 * Searches the recorded responses for a response matching the hash of the given request.
+	 *
+	 * @param request the request
+	 * @return the recorded response
 	 */
 	public HttpClientVcrResponse getRecordedResponse(HttpRequest request)
 	{
@@ -61,9 +68,10 @@ public class VcrTape {
 	/**
 	 * Adds a response to the tape.
 	 * Each response is identified by its request hash. See getRequestHash for how the request hash is generated.
-	 * @param <T>
-	 * @param request
-	 * @param response
+	 *
+	 * @param <T> the generic type
+	 * @param request the request
+	 * @param response the response
 	 */
 	public <T> void addRecordedResponse(HttpRequest request, HttpResponse<T> response)
 	{
@@ -81,9 +89,10 @@ public class VcrTape {
 	}
 	
 	/**
-	 * Loads the tape in the given path and deserializes the tape contents into the recorded responses hashmap
-	 * @param path
-	 * @throws IOException
+	 * Loads the tape in the given path and deserializes the tape contents into the recorded responses hashmap.
+	 *
+	 * @param path the path
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void loadTape(String path) throws IOException {
 		
@@ -107,8 +116,9 @@ public class VcrTape {
 	}
 	
 	/**
-	 * Serializes and saves the recorded responses into the tape file 
-	 * @throws IOException
+	 * Serializes and saves the recorded responses into the tape file .
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void saveTape() throws IOException
 	{
@@ -127,9 +137,10 @@ public class VcrTape {
 	}
 	
 	/**
-	 * Calculates the hash of a request according to the formula sha1({request url}{request method}{body contents})
-	 * @param request
-	 * @return
+	 * Calculates the hash of a request according to the formula sha1({request url}{request method}{body contents}).
+	 *
+	 * @param request the request
+	 * @return the request hash
 	 */
 	private String getRequestHash(HttpRequest request)
 	{
@@ -153,9 +164,10 @@ public class VcrTape {
 	}
 	
 	/**
-	 * Returns the sha1 hash of the given string
-	 * @param value
-	 * @return
+	 * Returns the sha1 hash of the given string.
+	 *
+	 * @param value the value
+	 * @return the string
 	 */
 	private String sha1Hash(String value)
 	{
@@ -179,9 +191,10 @@ public class VcrTape {
 	}
 	
 	/**
-	 * Converts a byte array to a hex string
-	 * @param hash
-	 * @return
+	 * Converts a byte array to a hex string.
+	 *
+	 * @param hash the hash
+	 * @return the string
 	 */
 	private String byteToHex(final byte[] hash)
 	{

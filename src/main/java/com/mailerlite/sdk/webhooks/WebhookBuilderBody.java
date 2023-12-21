@@ -11,17 +11,24 @@ import java.util.ArrayList;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * The Class WebhookBuilderBody.
+ */
 public class WebhookBuilderBody {
 
+	/** The name. */
 	@SerializedName("name")
 	public String name;
 	
+	/** The events. */
 	@SerializedName("events")
 	public ArrayList<String> events = new ArrayList<String>();
 	
+	/** The url. */
 	@SerializedName("url")
 	public String url;
 	
+	/** The enabled. */
 	@SerializedName("enabled")
 	public Boolean enabled;
 }

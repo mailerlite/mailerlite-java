@@ -12,15 +12,30 @@ import com.mailerlite.sdk.MailerLiteApi;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.util.PaginatedRequest;
 
+/**
+ * The Class FormsRetriever.
+ */
 public class FormsRetriever  extends PaginatedRequest<FormsRetriever> {
 
+/** The api object reference. */
 private MailerLite apiObjectReference;
 	
+	/**
+	 * Instantiates a new forms retriever.
+	 *
+	 * @param apiRef the api ref
+	 */
 	public FormsRetriever(MailerLite apiRef)
 	{
 		apiObjectReference = apiRef;
 	}
 	
+	/**
+	 * Name filter.
+	 *
+	 * @param nameFilter the name filter
+	 * @return the forms retriever
+	 */
 	public FormsRetriever nameFilter(String nameFilter)
 	{
 		this.addQueryParameter("filter[name]", nameFilter);
@@ -28,12 +43,25 @@ private MailerLite apiObjectReference;
 		return this;
 	}
 	
+	/**
+	 * Sort.
+	 *
+	 * @param sort the sort
+	 * @return the forms retriever
+	 */
 	public FormsRetriever sort(String sort)
 	{
 		this.addQueryParameter("sort", sort);
 		return this;
 	}
 	
+	/**
+	 * Gets the.
+	 *
+	 * @param type the type
+	 * @return the forms list
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public FormsList get(String type) throws MailerLiteException
 	{
 		String endpoint = "/forms/".concat(type).concat(this.getQueryParameters());
@@ -48,6 +76,13 @@ private MailerLite apiObjectReference;
 		return list;
 	}
 	
+	/**
+	 * Gets the single.
+	 *
+	 * @param formId the form id
+	 * @return the single
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public SingleForm getSingle(String formId) throws MailerLiteException
 	{
 		String endpoint = "/forms/".concat(formId);
@@ -63,6 +98,11 @@ private MailerLite apiObjectReference;
 	}
 	
 
+	/**
+	 * Gets the single instance of FormsRetriever.
+	 *
+	 * @return single instance of FormsRetriever
+	 */
 	@Override
 	protected FormsRetriever getInstance() {
 		return this;

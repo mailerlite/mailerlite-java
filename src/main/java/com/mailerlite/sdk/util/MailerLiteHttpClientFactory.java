@@ -17,8 +17,10 @@ import java.net.http.HttpClient;
  */
 public class MailerLiteHttpClientFactory {
 	
+	/** The instance. */
 	private static MailerLiteHttpClientFactory instance = null;
 	
+	/** The client. */
 	private HttpClient client;
 	
 	/**

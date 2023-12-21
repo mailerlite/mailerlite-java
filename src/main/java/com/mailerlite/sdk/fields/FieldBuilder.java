@@ -15,15 +15,32 @@ import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.groups.NameCreatorBody;
 import com.mailerlite.sdk.util.JsonSerializationDeserializationStrategy;
 
+/**
+ * The Class FieldBuilder.
+ */
 public class FieldBuilder {
 
+	/** The api object reference. */
 	private MailerLite apiObjectReference;
 	
+	/**
+	 * Instantiates a new field builder.
+	 *
+	 * @param apiRef the api ref
+	 */
 	public FieldBuilder(MailerLite apiRef)
 	{
 		apiObjectReference = apiRef;
 	}
 	
+	/**
+	 * Creates the.
+	 *
+	 * @param name the name
+	 * @param type the type
+	 * @return the single field
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public SingleField create(String name, String type) throws MailerLiteException
 	{
 		FieldCreatorBody requestBody = new FieldCreatorBody();
@@ -47,6 +64,14 @@ public class FieldBuilder {
         return field;
 	}
 	
+	/**
+	 * Update.
+	 *
+	 * @param fieldId the field id
+	 * @param newFieldName the new field name
+	 * @return the single field
+	 * @throws MailerLiteException the mailer lite exception
+	 */
 	public SingleField update(String fieldId, String newFieldName) throws MailerLiteException
 	{
 		MailerLiteApi api = new MailerLiteApi();

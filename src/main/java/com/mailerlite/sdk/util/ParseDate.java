@@ -12,9 +12,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * The Interface ParseDate.
+ */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ParseDate {
 
+	/**
+	 * Value.
+	 *
+	 * @return the string
+	 */
 	String value();
 }
