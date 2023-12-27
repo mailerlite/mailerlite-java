@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mailerlite</groupId>
 	<artifactId>mailerlite-java</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<name>MailerLite Java SDK</name>
 	<description>An SDK for MailerLite API</description>
 	<url>https://github.com/mailerlite/mailerlite-java</url>
