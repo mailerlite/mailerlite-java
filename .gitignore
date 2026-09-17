@@ -2,3 +2,4 @@
 /target/
 *.prefs
 /bin/
+.direnv
