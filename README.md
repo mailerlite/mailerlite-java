@@ -66,13 +66,13 @@ Using Maven:
 
     <dependency>
       <groupId>com.mailerlite</groupId>
-      <artifactId>sdk</artifactId>
-      <version>1.0.0</version>
+      <artifactId>mailerlite-java</artifactId>
+      <version>0.0.4</version>
     </dependency>
 
 Using Gradle:
 
-    implementation 'com.mailerlite.sdk:1.0.0'
+    implementation 'com.mailerlite:mailerlite-java:0.0.4'
 
 
 # Usage
