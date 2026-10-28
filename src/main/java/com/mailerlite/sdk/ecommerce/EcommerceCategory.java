@@ -21,4 +21,16 @@ public class EcommerceCategory {
 	/** The name. */
 	@SerializedName("name")
 	public String name;
+
+	@SerializedName("resource_id")
+	public String resourceId;
+
+	@SerializedName("exclude_from_automations")
+	public Boolean excludeFromAutomations;
+
+	@SerializedName("created_at")
+	public String createdAt;
+
+	@SerializedName("updated_at")
+	public String updatedAt;
 }

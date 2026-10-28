@@ -11,6 +11,7 @@ import com.mailerlite.sdk.automations.Automations;
 import com.mailerlite.sdk.campaigns.Campaigns;
 import com.mailerlite.sdk.fields.Fields;
 import com.mailerlite.sdk.forms.Forms;
+import com.mailerlite.sdk.ecommerce.Ecommerce;
 import com.mailerlite.sdk.groups.Groups;
 import com.mailerlite.sdk.segments.Segments;
 import com.mailerlite.sdk.susbcribers.Subscribers;
@@ -48,6 +49,8 @@ public class MailerLite
 	
 	/** The forms. */
 	protected Forms forms;
+	
+	protected Ecommerce ecommerce;
 	
 	/**
 	 * Campaigns.
@@ -170,6 +173,16 @@ public class MailerLite
 		}
 		
 		return forms;
+	}
+	
+	
+	public Ecommerce ecommerce()
+	{
+		if (ecommerce == null) {
+			ecommerce = new Ecommerce(this);
+		}
+		
+		return ecommerce;
 	}
 	
 	
