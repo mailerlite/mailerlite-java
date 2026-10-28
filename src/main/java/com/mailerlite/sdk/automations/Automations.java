@@ -8,6 +8,7 @@
 package com.mailerlite.sdk.automations;
 
 import com.mailerlite.sdk.MailerLite;
+import com.mailerlite.sdk.ecommerce.EcommerceReportRetriever;
 import com.mailerlite.sdk.automations.activity.AutomationSubscriberActivityRetriever;
 
 /**
@@ -46,5 +47,17 @@ public class Automations {
 	public AutomationSubscriberActivityRetriever subscriberActivityRetriever()
 	{
 		return new AutomationSubscriberActivityRetriever(apiObjectReference);
+	}
+
+	public EcommerceReportRetriever ecommerceReport(String automationId)
+	{
+		String endpoint = "/automations/".concat(automationId);
+		return new EcommerceReportRetriever(apiObjectReference, endpoint.concat("/monthly-totals/ecommerce"), endpoint.concat("/order-activity"), "ecommerce_shop_id");
+	}
+
+	public EcommerceReportRetriever ecommerceEmailReport(String automationId, String emailId)
+	{
+		String endpoint = "/automations/".concat(automationId).concat("/emails/").concat(emailId).concat("/ecommerce-overview-stats");
+		return new EcommerceReportRetriever(apiObjectReference, endpoint, null, null);
 	}
 }
