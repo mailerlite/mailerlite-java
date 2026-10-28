@@ -1,7 +1,7 @@
 /*************************************************
  * MailerLite Java SDK
  * https://github.com/mailerlite/mailerlite-java
- * 
+ *
  * @author MailerLite <support@mailerlite.com>
  * https://mailerlite.com
  **************************************************/
@@ -80,6 +80,10 @@ public class EcommerceReportRetriever extends EcommerceRequest<EcommerceReportRe
 
 	public EcommerceReportOrdersList orders() throws MailerLiteException
 	{
+		if (ordersEndpoint == null) {
+			throw new MailerLiteException("This report has no orders list. Use stats() instead.");
+		}
+
 		if (shopId != null) {
 			this.addQueryParameter(ordersShopParameter, shopId);
 		}

@@ -1,6 +1,7 @@
 package com.mailerlite.sdk.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.net.http.HttpRequest;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Flow;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -65,6 +67,12 @@ public class EcommerceTest extends TestBase {
 
 		ml = this.getMailerLite();
 		ecommerce = ml.ecommerce();
+	}
+
+	@AfterEach
+	public void afterEach()
+	{
+		MailerLiteHttpClientFactory.getInstance().setClient(null);
 	}
 
 	private void assertRequest(ApiCall call, String method, String url, String body) throws MailerLiteException
@@ -185,5 +193,12 @@ public class EcommerceTest extends TestBase {
 		assertRequest(() -> ml.automations().ecommerceReport("8").stats(), "GET", API + "/automations/8/monthly-totals/ecommerce", null);
 		assertRequest(() -> ml.automations().ecommerceReport("8").timeFrame("all_time").shopId("1").orders(), "GET", API + "/automations/8/order-activity?time_frame=all_time&ecommerce_shop_id=1", null);
 		assertRequest(() -> ml.automations().ecommerceEmailReport("8", "9").shopId("1").stats(), "GET", API + "/automations/8/emails/9/ecommerce-overview-stats?shop_id=1", null);
+	}
+
+	@Test
+	public void TestReportsWithoutOrdersRejectOrders()
+	{
+		assertThrows(MailerLiteException.class, () -> ecommerce.shops().ecommerceReport("1").orders());
+		assertThrows(MailerLiteException.class, () -> ml.automations().ecommerceEmailReport("8", "9").orders());
 	}
 }
