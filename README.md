@@ -88,12 +88,12 @@ Using Maven:
     <dependency>
       <groupId>com.mailerlite</groupId>
       <artifactId>mailerlite-java</artifactId>
-      <version>0.0.4</version>
+      <version>0.1.0</version>
     </dependency>
 
 Using Gradle:
 
-    implementation 'com.mailerlite:mailerlite-java:0.0.4'
+    implementation 'com.mailerlite:mailerlite-java:0.1.0'
 
 
 # Usage
