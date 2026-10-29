@@ -59,6 +59,20 @@ public class Emails {
 	}
 
 	/**
+	 * Gets the HTML of an email, as a preview. The HTML is not ready to send.
+	 * <p>
+	 * The API can return a temporary 503 error with a body that is not JSON. If it does, try again later.
+	 *
+	 * @param emailId the email ID
+	 * @return the HTML and the etag of the email
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 */
+	public SingleEmailHtml getHtml(String emailId) throws MailerLiteException
+	{
+		return send("GET", emailPath(emailId).concat("/html"), null, SingleEmailHtml.class);
+	}
+
+	/**
 	 * Checks the email ID and makes the path of the email.
 	 *
 	 * @param emailId the email ID

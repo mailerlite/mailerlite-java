@@ -47,6 +47,7 @@ MailerLite Java SDK
         - [Get subscribers activity for a campaign](#get-subscribers-activity-for-an-campaign)
     - [Emails](#emails)
         - [Get an email](#get-an-email)
+        - [Get the HTML of an email](#get-the-html-of-an-email)
     - [Forms](#forms)
         - [Get a list of forms](#get-a-list-of-forms)
         - [Get a form](#get-a-form)
@@ -999,6 +1000,36 @@ class Example {
 			System.out.println(etag);
 			
 		} catch (MailerLiteException e) {
+			
+			e.printStackTrace();
+		}
+    }
+}
+```
+
+### Get the HTML of an email
+
+Returns the HTML of the email as a preview. The HTML is not ready to send: personalization shows as tokens such as `{$name}`, and the links have markers instead of tracking URLs. The API can return a temporary `503` error. If it does, try again later.
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		try {
+			
+			SingleEmailHtml response = this.getMailerLite().emails().getHtml("123456");
+			
+			System.out.println(response.preview.html);
+			
+		} catch (MailerLiteException e) {
+			
+			if (e.code == 503) {
+				
+				System.out.println("Try again later");
+			}
 			
 			e.printStackTrace();
 		}

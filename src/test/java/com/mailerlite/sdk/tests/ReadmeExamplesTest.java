@@ -148,6 +148,10 @@ public class ReadmeExamplesTest {
 				.respond(200, Fixtures.read("email.json"))
 				.expect("GET /emails/123456"));
 
+		list.add(new Example("Get the HTML of an email")
+				.respond(200, Fixtures.read("email_html.json"))
+				.expect("GET /emails/123456/html"));
+
 		return list;
 	}
 

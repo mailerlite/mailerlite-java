@@ -33,8 +33,10 @@ import com.mailerlite.sdk.emails.EmailSettings;
 import com.mailerlite.sdk.emails.EmailSocialLink;
 import com.mailerlite.sdk.emails.Emails;
 import com.mailerlite.sdk.emails.SingleEmailDocument;
+import com.mailerlite.sdk.emails.SingleEmailHtml;
 import com.mailerlite.sdk.exceptions.EmptyIdException;
 import com.mailerlite.sdk.exceptions.InvalidIdException;
+import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.support.Fixtures;
 import com.mailerlite.sdk.support.RecordingHttpClient;
 import com.mailerlite.sdk.support.RecordingHttpClient.RecordedRequest;
@@ -247,4 +249,45 @@ public class EmailsTest {
 	{
 		assertRejectsIds(client, id -> () -> emails.get(id));
 	}
+
+	/**
+	 * getHtml sends GET /emails/{email}/html and decodes the HTML.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void getHtmlDecodesTheHtml() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_html.json"));
+
+		SingleEmailHtml response = emails.getHtml("123");
+
+		assertRequest(client, "GET", "/emails/123/html", null, null);
+		assertEquals("<!doctype html><html><body><p>Hello</p></body></html>", response.preview.html);
+		assertEquals("42", response.etag);
+	}
+
+	/**
+	 * getHtml throws a MailerLiteException with the status for a temporary 503 with a body that is not JSON.
+	 */
+	@Test
+	public void getHtmlServiceUnavailable()
+	{
+		client.respond(503, "<html><body>Service Unavailable</body></html>");
+
+		MailerLiteException e = assertThrows(MailerLiteException.class, () -> emails.getHtml("123"));
+
+		assertEquals(503, e.code);
+		assertEquals("<html><body>Service Unavailable</body></html>", e.responseBody);
+	}
+
+	/**
+	 * getHtml checks the email ID and sends no request for an invalid ID.
+	 */
+	@Test
+	public void getHtmlRejectsInvalidIds()
+	{
+		assertRejectsIds(client, id -> () -> emails.getHtml(id));
+	}
+
 }
