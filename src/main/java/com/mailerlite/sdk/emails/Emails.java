@@ -181,6 +181,22 @@ public class Emails {
 	}
 
 	/**
+	 * Checks a block with the rules of an insert, and saves nothing. It needs no email and no etag.
+	 * <p>
+	 * An invalid block is not an error: the response has valid set to false and the errors for each field.
+	 *
+	 * @param block the block to check
+	 * @return the result of the validation
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 * @throws NullPointerException if the block or its editor content is null
+	 * @throws IllegalArgumentException if the block type or the placement position is empty
+	 */
+	public EmailValidation validateBlock(EmailBlockInput block) throws MailerLiteException
+	{
+		return send("POST", "/emails/blocks/validate", toJson(blockBody(block, null)), EmailValidation.class);
+	}
+
+	/**
 	 * Checks the email ID and makes the path of the email.
 	 *
 	 * @param emailId the email ID

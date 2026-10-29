@@ -7,6 +7,7 @@
  **************************************************/
 package com.mailerlite.sdk.tests;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -37,6 +38,7 @@ import com.mailerlite.sdk.emails.EmailDocument;
 import com.mailerlite.sdk.emails.EmailEtagResponse;
 import com.mailerlite.sdk.emails.EmailSettings;
 import com.mailerlite.sdk.emails.EmailSocialLink;
+import com.mailerlite.sdk.emails.EmailValidation;
 import com.mailerlite.sdk.emails.Emails;
 import com.mailerlite.sdk.emails.SingleEmailBlock;
 import com.mailerlite.sdk.emails.SingleEmailDocument;
@@ -658,6 +660,78 @@ public class EmailsTest {
 
 		NullPointerException e = assertThrows(NullPointerException.class, () -> emails.moveBlock("123", "57", "45", null));
 		assertTrue(e.getMessage().contains("placement"), e.getMessage());
+		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	}
+
+
+	/**
+	 * validateBlock sends POST /emails/blocks/validate with the block and no etag, and decodes a valid result.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void validateBlockValid() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_block_validation_valid.json"));
+
+		EmailBlockInput block = new EmailBlockInput(EmailBlockTypes.PARAGRAPH, paragraph("left", "Hi"));
+		block.placement = new EmailBlockPosition(EmailBlockPositions.END);
+
+		EmailValidation response = emails.validateBlock(block);
+
+		assertRequest(client, "POST", "/emails/blocks/validate",
+				"{\"type\":\"paragraph\",\"editor_content\":{\"attrs\":{\"textAlign\":\"left\"},"
+				+ "\"content\":[{\"type\":\"text\",\"text\":\"Hi\"}]},\"placement\":{\"position\":\"end\"}}", null);
+		assertTrue(response.valid);
+		assertTrue(response.errors.isEmpty());
+		assertEquals("2.73.2", response.schema.version);
+		assertEquals("0f3a9c", response.schema.hash);
+		assertNull(response.rejected);
+	}
+
+	/**
+	 * validateBlock returns an invalid result as a success, with the errors for each field.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void validateBlockInvalid() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_block_validation_invalid.json"));
+
+		EmailValidation response = emails.validateBlock(new EmailBlockInput("table", new LinkedHashMap<String, Object>()));
+
+		assertEquals("{\"type\":\"table\",\"editor_content\":{}}", client.lastRequest().bodyString());
+		assertEquals(200, response.responseStatusCode);
+		assertFalse(response.valid);
+		assertArrayEquals(new String[] {"The selected type is invalid."}, response.errors.get("type"));
+	}
+
+	/**
+	 * validateBlock checks the placement: blockId only for "before" and "after".
+	 *
+	 * @throws Throwable if a call fails
+	 */
+	@Test
+	public void validateBlockPlacementRules() throws Throwable
+	{
+		assertPlacementRules(client, Fixtures.read("email_block_validation_valid.json"), placement -> () -> {
+			EmailBlockInput block = new EmailBlockInput(EmailBlockTypes.DIVIDER, new LinkedHashMap<String, Object>());
+			block.placement = placement;
+			emails.validateBlock(block);
+		}, json -> "{\"type\":\"divider\",\"editor_content\":{},\"placement\":" + json + "}");
+	}
+
+	/**
+	 * validateBlock checks the required values, and sends no request when a check fails.
+	 */
+	@Test
+	public void validateBlockRejectsInvalidInput()
+	{
+		assertThrows(NullPointerException.class, () -> emails.validateBlock(null));
+		assertThrows(IllegalArgumentException.class,
+				() -> emails.validateBlock(new EmailBlockInput("", new LinkedHashMap<String, Object>())));
+		assertThrows(NullPointerException.class, () -> emails.validateBlock(new EmailBlockInput(EmailBlockTypes.DIVIDER, null)));
 		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
 	}
 
