@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -101,7 +102,7 @@ public class MailerLiteApiTest {
 			MailerLiteException e = assertThrows(MailerLiteException.class, method.getValue(), method.getKey());
 
 			assertSame(error, e.getCause(), method.getKey());
-			assertEquals("connection reset", e.getMessage(), method.getKey());
+			assertEquals("java.io.IOException: connection reset", e.getMessage(), method.getKey());
 		}
 	}
 
@@ -360,4 +361,49 @@ public class MailerLiteApiTest {
 		{
 		}
 	}
+
+	/**
+	 * A network error without a message gives a MailerLiteException with a message that names the error.
+	 */
+	@Test
+	public void networkErrorWithoutMessageKeepsTheErrorName()
+	{
+		for (Map.Entry<String, Executable> method : oldRequestMethods().entrySet()) {
+
+			ConnectException error = new ConnectException();
+			client.fail(error);
+
+			MailerLiteException e = assertThrows(MailerLiteException.class, method.getValue(), method.getKey());
+
+			assertSame(error, e.getCause(), method.getKey());
+			assertTrue(e.getMessage() != null && e.getMessage().contains("ConnectException"), method.getKey() + ": " + e.getMessage());
+		}
+
+		ConnectException error = new ConnectException();
+		client.fail(error);
+
+		MailerLiteException e = assertThrows(MailerLiteException.class,
+				() -> api().sendRequest("POST", "/emails/123/versions", null, null, MailerLiteResponse.class));
+
+		assertSame(error, e.getCause());
+		assertTrue(e.getMessage() != null && e.getMessage().contains("ConnectException"), e.getMessage());
+	}
+
+	/**
+	 * An interrupt without a message gives a message that names the error, and the thread keeps its interrupt flag.
+	 */
+	@Test
+	public void interruptWithoutMessageKeepsTheErrorNameAndTheFlag()
+	{
+		InterruptedException error = new InterruptedException();
+		client.fail(error);
+
+		MailerLiteException e = assertThrows(MailerLiteException.class,
+				() -> api().sendRequest("GET", "/emails/123", null, null, MailerLiteResponse.class));
+
+		assertSame(error, e.getCause());
+		assertTrue(e.getMessage() != null && e.getMessage().contains("InterruptedException"), e.getMessage());
+		assertTrue(Thread.interrupted());
+	}
+
 }
