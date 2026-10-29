@@ -91,4 +91,29 @@ public class ApiRequestTest {
 
 		assertEquals("?filter[status]=active", request.getQueryParameters());
 	}
+
+	/**
+	 * The SDK encodes each value, so a value that the caller encoded is encoded two times. Do not encode values.
+	 */
+	@Test
+	public void encodesAnEncodedValueAgain()
+	{
+		ApiRequest request = new ApiRequest();
+		request.addQueryParameter("filter[name]", "summer%20sale");
+
+		assertEquals("?filter[name]=summer%2520sale", request.getQueryParameters());
+	}
+
+	/**
+	 * A plus sign is sent as "%2B", so the API reads a literal plus sign, not a space.
+	 */
+	@Test
+	public void sendsPlusAsLiteralPlus()
+	{
+		ApiRequest request = new ApiRequest();
+		request.addQueryParameter("filter[name]", "a+b");
+
+		assertEquals("?filter[name]=a%2Bb", request.getQueryParameters());
+	}
+
 }
