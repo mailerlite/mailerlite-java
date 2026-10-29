@@ -62,6 +62,8 @@ MailerLite Java SDK
         - [Restore a version of an email](#restore-a-version-of-an-email)
     - [Brand styles](#brand-styles)
         - [Get the brand styles](#get-the-brand-styles)
+    - [Files](#files)
+        - [Get a list of files](#get-a-list-of-files)
     - [Forms](#forms)
         - [Get a list of forms](#get-a-list-of-forms)
         - [Get a form](#get-a-form)
@@ -1443,6 +1445,46 @@ class Example {
 			for (BrandStyle preset : response.brandStyles.presets) {
 				
 				System.out.println(preset.identifier + " " + preset.name);
+			}
+			
+		} catch (MailerLiteException e) {
+			
+			e.printStackTrace();
+		}
+    }
+}
+```
+
+## Files
+
+### Get a list of files
+
+Returns the files of your media library. Use their `url` in image blocks. `width` and `height` are `null` for files that are not images.
+
+- `nameFilter` matches a part of the file name. `typeFilter` takes one of `MediaFileTypes`. `filter(name, value)` adds any other filter as `filter[name]`.
+- `sort` takes one of `MediaFileSorts`. The default is the newest files first.
+- The SDK encodes the values, so a space is sent as `+`. A `null` value is not sent.
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		try {
+			
+			MediaFilesList response = this.getMailerLite().files().retriever()
+					.nameFilter("summer sale")
+					.typeFilter(MediaFileTypes.IMAGE)
+					.sort(MediaFileSorts.SIZE_DESC)
+					.page(1)
+					.limit(25)
+					.get();
+			
+			for (MediaFile file : response.files) {
+				
+				System.out.println(file.name + " " + file.url);
 			}
 			
 		} catch (MailerLiteException e) {

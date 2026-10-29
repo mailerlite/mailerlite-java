@@ -59,6 +59,7 @@ public class ReadmeExamplesTest {
 			"com.mailerlite.sdk.campaigns.*",
 			"com.mailerlite.sdk.emails.*",
 			"com.mailerlite.sdk.exceptions.*",
+			"com.mailerlite.sdk.files.*",
 			"java.util.*");
 
 	/**
@@ -208,6 +209,10 @@ public class ReadmeExamplesTest {
 		list.add(new Example("Get the brand styles")
 				.respond(200, Fixtures.read("brand_styles.json"))
 				.expect("GET /brand-styles"));
+
+		list.add(new Example("Get a list of files")
+				.respond(200, Fixtures.read("files.json"))
+				.expect("GET /files?filter[type]=image&limit=25&filter[name]=summer+sale&sort=-size&page=1"));
 
 		return list;
 	}

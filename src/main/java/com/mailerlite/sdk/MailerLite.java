@@ -12,6 +12,7 @@ import com.mailerlite.sdk.brandstyles.BrandStyles;
 import com.mailerlite.sdk.campaigns.Campaigns;
 import com.mailerlite.sdk.emails.Emails;
 import com.mailerlite.sdk.fields.Fields;
+import com.mailerlite.sdk.files.MediaFiles;
 import com.mailerlite.sdk.forms.Forms;
 import com.mailerlite.sdk.groups.Groups;
 import com.mailerlite.sdk.segments.Segments;
@@ -56,6 +57,9 @@ public class MailerLite
 	
 	/** The brand styles. */
 	protected BrandStyles brandStyles;
+	
+	/** The files of the media library. */
+	protected MediaFiles files;
 	
 	/**
 	 * Campaigns.
@@ -208,6 +212,21 @@ public class MailerLite
 		}
 		
 		return brandStyles;
+	}
+	
+	
+	/**
+	 * Files of the media library.
+	 *
+	 * @return the files
+	 */
+	public MediaFiles files()
+	{
+		if (files == null) {
+			files = new MediaFiles(this);
+		}
+		
+		return files;
 	}
 	
 	
