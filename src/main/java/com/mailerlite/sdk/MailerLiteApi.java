@@ -14,6 +14,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import com.google.gson.Gson;
@@ -280,6 +281,67 @@ public class MailerLiteApi {
         }
         
         return this.handleApiResponse(responseObject, responseClass, customDeserializer);
+    }
+    
+    
+    /**
+     * Sends a request with any HTTP method, for example PATCH, to the given endpoint of the MailerLite API.
+     * <p>
+     * The request has the headers {@code Content-Type: application/json} and {@code Accept: application/json},
+     * and then the extra headers.
+     * <p>
+     * If the body is null, GET and DELETE requests have no body, and the other requests have an empty body.
+     * The SDK never sends the JSON {@code null}.
+     *
+     * @param <T> the generic type
+     * @param method the HTTP method, for example "PATCH"
+     * @param endpoint the MailerLite API endpoint, with the query string
+     * @param body the JSON body, or null for no body
+     * @param headers the extra headers, or null
+     * @param responseClass the class of the response object
+     * @return T
+     * @throws MailerLiteException if the API returns an error or the request fails
+     */
+    public <T extends MailerLiteResponse> T sendRequest(String method, String endpoint, String body, Map<String, String> headers, Class<T> responseClass) throws MailerLiteException
+    {
+    	HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(this.endpointBase.concat(endpoint)))
+    			.header("Content-Type", "application/json")
+    			.header("Accept", "application/json")
+    			.header("Authorization", "Bearer ".concat(this.apiToken));
+    	
+    	if (headers != null) {
+    		
+    		for (Map.Entry<String, String> header : headers.entrySet()) {
+    			
+    			builder.header(header.getKey(), header.getValue());
+    		}
+    	}
+    	
+    	if (body != null) {
+    		
+    		builder.method(method, BodyPublishers.ofString(body));
+    	} else if ("GET".equals(method)) {
+    		
+    		builder.GET();
+    	} else if ("DELETE".equals(method)) {
+    		
+    		builder.DELETE();
+    	} else {
+    		
+    		builder.method(method, BodyPublishers.noBody());
+    	}
+    	
+    	HttpResponse<String> responseObject = null;
+    	
+    	try {
+    		
+    		responseObject = this.client.send(builder.build(), BodyHandlers.ofString());
+    	} catch (IOException | InterruptedException e) {
+    		
+    		throw this.networkError(e);
+    	}
+    	
+    	return this.handleApiResponse(responseObject, responseClass, null);
     }
     
     
