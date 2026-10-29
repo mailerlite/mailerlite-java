@@ -250,6 +250,103 @@ public class MailerLiteApiTest {
 	}
 
 	/**
+	 * A 409 version conflict exposes the API code and the current etag.
+	 */
+	@Test
+	public void versionConflictExposesCodeAndEtag()
+	{
+		String body = "{\"message\":\"The email changed since you read it. Fetch it again, then retry with its new etag.\","
+				+ "\"code\":\"version_conflict\",\"etag\":\"43\"}";
+		client.respond(409, body);
+
+		MailerLiteException e = assertThrows(MailerLiteException.class,
+				() -> api().sendRequest("PATCH", "/emails/123/blocks/57", "{}", null, MailerLiteResponse.class));
+
+		assertEquals(409, e.code);
+		assertEquals("version_conflict", e.errorCode);
+		assertEquals("43", e.etag);
+		assertTrue(e.isVersionConflict());
+		assertEquals("version_conflict: The email changed since you read it. Fetch it again, then retry with its new etag.",
+				e.getMessage());
+		assertEquals(body, e.responseBody);
+		assertTrue(e.errors.isEmpty());
+	}
+
+	/**
+	 * A 409 without a code is not a version conflict, and the message has no prefix.
+	 */
+	@Test
+	public void conflictWithoutCodeIsNotVersionConflict()
+	{
+		client.respond(409, "{\"message\":\"The campaign is not a draft.\"}");
+
+		MailerLiteException e = assertThrows(MailerLiteException.class,
+				() -> api().postRequest("/emails/123/versions", "{}", MailerLiteResponse.class));
+
+		assertEquals(409, e.code);
+		assertNull(e.errorCode);
+		assertNull(e.etag);
+		assertFalse(e.isVersionConflict());
+		assertEquals("The campaign is not a draft.", e.getMessage());
+	}
+
+	/**
+	 * A 422 with errors exposes the errors for each field.
+	 */
+	@Test
+	public void validationErrorExposesErrors()
+	{
+		client.respond(422, "{\"message\":\"The given data was invalid.\","
+				+ "\"errors\":{\"editor_content\":[\"The editor content field must be present.\"]}}");
+
+		MailerLiteException e = assertThrows(MailerLiteException.class,
+				() -> api().sendRequest("POST", "/emails/123/blocks", "{}", null, MailerLiteResponse.class));
+
+		assertEquals(422, e.code);
+		assertNull(e.errorCode);
+		assertFalse(e.isVersionConflict());
+		assertEquals("The given data was invalid.", e.getMessage());
+		assertArrayEquals(new String[] {"The editor content field must be present."}, e.errors.get("editor_content"));
+	}
+
+	/**
+	 * A 422 with only a message has no errors.
+	 */
+	@Test
+	public void validationErrorWithOnlyMessage()
+	{
+		client.respond(422, "{\"message\":\"This email was not built with the simple editor.\"}");
+
+		MailerLiteException e = assertThrows(MailerLiteException.class,
+				() -> api().sendRequest("GET", "/emails/123", null, null, MailerLiteResponse.class));
+
+		assertEquals(422, e.code);
+		assertEquals("This email was not built with the simple editor.", e.getMessage());
+		assertTrue(e.errors.isEmpty());
+		assertNull(e.errorCode);
+	}
+
+	/**
+	 * A 503 with an HTML body keeps the status and the raw body.
+	 */
+	@Test
+	public void serviceUnavailableWithHtmlBody()
+	{
+		String body = "<html><body><h1>503 Service Unavailable</h1></body></html>";
+		client.respond(503, body);
+
+		MailerLiteException e = assertThrows(MailerLiteException.class,
+				() -> api().sendRequest("GET", "/emails/123/html", null, null, MailerLiteResponse.class));
+
+		assertEquals(503, e.code);
+		assertEquals("Error parsing API response", e.getMessage());
+		assertEquals(body, e.responseBody);
+		assertNull(e.errorCode);
+		assertNull(e.etag);
+		assertFalse(e.isVersionConflict());
+	}
+
+	/**
 	 * A response class without a no-argument constructor.
 	 */
 	public static class NoDefaultConstructorResponse extends MailerLiteResponse {

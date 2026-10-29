@@ -412,9 +412,18 @@ public class MailerLiteApi {
             	
             	JsonResponseError error = gson.fromJson(stringResponse, JsonResponseError.class);
 	            
-	            responseError = new MailerLiteException(error.message);
+	            String message = error.message;
+	            
+	            if (error.code != null && !error.code.isEmpty()) {
+	            	
+	            	message = error.code.concat(": ").concat(String.valueOf(error.message));
+	            }
+	            
+	            responseError = new MailerLiteException(message);
 	         
 	            responseError.errors = error.errors;
+	            responseError.errorCode = error.code;
+	            responseError.etag = error.etag;
             } catch (Exception ex) {
             	
             	responseError = new MailerLiteException("Error parsing API response");
