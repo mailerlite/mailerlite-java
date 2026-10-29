@@ -45,6 +45,8 @@ MailerLite Java SDK
         - [Cancel a ready campaign](#cancel-a-ready-campaign)
         - [Delete a campaign](#delete-a-campaign)
         - [Get subscribers activity for a campaign](#get-subscribers-activity-for-an-campaign)
+    - [Emails](#emails)
+        - [Get an email](#get-an-email)
     - [Forms](#forms)
         - [Get a list of forms](#get-a-list-of-forms)
         - [Get a form](#get-a-form)
@@ -954,6 +956,50 @@ class Example {
 			CampaignSubscriberActivityList activity = this.getMailerLite().campaigns().subscriberActivity().get(campaigns.campaigns[0].id);
 			
 		} catch (MailerLiteException e) {
+			e.printStackTrace();
+		}
+    }
+}
+```
+
+## Emails
+
+These methods read and change emails built with the simple editor. The ID of the email of a campaign is in `campaign.emails[0].id`.
+
+- IDs are strings of the digits 0 to 9. An empty or `null` ID throws `EmptyIdException`. An ID with other characters throws `InvalidIdException`. Both extend `IllegalArgumentException`, and the SDK sends no request.
+- Each write needs the etag from the last response for the email, and each write returns a new etag. The etag covers the whole email, so send the writes to one email one after another. An empty or `null` etag throws `EmptyEtagException`, and the SDK sends no request.
+- If the email changed after you read it, the write throws a `MailerLiteException` with `code` `409`, and `e.isVersionConflict()` is `true`. Then `e.etag` is the current etag. Get the email again, and then send the write again with the current etag.
+- The API error code, for example `version_conflict`, is in `e.errorCode`. The field `e.code` is the HTTP status.
+- The keys of `editorContent` are camelCase, for example `textAlign`. The SDK sends them as you give them. In a response, whole numbers are `Long` values.
+- Each response has the status code in `responseStatusCode` and the headers in `headers`.
+
+### Get an email
+
+Returns the email with its design settings and its blocks, and the etag of the email.
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		try {
+			
+			SingleEmailDocument response = this.getMailerLite().emails().get("123456");
+			
+			EmailDocument email = response.email;
+			String etag = response.etag;
+			
+			for (EmailBlock block : email.blocks) {
+				
+				System.out.println(block.id + " " + block.type);
+			}
+			
+			System.out.println(etag);
+			
+		} catch (MailerLiteException e) {
+			
 			e.printStackTrace();
 		}
     }

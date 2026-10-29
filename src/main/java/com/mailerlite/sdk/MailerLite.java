@@ -9,6 +9,7 @@ package com.mailerlite.sdk;
 
 import com.mailerlite.sdk.automations.Automations;
 import com.mailerlite.sdk.campaigns.Campaigns;
+import com.mailerlite.sdk.emails.Emails;
 import com.mailerlite.sdk.fields.Fields;
 import com.mailerlite.sdk.forms.Forms;
 import com.mailerlite.sdk.groups.Groups;
@@ -48,6 +49,9 @@ public class MailerLite
 	
 	/** The forms. */
 	protected Forms forms;
+	
+	/** The emails. */
+	protected Emails emails;
 	
 	/**
 	 * Campaigns.
@@ -170,6 +174,21 @@ public class MailerLite
 		}
 		
 		return forms;
+	}
+	
+	
+	/**
+	 * Emails built with the simple editor.
+	 *
+	 * @return the emails
+	 */
+	public Emails emails()
+	{
+		if (emails == null) {
+			emails = new Emails(this);
+		}
+		
+		return emails;
 	}
 	
 	
