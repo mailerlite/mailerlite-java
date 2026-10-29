@@ -100,9 +100,7 @@ public class MailerLiteApi {
                         
         } catch (IOException | InterruptedException e) {
 
-        	MailerLiteException ex = (MailerLiteException) e;
-            
-            throw ex;
+        	throw this.networkError(e);
         }
         
         if (responseClass == MailerLiteStringResponse.class) {
@@ -161,9 +159,7 @@ public class MailerLiteApi {
                         
         } catch (IOException | InterruptedException e) {
 
-        	MailerLiteException ex = (MailerLiteException) e;
-            
-            throw ex;
+        	throw this.networkError(e);
         }
         
         if (responseClass == MailerLiteStringResponse.class) {
@@ -218,9 +214,7 @@ public class MailerLiteApi {
                         
         } catch (IOException | InterruptedException e) {
 
-        	MailerLiteException ex = (MailerLiteException) e;
-            
-            throw ex;
+        	throw this.networkError(e);
         }
         
         return this.handleApiResponse(responseObject, responseClass, customDeserializer);
@@ -274,9 +268,7 @@ public class MailerLiteApi {
                         
         } catch (IOException | InterruptedException e) {
 
-        	MailerLiteException ex = (MailerLiteException) e;
-            
-            throw ex;
+        	throw this.networkError(e);
         }
         
         if (responseClass == MailerLiteStringResponse.class) {
@@ -288,6 +280,24 @@ public class MailerLiteApi {
         }
         
         return this.handleApiResponse(responseObject, responseClass, customDeserializer);
+    }
+    
+    
+    /**
+     * Converts a network error to a MailerLiteException.
+     * For an InterruptedException, it also sets the interrupt flag of the thread again.
+     *
+     * @param e the network error
+     * @return the exception to throw
+     */
+    private MailerLiteException networkError(Exception e)
+    {
+    	if (e instanceof InterruptedException) {
+    		
+    		Thread.currentThread().interrupt();
+    	}
+    	
+    	return new MailerLiteException(e.getMessage(), e);
     }
     
     
@@ -366,11 +376,9 @@ public class MailerLiteApi {
             try {
                 
                 response = responseClass.getDeclaredConstructor().newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 
-                MailerLiteException ex = (MailerLiteException) e;
-                
-                throw ex;
+                throw new MailerLiteException(e.getMessage(), e);
             }
         }
         

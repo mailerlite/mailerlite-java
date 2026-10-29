@@ -35,4 +35,15 @@ public class MailerLiteException extends Exception  {
         
         super(message);
     }
+    
+    /**
+     * Makes an exception with a message and a cause, for example a network error.
+     *
+     * @param message the message
+     * @param cause the error that caused this exception
+     */
+    public MailerLiteException(String message, Throwable cause) {
+        
+        super(message, cause);
+    }
 }
