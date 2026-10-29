@@ -285,6 +285,21 @@ public class Emails {
 	}
 
 	/**
+	 * Saves the email as a new version. The request has no body.
+	 * <p>
+	 * If nothing changed after the last version, the API saves no new version and returns the last version.
+	 * {@link SingleEmailVersion#isCreated()} tells the two cases apart.
+	 *
+	 * @param emailId the email ID
+	 * @return the new version, or the last version
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 */
+	public SingleEmailVersion createVersion(String emailId) throws MailerLiteException
+	{
+		return send("POST", emailPath(emailId).concat("/versions"), null, SingleEmailVersion.class);
+	}
+
+	/**
 	 * Checks the email ID and makes the path of the email.
 	 *
 	 * @param emailId the email ID

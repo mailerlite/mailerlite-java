@@ -47,6 +47,7 @@ import com.mailerlite.sdk.emails.EmailTextStyle;
 import com.mailerlite.sdk.emails.EmailTypographySettings;
 import com.mailerlite.sdk.emails.SingleEmailSettings;
 import com.mailerlite.sdk.emails.SingleEmailTemplate;
+import com.mailerlite.sdk.emails.SingleEmailVersion;
 import com.mailerlite.sdk.emails.EmailSocialLink;
 import com.mailerlite.sdk.emails.EmailValidation;
 import com.mailerlite.sdk.emails.EmailVersionsList;
@@ -999,6 +1000,57 @@ public class EmailsTest {
 	public void versionsRejectsInvalidIds()
 	{
 		assertRejectsIds(client, id -> () -> emails.versions(id).get());
+	}
+
+
+	/**
+	 * createVersion sends POST /emails/{email}/versions with an empty body, not the JSON null.
+	 * Status 201 means a new version.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void createVersionNew() throws Exception
+	{
+		client.respond(201, Fixtures.read("email_version.json"));
+
+		SingleEmailVersion response = emails.createVersion("123");
+
+		RecordedRequest request = assertRequest(client, "POST", "/emails/123/versions", "", null);
+		assertTrue(request.hasBodyPublisher);
+		assertEquals(0, request.contentLength);
+		assertEquals(0, request.body.length);
+		assertTrue(response.isCreated());
+		assertEquals(201, response.responseStatusCode);
+		assertEquals("903", response.version.id);
+		assertEquals("2026-10-28 12:10:00", response.version.createdAt);
+		assertTrue(response.version.current);
+	}
+
+	/**
+	 * Status 200 means that nothing changed, and the response has the last version.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void createVersionUnchanged() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_version.json"));
+
+		SingleEmailVersion response = emails.createVersion("123");
+
+		assertFalse(response.isCreated());
+		assertEquals(200, response.responseStatusCode);
+		assertEquals("903", response.version.id);
+	}
+
+	/**
+	 * createVersion checks the ID, and sends no request for an invalid ID.
+	 */
+	@Test
+	public void createVersionRejectsInvalidIds()
+	{
+		assertRejectsIds(client, id -> () -> emails.createVersion(id));
 	}
 
 }

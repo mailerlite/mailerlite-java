@@ -58,6 +58,7 @@ MailerLite Java SDK
         - [Validate the design settings](#validate-the-design-settings)
         - [Save an email as a template](#save-an-email-as-a-template)
         - [List the versions of an email](#list-the-versions-of-an-email)
+        - [Save a version of an email](#save-a-version-of-an-email)
     - [Forms](#forms)
         - [Get a list of forms](#get-a-list-of-forms)
         - [Get a form](#get-a-form)
@@ -1360,6 +1361,31 @@ class Example {
 				
 				System.out.println(version.id + " " + version.createdAt + " " + version.current);
 			}
+			
+		} catch (MailerLiteException e) {
+			
+			e.printStackTrace();
+		}
+    }
+}
+```
+
+### Save a version of an email
+
+Writes through the API do not save versions. If nothing changed after the last version, the API saves no new version and returns the last version. `isCreated()` is `true` for a new version (status `201`), and `false` for the last version (status `200`).
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		try {
+			
+			SingleEmailVersion response = this.getMailerLite().emails().createVersion("123456");
+			
+			System.out.println(response.version.id + " " + response.isCreated());
 			
 		} catch (MailerLiteException e) {
 			
