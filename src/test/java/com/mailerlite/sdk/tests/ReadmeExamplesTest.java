@@ -214,6 +214,10 @@ public class ReadmeExamplesTest {
 				.respond(200, Fixtures.read("files.json"))
 				.expect("GET /files?filter[type]=image&limit=25&filter[name]=summer+sale&sort=-size&page=1"));
 
+		list.add(new Example("Create a campaign with the simple editor")
+				.respond(201, Fixtures.read("campaign_simple_editor.json"))
+				.expect("POST /campaigns"));
+
 		return list;
 	}
 

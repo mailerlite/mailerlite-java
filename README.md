@@ -40,6 +40,7 @@ MailerLite Java SDK
         - [Get a list of campaigns](#get-a-list-of-campaigns)
         - [Get a campaign](#get-a-campaign)
         - [Create a campaign](#create-a-campaign)
+        - [Create a campaign with the simple editor](#create-a-campaign-with-the-simple-editor)
         - [Update a campaign](#update-a-campaign)
         - [Schedule a campaign](#schedule-a-campaign)
         - [Cancel a ready campaign](#cancel-a-ready-campaign)
@@ -815,6 +816,48 @@ class Example {
 }
 ```
 
+### Create a campaign with the simple editor
+
+To build the email with the simple editor, set `editor` to `EmailEditors.SIMPLE`, and do not set `content`. Then change the email with [the email methods](#emails). The ID of the email is in `campaign.emails[0].id`.
+
+- `editor`: the only accepted value is `simple`, which selects the simple editor instead of the drag-and-drop builder. It has to be the same across every email in the payload; a mixed array is rejected. Setting it prohibits `emails.*.content`.
+- `templateId` (`template_id`): the template the new email starts from. Allowed only when `editor` is `simple`, accepts only a template from the shared gallery, and also has to be the same across every email.
+- Only `create()` accepts `editor` and `templateId`. If an email has one of them set, `update()` gets a `422` error.
+- The SDK does not send `editor`, `templateId`, `replyTo` or `content` when they are `null`.
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		EmailBase email = new EmailBase();
+		email.from = "from email";
+		email.fromName = "test from name";
+		email.subject = "test email subject";
+		email.editor = EmailEditors.SIMPLE;
+		
+		try {
+		
+			SingleCampaign newCampaign = this.getMailerLite().campaigns().builder()
+			.name("test campaign name")
+			.email(email)
+			.type("regular")
+			.create();
+			
+			String emailId = newCampaign.campaign.emails[0].id;
+			
+			System.out.println(emailId);
+			
+		} catch (MailerLiteException e) {
+			
+			e.printStackTrace();
+		}
+    }
+}
+```
+
 ### Update a campaign
 
 ```java
@@ -981,7 +1024,7 @@ class Example {
 
 ## Emails
 
-These methods read and change emails built with the simple editor. The ID of the email of a campaign is in `campaign.emails[0].id`.
+These methods read and change emails built with the simple editor. To make such an email, [create a campaign with the simple editor](#create-a-campaign-with-the-simple-editor). The ID of the email is in `campaign.emails[0].id`.
 
 - IDs are strings of the digits 0 to 9. An empty or `null` ID throws `EmptyIdException`. An ID with other characters throws `InvalidIdException`. Both extend `IllegalArgumentException`, and the SDK sends no request.
 - Each write needs the etag from the last response for the email, and each write returns a new etag. The etag covers the whole email, so send the writes to one email one after another. An empty or `null` etag throws `EmptyEtagException`, and the SDK sends no request.

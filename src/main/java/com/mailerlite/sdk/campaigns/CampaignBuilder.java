@@ -161,6 +161,9 @@ public class CampaignBuilder {
 	
 	/**
 	 * Creates the.
+	 * <p>
+	 * To build the emails with the simple editor, set {@code editor} to
+	 * {@link com.mailerlite.sdk.emails.EmailEditors#SIMPLE} on each email, and do not set {@code content}.
 	 *
 	 * @return the single campaign
 	 * @throws MailerLiteException the mailer lite exception
@@ -188,6 +191,9 @@ public class CampaignBuilder {
 	
 	/**
 	 * Update.
+	 * <p>
+	 * Only {@link #create()} accepts the email fields {@code editor} and {@code templateId}. If an email of the
+	 * builder has one of them set, the API rejects the update with a 422 error.
 	 *
 	 * @param campaignId the campaign id
 	 * @return the single campaign
