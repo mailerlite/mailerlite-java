@@ -21,20 +21,12 @@ import com.mailerlite.sdk.brandstyles.SingleBrandStyles;
 import com.mailerlite.sdk.support.Fixtures;
 import com.mailerlite.sdk.support.RecordingHttpClient;
 
-/**
- * Tests the brand styles endpoint with the recording HTTP client.
- */
 public class BrandStylesTest {
 
-	/** The fake HTTP client. */
 	private RecordingHttpClient client;
 
-	/** The MailerLite object. */
 	private MailerLite ml;
 
-	/**
-	 * Sets the fake HTTP client.
-	 */
 	@BeforeEach
 	public void setupEach()
 	{
@@ -44,20 +36,12 @@ public class BrandStylesTest {
 		ml.setToken("test-token");
 	}
 
-	/**
-	 * Removes the fake HTTP client.
-	 */
 	@AfterEach
 	public void afterEach()
 	{
 		RecordingHttpClient.uninstall();
 	}
 
-	/**
-	 * get sends GET /brand-styles and decodes the brand, the default palette and the presets.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void getDecodesThePalettes() throws Exception
 	{
@@ -89,11 +73,6 @@ public class BrandStylesTest {
 		assertEquals("Courier New, monospace", data.presets[1].fontFamily);
 	}
 
-	/**
-	 * brand is null when the account has no brand styles.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void getWithoutBrand() throws Exception
 	{

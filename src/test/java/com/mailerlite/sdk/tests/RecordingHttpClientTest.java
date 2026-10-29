@@ -27,28 +27,16 @@ import org.junit.jupiter.api.Test;
 import com.mailerlite.sdk.support.RecordingHttpClient;
 import com.mailerlite.sdk.support.RecordingHttpClient.RecordedRequest;
 
-/**
- * Tests the fake HttpClient that the other tests use.
- */
 public class RecordingHttpClientTest {
 
-	/** The test URI. */
 	private static final URI TEST_URI = URI.create("https://connect.mailerlite.com/api/test");
 
-	/**
-	 * Removes the client from the factory.
-	 */
 	@AfterEach
 	public void afterEach()
 	{
 		RecordingHttpClient.uninstall();
 	}
 
-	/**
-	 * The client keeps the raw body and returns the queued response.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void keepsTheRawBodyAndReturnsTheQueuedResponse() throws Exception
 	{
@@ -72,11 +60,6 @@ public class RecordingHttpClientTest {
 		assertEquals(0, client.pendingResponses());
 	}
 
-	/**
-	 * A request without a body publisher and a request with noBody() are different.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void tellsNoPublisherFromAnEmptyBody() throws Exception
 	{
@@ -95,9 +78,6 @@ public class RecordingHttpClientTest {
 		assertArrayEquals(new byte[0], post.body);
 	}
 
-	/**
-	 * The client throws a queued error, and an IOException when the queue is empty.
-	 */
 	@Test
 	public void throwsQueuedErrorsAndFailsWhenTheQueueIsEmpty()
 	{

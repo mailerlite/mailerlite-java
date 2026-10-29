@@ -18,14 +18,8 @@ import com.mailerlite.sdk.util.RequestChecks;
  */
 public final class RequestOptions {
 
-	/** The idempotency key, or null. */
 	private final String idempotencyKey;
 
-	/**
-	 * Instantiates new options.
-	 *
-	 * @param idempotencyKey the idempotency key, or null
-	 */
 	private RequestOptions(String idempotencyKey)
 	{
 		this.idempotencyKey = idempotencyKey;

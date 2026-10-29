@@ -18,12 +18,8 @@ import com.mailerlite.sdk.exceptions.InvalidIdempotencyKeyException;
  */
 public final class RequestChecks {
 
-	/** The maximum length of an idempotency key. */
 	private static final int MAX_IDEMPOTENCY_KEY_LENGTH = 255;
 
-	/**
-	 * Do not make instances of this class.
-	 */
 	private RequestChecks()
 	{
 	}
@@ -104,11 +100,6 @@ public final class RequestChecks {
 		return key;
 	}
 
-	/**
-	 * Makes the exception for an invalid idempotency key.
-	 *
-	 * @return the exception
-	 */
 	private static InvalidIdempotencyKeyException invalidKey()
 	{
 		return new InvalidIdempotencyKeyException(

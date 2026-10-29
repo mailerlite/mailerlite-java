@@ -51,9 +51,6 @@ public final class EmailBlockTypes {
 	/** A video. */
 	public static final String VIDEO = "video";
 
-	/**
-	 * Do not make instances of this class.
-	 */
 	private EmailBlockTypes()
 	{
 	}

@@ -34,26 +34,14 @@ import com.mailerlite.sdk.exceptions.InvalidIdException;
 import com.mailerlite.sdk.exceptions.InvalidIdempotencyKeyException;
 import com.mailerlite.sdk.util.RequestChecks;
 
-/**
- * Tests the shared input checks and the editor content adapter.
- */
 public class RequestChecksTest {
 
-	/** IDs that are not only ASCII digits. */
 	public static final List<String> INVALID_IDS = Collections.unmodifiableList(Arrays.asList(
 			"123/html", "123%2Fhtml", "123\n", "\u00b2", "\u0661\u0662\u0663", "12a", " 123", "-1", "1.5"));
 
-	/** Idempotency keys that the API rejects, or that HTTP changes. */
 	public static final List<String> INVALID_KEYS = Collections.unmodifiableList(Arrays.asList(
 			"", repeat('k', 256), "key\n", "key\t", "cl\u00e9", "key\u007f", " key", "key "));
 
-	/**
-	 * Makes a string of one character.
-	 *
-	 * @param c the character
-	 * @param count the length
-	 * @return the string
-	 */
 	public static String repeat(char c, int count)
 	{
 		char[] chars = new char[count];
@@ -62,9 +50,6 @@ public class RequestChecksTest {
 		return new String(chars);
 	}
 
-	/**
-	 * A valid ID is returned as it is.
-	 */
 	@Test
 	public void pathIdAcceptsAsciiDigits()
 	{
@@ -72,9 +57,6 @@ public class RequestChecksTest {
 		assertEquals("0", RequestChecks.pathId("0", "emailId"));
 	}
 
-	/**
-	 * An empty or null ID throws EmptyIdException with the parameter name.
-	 */
 	@Test
 	public void pathIdRejectsEmptyIds()
 	{
@@ -85,11 +67,6 @@ public class RequestChecksTest {
 		assertTrue(empty instanceof IllegalArgumentException);
 	}
 
-	/**
-	 * An ID that is not only ASCII digits throws InvalidIdException.
-	 *
-	 * @return a test for each ID
-	 */
 	@TestFactory
 	public List<DynamicTest> pathIdRejectsInvalidIds()
 	{
@@ -106,9 +83,6 @@ public class RequestChecksTest {
 		return tests;
 	}
 
-	/**
-	 * An empty or null etag throws EmptyEtagException.
-	 */
 	@Test
 	public void etagRejectsEmptyValues()
 	{
@@ -118,9 +92,6 @@ public class RequestChecksTest {
 		assertTrue(e instanceof IllegalArgumentException);
 	}
 
-	/**
-	 * A key of 1 to 255 printable ASCII characters is accepted.
-	 */
 	@Test
 	public void idempotencyKeyAcceptsPrintableAscii()
 	{
@@ -131,11 +102,6 @@ public class RequestChecksTest {
 		assertEquals("retry 1 ~!@#$%^&*()", RequestChecks.idempotencyKey("retry 1 ~!@#$%^&*()"));
 	}
 
-	/**
-	 * An invalid key throws InvalidIdempotencyKeyException.
-	 *
-	 * @return a test for each key
-	 */
 	@TestFactory
 	public List<DynamicTest> idempotencyKeyRejectsInvalidKeys()
 	{
@@ -156,24 +122,16 @@ public class RequestChecksTest {
 		return tests;
 	}
 
-	/**
-	 * A class with an editor content field, like the SDK models.
-	 */
 	public static class Holder {
 
-		/** The editor content. */
 		@SerializedName("editor_content")
 		@JsonAdapter(EditorContentAdapter.class)
 		public Map<String, Object> editorContent;
 
-		/** A field that stays absent when it is null. */
 		@SerializedName("other")
 		public String other;
 	}
 
-	/**
-	 * The adapter reads whole numbers as Long, so the SDK sends them back without ".0".
-	 */
 	@Test
 	public void editorContentKeepsWholeNumbers()
 	{
@@ -190,9 +148,6 @@ public class RequestChecksTest {
 		assertEquals(json, new Gson().toJson(holder));
 	}
 
-	/**
-	 * The adapter keeps null values in the map, and the other null fields stay absent.
-	 */
 	@Test
 	public void editorContentKeepsNullValues()
 	{

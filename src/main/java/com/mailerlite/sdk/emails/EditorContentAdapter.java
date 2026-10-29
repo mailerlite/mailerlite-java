@@ -31,13 +31,11 @@ import com.google.gson.stream.JsonWriter;
  */
 public class EditorContentAdapter extends TypeAdapter<Map<String, Object>> {
 
-	/** The Gson object that reads and writes the map. */
 	private static final Gson GSON = new GsonBuilder()
 			.setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
 			.serializeNulls()
 			.create();
 
-	/** The adapter for the map. */
 	private static final TypeAdapter<Map<String, Object>> DELEGATE =
 			GSON.getAdapter(new TypeToken<Map<String, Object>>() { });
 

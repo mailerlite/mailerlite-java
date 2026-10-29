@@ -18,9 +18,6 @@ public final class EmailErrorCodes {
 	 */
 	public static final String VERSION_CONFLICT = "version_conflict";
 
-	/**
-	 * Do not make instances of this class.
-	 */
 	private EmailErrorCodes()
 	{
 	}

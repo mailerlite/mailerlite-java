@@ -16,7 +16,6 @@ import com.mailerlite.sdk.exceptions.MailerLiteException;
  */
 public class BrandStyles {
 
-	/** The api object reference. */
 	private MailerLite apiObjectReference;
 
 	/**

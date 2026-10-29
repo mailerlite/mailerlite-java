@@ -14,7 +14,6 @@ import com.mailerlite.sdk.MailerLite;
  */
 public class MediaFiles {
 
-	/** The api object reference. */
 	private MailerLite apiObjectReference;
 
 	/**

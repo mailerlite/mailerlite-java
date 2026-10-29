@@ -13,7 +13,6 @@ package com.mailerlite.sdk.exceptions;
  */
 public class EmptyEtagException extends IllegalArgumentException {
 
-	/** The serial version UID. */
 	private static final long serialVersionUID = 1L;
 
 	/**

@@ -30,9 +30,6 @@ public final class MediaFileSorts {
 	/** The largest files first. */
 	public static final String SIZE_DESC = "-size";
 
-	/**
-	 * Do not make instances of this class.
-	 */
 	private MediaFileSorts()
 	{
 	}

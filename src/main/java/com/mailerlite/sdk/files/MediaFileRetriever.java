@@ -20,7 +20,6 @@ import com.mailerlite.sdk.util.CursorPaginatedRequest;
  */
 public class MediaFileRetriever extends CursorPaginatedRequest<MediaFileRetriever> {
 
-	/** The api object reference. */
 	private MailerLite apiObjectReference;
 
 	/**

@@ -43,18 +43,11 @@ import com.mailerlite.sdk.support.RecordingHttpClient;
 import com.mailerlite.sdk.support.RecordingHttpClient.RecordedRequest;
 import com.mailerlite.sdk.support.UrlAssert;
 
-/**
- * Compiles the examples of the new README sections and runs each one against the recording HTTP client.
- * <p>
- * Each example must send the expected requests and use all the queued responses. A MailerLiteException
- * in an example fails the test, because the test changes "e.printStackTrace();" to a throw.
- */
 public class ReadmeExamplesTest {
 
-	/** The base URL of the API. */
 	private static final String BASE = "https://connect.mailerlite.com/api";
 
-	/** The imports that the README examples get. The README shows them as "// import ....". */
+	/** The README shows these imports only as "// import ....", so the test adds them. */
 	private static final List<String> IMPORTS = Arrays.asList(
 			"com.mailerlite.sdk.*",
 			"com.mailerlite.sdk.brandstyles.*",
@@ -65,74 +58,36 @@ public class ReadmeExamplesTest {
 			"java.io.*",
 			"java.util.*");
 
-	/**
-	 * A README example: the heading of its section, the responses to queue and the expected requests.
-	 */
 	private static class Example {
 
-		/** The heading of the README section, without "### ". */
 		final String heading;
 
-		/** The responses to queue. */
 		final List<Object[]> responses = new ArrayList<Object[]>();
 
-		/** The expected requests, as "METHOD /path?query". */
 		final List<String> requests = new ArrayList<String>();
 
-		/**
-		 * Instantiates a new example.
-		 *
-		 * @param heading the heading
-		 */
 		Example(String heading)
 		{
 			this.heading = heading;
 		}
 
-		/**
-		 * Queues a response.
-		 *
-		 * @param status the status
-		 * @param body the body
-		 * @return this example
-		 */
 		Example respond(int status, String body)
 		{
 			return respond(status, body, Collections.<String, String>emptyMap());
 		}
 
-		/**
-		 * Queues a response with headers.
-		 *
-		 * @param status the status
-		 * @param body the body
-		 * @param headers the headers
-		 * @return this example
-		 */
 		Example respond(int status, String body, Map<String, String> headers)
 		{
 			responses.add(new Object[] {status, body, headers});
 			return this;
 		}
 
-		/**
-		 * Queues a network error.
-		 *
-		 * @param error the error
-		 * @return this example
-		 */
 		Example fail(Exception error)
 		{
 			responses.add(new Object[] {error});
 			return this;
 		}
 
-		/**
-		 * Adds an expected request.
-		 *
-		 * @param request the request, as "METHOD /path?query"
-		 * @return this example
-		 */
 		Example expect(String request)
 		{
 			requests.add(request);
@@ -140,11 +95,6 @@ public class ReadmeExamplesTest {
 		}
 	}
 
-	/**
-	 * The examples to run, one for each new README section.
-	 *
-	 * @return the examples
-	 */
 	private static List<Example> examples()
 	{
 		List<Example> list = new ArrayList<Example>();
@@ -230,12 +180,6 @@ public class ReadmeExamplesTest {
 		return list;
 	}
 
-	/**
-	 * Compiles and runs the README examples.
-	 *
-	 * @return a test for each example
-	 * @throws Exception if the README cannot be read or the examples do not compile
-	 */
 	@TestFactory
 	public List<DynamicTest> readmeExamplesRun() throws Exception
 	{
@@ -270,14 +214,6 @@ public class ReadmeExamplesTest {
 		return tests;
 	}
 
-	/**
-	 * Runs one compiled example and checks its requests.
-	 *
-	 * @param loader the class loader of the compiled examples
-	 * @param className the class name
-	 * @param example the example
-	 * @throws Throwable if the example fails
-	 */
 	private void run(ClassLoader loader, String className, Example example) throws Throwable
 	{
 		RecordingHttpClient client = RecordingHttpClient.install();
@@ -322,13 +258,6 @@ public class ReadmeExamplesTest {
 		}
 	}
 
-	/**
-	 * Finds the first Java code block of a README section.
-	 *
-	 * @param readme the README
-	 * @param heading the heading of the section, without "### "
-	 * @return the code
-	 */
 	private static String extractCode(String readme, String heading)
 	{
 		List<String> lines = Arrays.asList(readme.split("\n", -1));
@@ -361,13 +290,6 @@ public class ReadmeExamplesTest {
 		throw new AssertionError("The README section \"### " + heading + "\" has no Java code block");
 	}
 
-	/**
-	 * Makes a compilable class from a README example.
-	 *
-	 * @param code the example code
-	 * @param className the class name
-	 * @return the source
-	 */
 	private static String toSource(String code, String className)
 	{
 		if (!code.contains("class Example {") || !code.contains("public void example()")) {
@@ -388,13 +310,6 @@ public class ReadmeExamplesTest {
 		return source.toString();
 	}
 
-	/**
-	 * Compiles the examples for Java 11.
-	 *
-	 * @param dir the output folder
-	 * @param sources the source files
-	 * @throws Exception if the compiler fails
-	 */
 	private static void compile(Path dir, List<File> sources) throws Exception
 	{
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -420,13 +335,6 @@ public class ReadmeExamplesTest {
 		}
 	}
 
-	/**
-	 * Gets the class path entry of a class.
-	 *
-	 * @param type the class
-	 * @return the path of its folder or JAR file
-	 * @throws Exception if the location is not a file
-	 */
 	private static String location(Class<?> type) throws Exception
 	{
 		return Paths.get(type.getProtectionDomain().getCodeSource().getLocation().toURI()).toString();

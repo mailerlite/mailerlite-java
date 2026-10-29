@@ -12,24 +12,12 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Reads the JSON response fixtures in src/test/resources/responses.
- */
 public final class Fixtures {
 
-	/**
-	 * Do not make instances of this class.
-	 */
 	private Fixtures()
 	{
 	}
 
-	/**
-	 * Reads a fixture.
-	 *
-	 * @param name the file name, for example "email.json"
-	 * @return the file contents
-	 */
 	public static String read(String name)
 	{
 		try (InputStream stream = Fixtures.class.getResourceAsStream("/responses/" + name)) {

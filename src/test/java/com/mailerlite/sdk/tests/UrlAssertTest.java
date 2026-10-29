@@ -15,14 +15,8 @@ import org.junit.jupiter.api.Test;
 
 import com.mailerlite.sdk.support.UrlAssert;
 
-/**
- * Tests the URL comparison that ignores the sequence of the query parameters.
- */
 public class UrlAssertTest {
 
-	/**
-	 * The sequence of the query parameters does not matter.
-	 */
 	@Test
 	public void ignoresTheSequenceOfTheParameters()
 	{
@@ -31,18 +25,12 @@ public class UrlAssertTest {
 		UrlAssert.assertUrlEquals("/files?filter[name]=a+b&page=2", "/files?page=2&filter[name]=a+b");
 	}
 
-	/**
-	 * A parameter that is sent two times is not the same as a parameter that is sent one time.
-	 */
 	@Test
 	public void keepsDuplicateParameters()
 	{
 		assertFalse(UrlAssert.sameUrl("/files?a=1", "/files?a=1&a=1"));
 	}
 
-	/**
-	 * The values and the encoding must be the same.
-	 */
 	@Test
 	public void comparesTheRawValues()
 	{
@@ -50,9 +38,6 @@ public class UrlAssertTest {
 		assertFalse(UrlAssert.sameUrl("/files?a=a+b", "/files?a=a%20b"));
 	}
 
-	/**
-	 * The paths must be the same, and a URL without a query is not the same as a URL with a query.
-	 */
 	@Test
 	public void comparesThePathExactly()
 	{

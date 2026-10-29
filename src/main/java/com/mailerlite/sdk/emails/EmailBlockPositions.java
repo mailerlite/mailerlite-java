@@ -24,9 +24,6 @@ public final class EmailBlockPositions {
 	/** After the block with the block ID. */
 	public static final String AFTER = "after";
 
-	/**
-	 * Do not make instances of this class.
-	 */
 	private EmailBlockPositions()
 	{
 	}

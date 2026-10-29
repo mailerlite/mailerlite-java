@@ -41,16 +41,11 @@ import com.mailerlite.sdk.util.RequestChecks;
  */
 public class Emails {
 
-	/** The Gson object for the request bodies. It does not send null fields. */
 	private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
-	/**
-	 * The Gson object that writes a JSON tree that GSON made. The tree has no null fields, except the null values
-	 * in the editor content maps, so this object writes them.
-	 */
+	/** Writes the trees that GSON makes, with the null values of the editor content maps. */
 	private static final Gson TREE_GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
 
-	/** The api object reference. */
 	private MailerLite apiObjectReference;
 
 	/**
@@ -297,8 +292,6 @@ public class Emails {
 	 * value of your account. For the other values, the API rejects an empty string with a 422 error. The API stores
 	 * each value that you send, also a value that the email inherits from your account. So do not send back all the
 	 * settings that you read.
-	 * <p>
-	 * The SDK sends the etag at the top level of the body, next to the settings groups.
 	 *
 	 * @param emailId the email ID
 	 * @param etag the etag from the last response for the email
@@ -321,8 +314,6 @@ public class Emails {
 	 * value of your account. For the other values, the API rejects an empty string with a 422 error. The API stores
 	 * each value that you send, also a value that the email inherits from your account. So do not send back all the
 	 * settings that you read.
-	 * <p>
-	 * The SDK sends the etag at the top level of the body, next to the settings groups.
 	 *
 	 * @param emailId the email ID
 	 * @param etag the etag from the last response for the email
@@ -415,7 +406,7 @@ public class Emails {
 	}
 
 	/**
-	 * Saves the email as a new version. The request has no body.
+	 * Saves the email as a new version.
 	 * <p>
 	 * If nothing changed after the last version, the API saves no new version and returns the last version.
 	 * {@link SingleEmailVersion#isCreated()} tells the two cases apart.
@@ -430,7 +421,7 @@ public class Emails {
 	}
 
 	/**
-	 * Saves the email as a new version. The request has no body.
+	 * Saves the email as a new version.
 	 * <p>
 	 * If nothing changed after the last version, the API saves no new version and returns the last version.
 	 * {@link SingleEmailVersion#isCreated()} tells the two cases apart.
@@ -482,36 +473,16 @@ public class Emails {
 		return send("POST", endpoint, etagBody(etag), options, SingleEmailDocument.class);
 	}
 
-	/**
-	 * Checks the email ID and makes the path of the email.
-	 *
-	 * @param emailId the email ID
-	 * @return the path
-	 */
 	private static String emailPath(String emailId)
 	{
 		return "/emails/".concat(RequestChecks.pathId(emailId, "emailId"));
 	}
 
-	/**
-	 * Checks the email ID and the block ID, and makes the path of the block.
-	 *
-	 * @param emailId the email ID
-	 * @param blockId the block ID
-	 * @return the path
-	 */
 	private static String blockPath(String emailId, String blockId)
 	{
 		return emailPath(emailId).concat("/blocks/").concat(RequestChecks.pathId(blockId, "blockId"));
 	}
 
-	/**
-	 * Checks a block input and makes the request body.
-	 *
-	 * @param block the block input
-	 * @param etag the etag, or null for no etag
-	 * @return the request body
-	 */
 	private static BlockBody blockBody(EmailBlockInput block, String etag)
 	{
 		Objects.requireNonNull(block, "block");
@@ -530,13 +501,7 @@ public class Emails {
 	}
 
 	/**
-	 * Checks a placement and makes a copy to send.
-	 * <p>
-	 * The API uses the block ID only for "before" and "after". So for these positions the block ID must be valid.
-	 * For "start" and "end", the copy has no block ID. For another position, the block ID is checked if it is set.
-	 *
-	 * @param placement the placement of the caller
-	 * @return the copy to send
+	 * The API uses the block ID only for "before" and "after". So the copy has no block ID for "start" and "end".
 	 */
 	private static PlacementBody placementBody(EmailBlockPosition placement)
 	{
@@ -558,12 +523,6 @@ public class Emails {
 		return new PlacementBody(position, placement.blockId);
 	}
 
-	/**
-	 * Checks the etag and makes a request body that has only the etag.
-	 *
-	 * @param etag the etag
-	 * @return the JSON body
-	 */
 	private static String etagBody(String etag)
 	{
 		EtagBody body = new EtagBody();
@@ -572,57 +531,22 @@ public class Emails {
 		return toJson(body);
 	}
 
-	/**
-	 * Converts the settings to a JSON tree without the null fields.
-	 *
-	 * @param settings the settings
-	 * @return the JSON tree
-	 */
 	private static JsonObject settingsBody(EmailSettings settings)
 	{
 		return GSON.toJsonTree(Objects.requireNonNull(settings, "settings")).getAsJsonObject();
 	}
 
-	/**
-	 * Converts a request body to JSON.
-	 *
-	 * @param body the body
-	 * @return the JSON
-	 */
 	private static String toJson(Object body)
 	{
 		return GSON.toJson(body);
 	}
 
-	/**
-	 * Sends a request without options.
-	 *
-	 * @param <T> the response type
-	 * @param method the HTTP method
-	 * @param endpoint the endpoint
-	 * @param body the JSON body, or null
-	 * @param responseClass the response class
-	 * @return the response
-	 * @throws MailerLiteException if the API returns an error or the request fails
-	 */
 	private <T extends MailerLiteResponse> T send(String method, String endpoint, String body, Class<T> responseClass)
 			throws MailerLiteException
 	{
 		return send(method, endpoint, body, null, responseClass);
 	}
 
-	/**
-	 * Sends a request. If the options have an idempotency key, the request has the Idempotency-Key header.
-	 *
-	 * @param <T> the response type
-	 * @param method the HTTP method
-	 * @param endpoint the endpoint
-	 * @param body the JSON body, or null
-	 * @param options the request options, or null
-	 * @param responseClass the response class
-	 * @return the response
-	 * @throws MailerLiteException if the API returns an error or the request fails
-	 */
 	private <T extends MailerLiteResponse> T send(String method, String endpoint, String body, RequestOptions options,
 			Class<T> responseClass) throws MailerLiteException
 	{
@@ -638,97 +562,61 @@ public class Emails {
 		return api.sendRequest(method, endpoint, body, headers, responseClass);
 	}
 
-	/**
-	 * The request body of a block insert or a block validation.
-	 */
 	private static class BlockBody {
 
-		/** The block type. */
 		@SerializedName("type")
 		String type;
 
-		/** The editor document. */
 		@SerializedName("editor_content")
 		@JsonAdapter(EditorContentAdapter.class)
 		Map<String, Object> editorContent;
 
-		/** The placement, or null. */
 		@SerializedName("placement")
 		PlacementBody placement;
 
-		/** The etag, or null. */
 		@SerializedName("etag")
 		String etag;
 	}
 
-	/**
-	 * The request body of a block update.
-	 */
 	private static class UpdateBlockBody {
 
-		/** The editor document. */
 		@SerializedName("editor_content")
 		@JsonAdapter(EditorContentAdapter.class)
 		Map<String, Object> editorContent;
 
-		/** The etag. */
 		@SerializedName("etag")
 		String etag;
 	}
 
-	/**
-	 * A request body that has only the etag.
-	 */
 	private static class EtagBody {
 
-		/** The etag. */
 		@SerializedName("etag")
 		String etag;
 	}
 
-	/**
-	 * The request body of a block move.
-	 */
 	private static class MoveBlockBody {
 
-		/** The placement. */
 		@SerializedName("placement")
 		PlacementBody placement;
 
-		/** The etag. */
 		@SerializedName("etag")
 		String etag;
 	}
 
-	/**
-	 * The request body of a template create.
-	 */
 	private static class TemplateBody {
 
-		/** The name. */
 		@SerializedName("name")
 		String name;
 	}
 
-	/**
-	 * The placement in a request body.
-	 */
 	private static class PlacementBody {
 
-		/** The position. */
 		@SerializedName("position")
 		final String position;
 
-		/** The block ID, or null. */
 		@SerializedName("block_id")
 		final String blockId;
 
-		/**
-		 * Instantiates a new placement body.
-		 *
-		 * @param position the position
-		 * @param blockId the block ID, or null
-		 */
 		PlacementBody(String position, String blockId)
 		{
 			this.position = position;

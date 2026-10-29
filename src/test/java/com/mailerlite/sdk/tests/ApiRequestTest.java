@@ -13,14 +13,8 @@ import org.junit.jupiter.api.Test;
 
 import com.mailerlite.sdk.util.ApiRequest;
 
-/**
- * Tests the query string of ApiRequest.
- */
 public class ApiRequestTest {
 
-	/**
-	 * The SDK does not store a null value.
-	 */
 	@Test
 	public void skipsNullValues()
 	{
@@ -31,9 +25,6 @@ public class ApiRequestTest {
 		assertEquals("?page=2", request.getQueryParameters());
 	}
 
-	/**
-	 * A null value removes a value that the caller set before.
-	 */
 	@Test
 	public void nullValueRemovesTheEarlierValue()
 	{
@@ -44,9 +35,6 @@ public class ApiRequestTest {
 		assertEquals("?", request.getQueryParameters());
 	}
 
-	/**
-	 * The SDK encodes a space as a plus sign and keeps the brackets of the key.
-	 */
 	@Test
 	public void encodesSpacesInValues()
 	{
@@ -56,9 +44,6 @@ public class ApiRequestTest {
 		assertEquals("?filter[name]=summer+sale+banner", request.getQueryParameters());
 	}
 
-	/**
-	 * The SDK encodes the characters that have a meaning in a query string, and characters that are not ASCII.
-	 */
 	@Test
 	public void encodesReservedAndNonAsciiCharacters()
 	{
@@ -68,9 +53,6 @@ public class ApiRequestTest {
 		assertEquals("?filter[name]=a%26b%3Dc%23d%2F%C3%A9", request.getQueryParameters());
 	}
 
-	/**
-	 * The SDK sends an empty value as "key=".
-	 */
 	@Test
 	public void sendsEmptyValue()
 	{
@@ -92,9 +74,6 @@ public class ApiRequestTest {
 		assertEquals("?filter[status]=active", request.getQueryParameters());
 	}
 
-	/**
-	 * The SDK encodes each value, so a value that the caller encoded is encoded two times. Do not encode values.
-	 */
 	@Test
 	public void encodesAnEncodedValueAgain()
 	{
@@ -104,9 +83,6 @@ public class ApiRequestTest {
 		assertEquals("?filter[name]=summer%2520sale", request.getQueryParameters());
 	}
 
-	/**
-	 * A plus sign is sent as "%2B", so the API reads a literal plus sign, not a space.
-	 */
 	@Test
 	public void sendsPlusAsLiteralPlus()
 	{

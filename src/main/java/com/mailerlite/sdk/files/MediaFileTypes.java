@@ -22,9 +22,6 @@ public final class MediaFileTypes {
 	/** An EPUB book. */
 	public static final String EPUB = "epub";
 
-	/**
-	 * Do not make instances of this class.
-	 */
 	private MediaFileTypes()
 	{
 	}

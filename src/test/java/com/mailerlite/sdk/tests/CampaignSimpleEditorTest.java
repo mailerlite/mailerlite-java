@@ -21,20 +21,12 @@ import com.mailerlite.sdk.emails.EmailEditors;
 import com.mailerlite.sdk.support.Fixtures;
 import com.mailerlite.sdk.support.RecordingHttpClient;
 
-/**
- * Tests the campaign create with the simple editor, with the recording HTTP client.
- */
 public class CampaignSimpleEditorTest {
 
-	/** The fake HTTP client. */
 	private RecordingHttpClient client;
 
-	/** The MailerLite object. */
 	private MailerLite ml;
 
-	/**
-	 * Sets the fake HTTP client.
-	 */
 	@BeforeEach
 	public void setupEach()
 	{
@@ -45,20 +37,12 @@ public class CampaignSimpleEditorTest {
 		ml.setToken("test-token");
 	}
 
-	/**
-	 * Removes the fake HTTP client.
-	 */
 	@AfterEach
 	public void afterEach()
 	{
 		RecordingHttpClient.uninstall();
 	}
 
-	/**
-	 * Makes an email with a sender and a subject.
-	 *
-	 * @return the email
-	 */
 	private EmailBase email()
 	{
 		EmailBase email = new EmailBase();
@@ -69,11 +53,6 @@ public class CampaignSimpleEditorTest {
 		return email;
 	}
 
-	/**
-	 * A create without the new fields sends the same body as before.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void createWithoutEditorSendsTheSameBodyAsBefore() throws Exception
 	{
@@ -89,12 +68,6 @@ public class CampaignSimpleEditorTest {
 				+ "\"groups\":[],\"segments\":[],\"ab_settings\":{},\"resend_settings\":{}}", client.lastRequest().bodyString());
 	}
 
-	/**
-	 * A create with the simple editor sends editor, template_id and reply_to, and no content.
-	 * The response has the email of the simple editor.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void createWithSimpleEditor() throws Exception
 	{

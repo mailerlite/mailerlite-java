@@ -345,14 +345,7 @@ public class MailerLiteApi {
     }
     
     
-    /**
-     * Converts a network error to a MailerLiteException. The message is the class name and the message of the
-     * error, so it is not null when the error has no message.
-     * For an InterruptedException, it also sets the interrupt flag of the thread again.
-     *
-     * @param e the network error
-     * @return the exception to throw
-     */
+    /** Uses e.toString() as the message, because e.getMessage() can be null. */
     private MailerLiteException networkError(Exception e)
     {
     	if (e instanceof InterruptedException) {

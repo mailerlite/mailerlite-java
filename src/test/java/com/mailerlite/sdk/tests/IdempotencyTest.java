@@ -38,20 +38,12 @@ import com.mailerlite.sdk.exceptions.InvalidIdempotencyKeyException;
 import com.mailerlite.sdk.support.Fixtures;
 import com.mailerlite.sdk.support.RecordingHttpClient;
 
-/**
- * Tests the idempotency key option and the replay flag, with the recording HTTP client.
- */
 public class IdempotencyTest {
 
-	/** The fake HTTP client. */
 	private RecordingHttpClient client;
 
-	/** The email service. */
 	private Emails emails;
 
-	/**
-	 * Sets the fake HTTP client.
-	 */
 	@BeforeEach
 	public void setupEach()
 	{
@@ -62,20 +54,12 @@ public class IdempotencyTest {
 		emails = ml.emails();
 	}
 
-	/**
-	 * Removes the fake HTTP client.
-	 */
 	@AfterEach
 	public void afterEach()
 	{
 		RecordingHttpClient.uninstall();
 	}
 
-	/**
-	 * The 8 methods that accept an idempotency key, each with a name and a response.
-	 *
-	 * @return the name, the response fixture and the call for the options
-	 */
 	private Map<String, Object[]> writeMethods()
 	{
 		EmailBlockInput divider = new EmailBlockInput(EmailBlockTypes.DIVIDER, new LinkedHashMap<String, Object>());
@@ -103,12 +87,6 @@ public class IdempotencyTest {
 		return methods;
 	}
 
-	/**
-	 * Each of the 8 methods sends the Idempotency-Key header when the options have a key, and no header when the
-	 * options are null or have a null key.
-	 *
-	 * @throws Throwable if a call fails
-	 */
 	@Test
 	@SuppressWarnings("unchecked")
 	public void writeMethodsSendTheKeyOnlyWhenSet() throws Throwable
@@ -134,11 +112,6 @@ public class IdempotencyTest {
 		}
 	}
 
-	/**
-	 * The validate methods have no options and never send the header.
-	 *
-	 * @throws Exception if a call fails
-	 */
 	@Test
 	public void validateMethodsSendNoKey() throws Exception
 	{
@@ -152,9 +125,6 @@ public class IdempotencyTest {
 		assertNull(client.requests().get(1).header("Idempotency-Key"));
 	}
 
-	/**
-	 * RequestOptions.idempotencyKey checks the key at once.
-	 */
 	@Test
 	public void invalidKeysThrowAtOnce()
 	{
@@ -169,11 +139,6 @@ public class IdempotencyTest {
 		assertTrue(client.requests().isEmpty());
 	}
 
-	/**
-	 * A response with the header Idempotent-Replayed: true is a replay. The SDK ignores case and spaces.
-	 *
-	 * @throws Exception if a call fails
-	 */
 	@Test
 	public void replayFlag() throws Exception
 	{
@@ -199,9 +164,6 @@ public class IdempotencyTest {
 				new EmailBlockInput(EmailBlockTypes.DIVIDER, new LinkedHashMap<String, Object>())).isIdempotentReplay());
 	}
 
-	/**
-	 * The replay flag also works with a header map that is case-sensitive, and with no header map.
-	 */
 	@Test
 	public void replayFlagWithPlainHeaderMap()
 	{

@@ -17,18 +17,10 @@ import com.mailerlite.sdk.util.CursorPaginatedRequest;
  */
 public class EmailVersionsRetriever extends CursorPaginatedRequest<EmailVersionsRetriever> {
 
-	/** The api object reference. */
 	private MailerLite apiObjectReference;
 
-	/** The path of the versions, with the checked email ID. */
 	private String endpoint;
 
-	/**
-	 * Instantiates a new retriever. Use {@link Emails#versions(String)}.
-	 *
-	 * @param apiReference the api reference
-	 * @param endpoint the path of the versions
-	 */
 	EmailVersionsRetriever(MailerLite apiReference, String endpoint)
 	{
 		this.apiObjectReference = apiReference;

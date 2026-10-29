@@ -22,20 +22,12 @@ import com.mailerlite.sdk.files.MediaFilesList;
 import com.mailerlite.sdk.support.Fixtures;
 import com.mailerlite.sdk.support.RecordingHttpClient;
 
-/**
- * Tests the files endpoint with the recording HTTP client.
- */
 public class MediaFilesTest {
 
-	/** The fake HTTP client. */
 	private RecordingHttpClient client;
 
-	/** The MailerLite object. */
 	private MailerLite ml;
 
-	/**
-	 * Sets the fake HTTP client.
-	 */
 	@BeforeEach
 	public void setupEach()
 	{
@@ -46,20 +38,12 @@ public class MediaFilesTest {
 		ml.setToken("test-token");
 	}
 
-	/**
-	 * Removes the fake HTTP client.
-	 */
 	@AfterEach
 	public void afterEach()
 	{
 		RecordingHttpClient.uninstall();
 	}
 
-	/**
-	 * get() without options sends GET /files without a query string, and decodes the files.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void listWithoutOptions() throws Exception
 	{
@@ -87,11 +71,6 @@ public class MediaFilesTest {
 		assertEquals(2, response.meta.total);
 	}
 
-	/**
-	 * A name filter with spaces keeps the key filter[name] and sends the spaces as "+".
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void nameFilterWithSpaces() throws Exception
 	{
@@ -100,11 +79,6 @@ public class MediaFilesTest {
 		EmailsTest.assertRequest(client, "GET", "/files?filter[name]=summer+sale+banner", null, null);
 	}
 
-	/**
-	 * An empty filter value is sent as "key=", and a null value is not sent.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void emptyAndNullFilterValues() throws Exception
 	{
@@ -113,11 +87,6 @@ public class MediaFilesTest {
 		EmailsTest.assertRequest(client, "GET", "/files?filter[name]=", null, null);
 	}
 
-	/**
-	 * The type filter, the sort, the page and the limit are sent. The filter accepts types that the SDK does not know.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void allOptions() throws Exception
 	{

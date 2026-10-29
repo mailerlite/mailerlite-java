@@ -15,9 +15,6 @@ public final class EmailEditors {
 	/** The simple editor. Change the email with the methods of {@link Emails}. */
 	public static final String SIMPLE = "simple";
 
-	/**
-	 * Do not make instances of this class.
-	 */
 	private EmailEditors()
 	{
 	}

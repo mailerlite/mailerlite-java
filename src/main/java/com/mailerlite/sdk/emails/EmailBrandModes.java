@@ -21,9 +21,6 @@ public final class EmailBrandModes {
 	/** Use the colors of the email. */
 	public static final String CUSTOM = "custom";
 
-	/**
-	 * Do not make instances of this class.
-	 */
 	private EmailBrandModes()
 	{
 	}

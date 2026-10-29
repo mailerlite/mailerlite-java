@@ -64,23 +64,14 @@ import com.mailerlite.sdk.support.RecordingHttpClient;
 import com.mailerlite.sdk.support.RecordingHttpClient.RecordedRequest;
 import com.mailerlite.sdk.support.UrlAssert;
 
-/**
- * Tests the email endpoints with the recording HTTP client.
- */
 public class EmailsTest {
 
-	/** The base URL of the API. */
 	static final String BASE = "https://connect.mailerlite.com/api";
 
-	/** The fake HTTP client. */
 	private RecordingHttpClient client;
 
-	/** The email service. */
 	private Emails emails;
 
-	/**
-	 * Sets the fake HTTP client.
-	 */
 	@BeforeEach
 	public void setupEach()
 	{
@@ -91,26 +82,12 @@ public class EmailsTest {
 		emails = ml.emails();
 	}
 
-	/**
-	 * Removes the fake HTTP client.
-	 */
 	@AfterEach
 	public void afterEach()
 	{
 		RecordingHttpClient.uninstall();
 	}
 
-	/**
-	 * Asserts the one request that the client got: the method, the full URL, all the headers and the raw body.
-	 * The sequence of the query parameters is ignored.
-	 *
-	 * @param client the fake HTTP client
-	 * @param method the HTTP method
-	 * @param path the path and the query string, after the base URL
-	 * @param body the exact raw body, or null for a request without a body publisher
-	 * @param idempotencyKey the expected Idempotency-Key header, or null for no header
-	 * @return the request
-	 */
 	static RecordedRequest assertRequest(RecordingHttpClient client, String method, String path, String body,
 			String idempotencyKey)
 	{
@@ -145,12 +122,6 @@ public class EmailsTest {
 		return request;
 	}
 
-	/**
-	 * Asserts that each empty and each invalid ID throws the correct exception, and that no request is sent.
-	 *
-	 * @param client the fake HTTP client
-	 * @param call makes the call for an ID
-	 */
 	static void assertRejectsIds(RecordingHttpClient client, Function<String, Executable> call)
 	{
 		for (String id : Arrays.asList("", null)) {
@@ -164,24 +135,12 @@ public class EmailsTest {
 		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
 	}
 
-	/**
-	 * Gets a map value as a map.
-	 *
-	 * @param map the map
-	 * @param key the key
-	 * @return the value
-	 */
 	@SuppressWarnings("unchecked")
 	static Map<String, Object> map(Map<String, Object> map, String key)
 	{
 		return (Map<String, Object>) map.get(key);
 	}
 
-	/**
-	 * get sends GET /emails/{email} and decodes the email, the settings and the blocks.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void getDecodesTheEmail() throws Exception
 	{
@@ -265,20 +224,12 @@ public class EmailsTest {
 		assertEquals("paragraph", list.children[0].type);
 	}
 
-	/**
-	 * get checks the email ID and sends no request for an invalid ID.
-	 */
 	@Test
 	public void getRejectsInvalidIds()
 	{
 		assertRejectsIds(client, id -> () -> emails.get(id));
 	}
 
-	/**
-	 * getHtml sends GET /emails/{email}/html and decodes the HTML.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void getHtmlDecodesTheHtml() throws Exception
 	{
@@ -291,9 +242,6 @@ public class EmailsTest {
 		assertEquals("42", response.etag);
 	}
 
-	/**
-	 * getHtml throws a MailerLiteException with the status for a temporary 503 with a body that is not JSON.
-	 */
 	@Test
 	public void getHtmlServiceUnavailable()
 	{
@@ -305,9 +253,6 @@ public class EmailsTest {
 		assertEquals("<html><body>Service Unavailable</body></html>", e.responseBody);
 	}
 
-	/**
-	 * getHtml checks the email ID and sends no request for an invalid ID.
-	 */
 	@Test
 	public void getHtmlRejectsInvalidIds()
 	{
@@ -315,11 +260,6 @@ public class EmailsTest {
 	}
 
 
-	/**
-	 * getBlock sends GET /emails/{email}/blocks/{block} and decodes the block and its placement.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void getBlockDecodesTheBlock() throws Exception
 	{
@@ -337,9 +277,6 @@ public class EmailsTest {
 		assertNull(response.block.children);
 	}
 
-	/**
-	 * getBlock checks both IDs and sends no request for an invalid ID.
-	 */
 	@Test
 	public void getBlockRejectsInvalidIds()
 	{
@@ -348,13 +285,6 @@ public class EmailsTest {
 	}
 
 
-	/**
-	 * Makes the editor content of a paragraph: {"attrs":{"textAlign":align},"content":[{"type":"text","text":text}]}.
-	 *
-	 * @param align the text alignment
-	 * @param text the text
-	 * @return the editor content
-	 */
 	static Map<String, Object> paragraph(String align, String text)
 	{
 		Map<String, Object> attrs = new LinkedHashMap<String, Object>();
@@ -371,12 +301,6 @@ public class EmailsTest {
 		return content;
 	}
 
-	/**
-	 * Asserts that each write rejects an empty or null etag, and sends no request.
-	 *
-	 * @param client the fake HTTP client
-	 * @param call makes the call for an etag
-	 */
 	static void assertRejectsEtags(RecordingHttpClient client, Function<String, Executable> call)
 	{
 		assertThrows(EmptyEtagException.class, call.apply(""));
@@ -384,19 +308,6 @@ public class EmailsTest {
 		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
 	}
 
-	/**
-	 * Asserts the placement rules of a method that sends a placement.
-	 * <p>
-	 * The SDK checks blockId only for "before" and "after". For "start" and "end", it does not check blockId and
-	 * does not send it. For another position, it checks blockId if it is set, and sends it.
-	 * The SDK does not change the object of the caller.
-	 *
-	 * @param client the fake HTTP client
-	 * @param response the response body to queue for each request
-	 * @param call makes the call for a placement
-	 * @param expectedBody makes the expected raw body from the JSON of the placement
-	 * @throws Throwable if a call fails
-	 */
 	static void assertPlacementRules(RecordingHttpClient client, String response, Function<EmailBlockPosition, Executable> call,
 			Function<String, String> expectedBody) throws Throwable
 	{
@@ -444,11 +355,6 @@ public class EmailsTest {
 		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
 	}
 
-	/**
-	 * createBlock sends POST /emails/{email}/blocks with the block, the placement and the etag.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void createBlockSendsTheBlock() throws Exception
 	{
@@ -471,12 +377,6 @@ public class EmailsTest {
 		assertNull(response.block.placement.before);
 	}
 
-	/**
-	 * createBlock sends an empty editor content and no placement when the caller sets none.
-	 * A null value inside the editor content is sent as null.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void createBlockWithoutPlacement() throws Exception
 	{
@@ -497,11 +397,6 @@ public class EmailsTest {
 				client.lastRequest().bodyString());
 	}
 
-	/**
-	 * createBlock checks the placement: blockId only for "before" and "after".
-	 *
-	 * @throws Throwable if a call fails
-	 */
 	@Test
 	public void createBlockPlacementRules() throws Throwable
 	{
@@ -512,9 +407,6 @@ public class EmailsTest {
 		}, json -> "{\"type\":\"divider\",\"editor_content\":{},\"placement\":" + json + ",\"etag\":\"42\"}");
 	}
 
-	/**
-	 * createBlock checks the IDs, the etag and the required values, and sends no request when a check fails.
-	 */
 	@Test
 	public void createBlockRejectsInvalidInput()
 	{
@@ -539,11 +431,6 @@ public class EmailsTest {
 	}
 
 
-	/**
-	 * updateBlock sends PATCH /emails/{email}/blocks/{block} with the editor content and the etag.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void updateBlockSendsTheEditorContent() throws Exception
 	{
@@ -560,11 +447,6 @@ public class EmailsTest {
 		assertEquals("58", response.block.placement.before);
 	}
 
-	/**
-	 * A block that the SDK read is sent back with the same numbers and the same null values.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void updateBlockSendsBackTheEditorContentExactly() throws Exception
 	{
@@ -580,9 +462,6 @@ public class EmailsTest {
 		assertEquals("{\"editor_content\":" + editorContent + ",\"etag\":\"43\"}", client.lastRequest().bodyString());
 	}
 
-	/**
-	 * updateBlock checks the IDs, the etag and the editor content, and sends no request when a check fails.
-	 */
 	@Test
 	public void updateBlockRejectsInvalidInput()
 	{
@@ -598,11 +477,6 @@ public class EmailsTest {
 	}
 
 
-	/**
-	 * deleteBlock sends DELETE /emails/{email}/blocks/{block} with the etag in the body, and returns the new etag.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void deleteBlockSendsTheEtagInTheBody() throws Exception
 	{
@@ -615,9 +489,6 @@ public class EmailsTest {
 		assertEquals("45", response.etag);
 	}
 
-	/**
-	 * deleteBlock checks the IDs and the etag, and sends no request when a check fails.
-	 */
 	@Test
 	public void deleteBlockRejectsInvalidInput()
 	{
@@ -627,11 +498,6 @@ public class EmailsTest {
 	}
 
 
-	/**
-	 * moveBlock sends POST /emails/{email}/blocks/{block}/move with the placement and the etag.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void moveBlockSendsThePlacement() throws Exception
 	{
@@ -647,11 +513,6 @@ public class EmailsTest {
 		assertEquals("1", response.block.placement.before);
 	}
 
-	/**
-	 * moveBlock checks the placement: blockId only for "before" and "after".
-	 *
-	 * @throws Throwable if a call fails
-	 */
 	@Test
 	public void moveBlockPlacementRules() throws Throwable
 	{
@@ -660,9 +521,6 @@ public class EmailsTest {
 				json -> "{\"placement\":" + json + ",\"etag\":\"45\"}");
 	}
 
-	/**
-	 * moveBlock checks the IDs, the etag and the placement, and sends no request when a check fails.
-	 */
 	@Test
 	public void moveBlockRejectsInvalidInput()
 	{
@@ -678,11 +536,6 @@ public class EmailsTest {
 	}
 
 
-	/**
-	 * validateBlock sends POST /emails/blocks/validate with the block and no etag, and decodes a valid result.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void validateBlockValid() throws Exception
 	{
@@ -703,11 +556,6 @@ public class EmailsTest {
 		assertNull(response.rejected);
 	}
 
-	/**
-	 * validateBlock returns an invalid result as a success, with the errors for each field.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void validateBlockInvalid() throws Exception
 	{
@@ -721,11 +569,6 @@ public class EmailsTest {
 		assertArrayEquals(new String[] {"The selected type is invalid."}, response.errors.get("type"));
 	}
 
-	/**
-	 * validateBlock checks the placement: blockId only for "before" and "after".
-	 *
-	 * @throws Throwable if a call fails
-	 */
 	@Test
 	public void validateBlockPlacementRules() throws Throwable
 	{
@@ -736,9 +579,6 @@ public class EmailsTest {
 		}, json -> "{\"type\":\"divider\",\"editor_content\":{},\"placement\":" + json + "}");
 	}
 
-	/**
-	 * validateBlock checks the required values, and sends no request when a check fails.
-	 */
 	@Test
 	public void validateBlockRejectsInvalidInput()
 	{
@@ -750,11 +590,6 @@ public class EmailsTest {
 	}
 
 
-	/**
-	 * Makes settings that change the brand mode, the background color and the paragraph size.
-	 *
-	 * @return the settings
-	 */
 	static EmailSettings brandAndParagraphSettings()
 	{
 		EmailSettings settings = new EmailSettings();
@@ -769,11 +604,6 @@ public class EmailsTest {
 		return settings;
 	}
 
-	/**
-	 * updateSettings sends PATCH /emails/{email}/settings with only the set fields, and the etag at the top level.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void updateSettingsSendsOnlyTheSetFields() throws Exception
 	{
@@ -793,12 +623,6 @@ public class EmailsTest {
 		assertArrayEquals(new String[] {"footer.social_links[0].url"}, response.rejected.keys);
 	}
 
-	/**
-	 * An empty string unsets a value, an empty list removes all the social links, an empty editor content unsets a
-	 * footer text, and a null inside an editor content is kept.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void updateSettingsSendsEmptyValues() throws Exception
 	{
@@ -827,11 +651,6 @@ public class EmailsTest {
 				client.lastRequest().bodyString());
 	}
 
-	/**
-	 * A social link keeps its link ID as a whole number.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void updateSettingsKeepsTheLinkId() throws Exception
 	{
@@ -849,9 +668,6 @@ public class EmailsTest {
 				+ "\"label\":\"Website\",\"link_id\":7}]},\"etag\":\"42\"}", client.lastRequest().bodyString());
 	}
 
-	/**
-	 * updateSettings checks the ID, the etag and the settings, and sends no request when a check fails.
-	 */
 	@Test
 	public void updateSettingsRejectsInvalidInput()
 	{
@@ -866,11 +682,6 @@ public class EmailsTest {
 	}
 
 
-	/**
-	 * validateSettings sends POST /emails/{email}/settings/validate with the settings and no etag.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void validateSettingsSendsTheSettingsWithoutEtag() throws Exception
 	{
@@ -888,9 +699,6 @@ public class EmailsTest {
 		assertArrayEquals(new String[] {"footer.social_links[0].url"}, response.rejected.keys);
 	}
 
-	/**
-	 * validateSettings checks the ID and the settings, and sends no request when a check fails.
-	 */
 	@Test
 	public void validateSettingsRejectsInvalidInput()
 	{
@@ -901,11 +709,6 @@ public class EmailsTest {
 	}
 
 
-	/**
-	 * createTemplate sends POST /emails/{email}/templates with the name, and decodes the template.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void createTemplateSendsTheName() throws Exception
 	{
@@ -921,9 +724,6 @@ public class EmailsTest {
 		assertEquals("2026-10-28 12:00:00", response.template.createdAt);
 	}
 
-	/**
-	 * createTemplate checks the ID and the name, and sends no request when a check fails.
-	 */
 	@Test
 	public void createTemplateRejectsInvalidInput()
 	{
@@ -935,11 +735,6 @@ public class EmailsTest {
 	}
 
 
-	/**
-	 * versions().get() sends GET /emails/{email}/versions without a query string, and decodes the list.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void versionsWithoutOptions() throws Exception
 	{
@@ -961,11 +756,6 @@ public class EmailsTest {
 		assertEquals(2, response.meta.total);
 	}
 
-	/**
-	 * versions() sends the page and the limit.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void versionsWithPageAndLimit() throws Exception
 	{
@@ -976,11 +766,6 @@ public class EmailsTest {
 		assertRequest(client, "GET", "/emails/123/versions?page=2&limit=10", null, null);
 	}
 
-	/**
-	 * An empty page has null for meta.from and meta.to. The SDK reads them as 0.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void versionsEmptyPageReadsNullFromAndToAsZero() throws Exception
 	{
@@ -995,9 +780,6 @@ public class EmailsTest {
 		assertEquals(0, response.meta.total);
 	}
 
-	/**
-	 * versions() checks the ID, and sends no request for an invalid ID.
-	 */
 	@Test
 	public void versionsRejectsInvalidIds()
 	{
@@ -1005,12 +787,6 @@ public class EmailsTest {
 	}
 
 
-	/**
-	 * createVersion sends POST /emails/{email}/versions with an empty body, not the JSON null.
-	 * Status 201 means a new version.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void createVersionNew() throws Exception
 	{
@@ -1029,11 +805,6 @@ public class EmailsTest {
 		assertTrue(response.version.current);
 	}
 
-	/**
-	 * Status 200 means that nothing changed, and the response has the last version.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void createVersionUnchanged() throws Exception
 	{
@@ -1046,9 +817,6 @@ public class EmailsTest {
 		assertEquals("903", response.version.id);
 	}
 
-	/**
-	 * createVersion checks the ID, and sends no request for an invalid ID.
-	 */
 	@Test
 	public void createVersionRejectsInvalidIds()
 	{
@@ -1056,11 +824,6 @@ public class EmailsTest {
 	}
 
 
-	/**
-	 * restoreVersion sends POST /emails/{email}/versions/{version}/restore with the etag, and decodes the email.
-	 *
-	 * @throws Exception if the request fails
-	 */
 	@Test
 	public void restoreVersionSendsTheEtag() throws Exception
 	{
@@ -1074,9 +837,6 @@ public class EmailsTest {
 		assertEquals(2, response.email.blocks.length);
 	}
 
-	/**
-	 * restoreVersion checks the IDs and the etag, and sends no request when a check fails.
-	 */
 	@Test
 	public void restoreVersionRejectsInvalidInput()
 	{
