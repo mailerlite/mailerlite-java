@@ -7,6 +7,7 @@ MailerLite Java SDK
 # Table of Contents
 
 - [Installation](#installation)
+- [Upgrading to 0.1.0](#upgrading-to-010)
 - [Usage](#usage)
     - [Subscribers](#subscribers)
         - [Get a list of subscribers](#get-a-list-of-subscribers)
@@ -95,6 +96,15 @@ Using Gradle:
 
     implementation 'com.mailerlite:mailerlite-java:0.1.0'
 
+
+# Upgrading to 0.1.0
+
+Version 0.1.0 changes some behavior of the SDK. Before you upgrade from 0.0.4, do these checks:
+
+- The SDK now encodes the query values, for example the values of `filter(...)`. Do not encode the values yourself. If you do, the SDK encodes them two times: `"summer%20sale"` is sent as `summer%2520sale`. Give the plain value, for example `"summer sale"`.
+- The SDK now sends a `+` in a query value as a literal `+`. Before, the API read it as a space.
+- `EmailBase` now has the fields `replyTo` (`reply_to`), `editor` and `templateId` (`template_id`). If your subclass of `EmailBase` has its own field with one of these JSON names, Gson throws an error ("declares multiple JSON fields named ..."), and `CampaignBuilder.create()` and `update()` fail. Remove these fields from your subclass, and use the fields of `EmailBase`.
+- A network error is now a `MailerLiteException` with the network error as the cause. Before, the SDK threw a `ClassCastException`. To find a network error, examine `e.getCause()`, for example `e.getCause() instanceof IOException`.
 
 # Usage
 
