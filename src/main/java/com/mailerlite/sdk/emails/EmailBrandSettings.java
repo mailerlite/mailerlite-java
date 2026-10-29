@@ -13,7 +13,9 @@ import com.google.gson.annotations.SerializedName;
  * The palette and the font of an email.
  *
  * In an update, null is not sent and does not change the value.
- * An empty string unsets the value, and the email then uses the value of your account.
+ * To unset a color (backgroundColor, textColor or borderColor), send an empty string. The email then uses the color
+ * of your account. Only these colors accept an empty string. For the other fields, for example style, the API
+ * rejects an empty string with a 422 error.
  */
 public class EmailBrandSettings {
 

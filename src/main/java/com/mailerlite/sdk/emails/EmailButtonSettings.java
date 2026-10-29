@@ -13,7 +13,8 @@ import com.google.gson.annotations.SerializedName;
  * The button style of an email. Send all values as strings, for example "4" and not 4.
  *
  * In an update, null is not sent and does not change the value.
- * An empty string unsets the value, and the email then uses the value of your account.
+ * Do not send an empty string. The API rejects an empty string with a 422 error. Only a brand color accepts an
+ * empty string.
  */
 public class EmailButtonSettings {
 

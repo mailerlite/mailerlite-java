@@ -13,7 +13,8 @@ import com.google.gson.annotations.SerializedName;
  * The color and the size of a text style. Send the size as a string, for example "16" and not 16.
  *
  * In an update, null is not sent and does not change the value.
- * An empty string unsets the value, and the email then uses the value of your account.
+ * Do not send an empty string. The API rejects an empty string with a 422 error. Only a brand color accepts an
+ * empty string.
  */
 public class EmailTextStyle {
 

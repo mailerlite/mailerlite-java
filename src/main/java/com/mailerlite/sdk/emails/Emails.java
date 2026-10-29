@@ -292,9 +292,11 @@ public class Emails {
 	/**
 	 * Changes the design settings of an email.
 	 * <p>
-	 * Set only the fields that you want to change. A null field is not sent and does not change. An empty string
-	 * unsets the value. The API stores each value that you send, also a value that the email inherits from your
-	 * account. So do not send back all the settings that you read.
+	 * Set only the fields that you want to change. A null field is not sent and does not change. To unset a brand
+	 * color, send an empty string. To unset a footer text, send an empty editor document. The email then uses the
+	 * value of your account. For the other values, the API rejects an empty string with a 422 error. The API stores
+	 * each value that you send, also a value that the email inherits from your account. So do not send back all the
+	 * settings that you read.
 	 * <p>
 	 * The SDK sends the etag at the top level of the body, next to the settings groups.
 	 *
@@ -314,9 +316,11 @@ public class Emails {
 	/**
 	 * Changes the design settings of an email.
 	 * <p>
-	 * Set only the fields that you want to change. A null field is not sent and does not change. An empty string
-	 * unsets the value. The API stores each value that you send, also a value that the email inherits from your
-	 * account. So do not send back all the settings that you read.
+	 * Set only the fields that you want to change. A null field is not sent and does not change. To unset a brand
+	 * color, send an empty string. To unset a footer text, send an empty editor document. The email then uses the
+	 * value of your account. For the other values, the API rejects an empty string with a 422 error. The API stores
+	 * each value that you send, also a value that the email inherits from your account. So do not send back all the
+	 * settings that you read.
 	 * <p>
 	 * The SDK sends the etag at the top level of the body, next to the settings groups.
 	 *

@@ -14,7 +14,9 @@ import com.google.gson.annotations.SerializedName;
  *
  * In a response, the settings show the values that apply to the email, also the values that the email
  * inherits from your account. In an update, set only the fields that you want to change. A null field is not sent.
- * An empty string unsets a value.
+ * To unset a brand color, send an empty string. To unset a footer text, send an empty editor document. The email then
+ * uses the value of your account. For the other values, for example other colors, sizes, button.borderRadius and
+ * brand.style, the API rejects an empty string with a 422 error.
  *
  * Do not send back all the settings that you read. The API stores each value that you send, also an inherited
  * value. The email then no longer follows your account for that value.

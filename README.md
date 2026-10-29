@@ -1301,7 +1301,9 @@ class Example {
 
 Set only the fields that you want to change. The groups are `brand`, `layout`, `typography`, `button` and `footer`.
 
-- A `null` field is not sent and does not change. An empty string unsets the value, and the email then uses the value of your account.
+- A `null` field is not sent and does not change.
+- To unset a brand color (`backgroundColor`, `textColor` or `borderColor`), send an empty string. To unset a footer text (`companyName`, `address` or `infoText`), send an empty `editorContent` map, or a map with an empty `content` list. The email then uses the value of your account.
+- Only a brand color accepts an empty string. For the other values, for example other colors, sizes, `button.borderRadius` and `brand.style`, the API rejects an empty string with a `422` error.
 - All style values are strings, for example `"16"` and not `16`.
 - The API stores each value that you send, also a value that the email inherits from your account. Then the email no longer follows your account for that value. So do not send back all the settings that you read.
 - `footer.socialLinks` replaces the whole list. An empty list removes all the links. Keep the `linkId` of each link to keep its click history.

@@ -13,7 +13,8 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * A footer text as an editor document. In an update, an empty editorContent map unsets the text.
+ * A footer text as an editor document. In an update, an empty editorContent map, or a map with an empty "content"
+ * list, unsets the text.
  * The email then uses the text of your account.
  */
 public class EmailEditorText {

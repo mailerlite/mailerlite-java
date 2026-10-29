@@ -14,7 +14,8 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The footer of an email.
  *
- * In an update, a null field is not sent and does not change.
+ * In an update, a null field is not sent and does not change. To unset companyName, address or infoText, send an
+ * empty editor document. The email then uses the text of your account.
  */
 public class EmailFooterSettings {
 
