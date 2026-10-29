@@ -1053,4 +1053,34 @@ public class EmailsTest {
 		assertRejectsIds(client, id -> () -> emails.createVersion(id));
 	}
 
+
+	/**
+	 * restoreVersion sends POST /emails/{email}/versions/{version}/restore with the etag, and decodes the email.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void restoreVersionSendsTheEtag() throws Exception
+	{
+		client.respond(200, Fixtures.read("email.json"));
+
+		SingleEmailDocument response = emails.restoreVersion("123", "901", "47");
+
+		assertRequest(client, "POST", "/emails/123/versions/901/restore", "{\"etag\":\"47\"}", null);
+		assertEquals("42", response.etag);
+		assertEquals("123", response.email.id);
+		assertEquals(2, response.email.blocks.length);
+	}
+
+	/**
+	 * restoreVersion checks the IDs and the etag, and sends no request when a check fails.
+	 */
+	@Test
+	public void restoreVersionRejectsInvalidInput()
+	{
+		assertRejectsIds(client, id -> () -> emails.restoreVersion(id, "901", "47"));
+		assertRejectsIds(client, id -> () -> emails.restoreVersion("123", id, "47"));
+		assertRejectsEtags(client, etag -> () -> emails.restoreVersion("123", "901", etag));
+	}
+
 }

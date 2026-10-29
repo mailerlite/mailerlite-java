@@ -200,6 +200,10 @@ public class ReadmeExamplesTest {
 				.respond(201, Fixtures.read("email_version.json"))
 				.expect("POST /emails/123456/versions"));
 
+		list.add(new Example("Restore a version of an email")
+				.respond(200, Fixtures.read("email.json"))
+				.expect("POST /emails/123456/versions/901/restore"));
+
 		return list;
 	}
 

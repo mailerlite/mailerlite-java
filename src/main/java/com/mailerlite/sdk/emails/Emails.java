@@ -300,6 +300,25 @@ public class Emails {
 	}
 
 	/**
+	 * Puts an email back to a version, and returns the full email with the new etag.
+	 * <p>
+	 * Before the restore, the API saves the current state as a version, so you can undo the restore.
+	 *
+	 * @param emailId the email ID
+	 * @param versionId the version ID
+	 * @param etag the etag from the last response for the email
+	 * @return the email and the new etag
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 */
+	public SingleEmailDocument restoreVersion(String emailId, String versionId, String etag) throws MailerLiteException
+	{
+		String endpoint = emailPath(emailId).concat("/versions/")
+				.concat(RequestChecks.pathId(versionId, "versionId")).concat("/restore");
+
+		return send("POST", endpoint, etagBody(etag), SingleEmailDocument.class);
+	}
+
+	/**
 	 * Checks the email ID and makes the path of the email.
 	 *
 	 * @param emailId the email ID
