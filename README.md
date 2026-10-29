@@ -52,6 +52,7 @@ MailerLite Java SDK
         - [Insert a block](#insert-a-block)
         - [Update a block](#update-a-block)
         - [Delete a block](#delete-a-block)
+        - [Move a block](#move-a-block)
     - [Forms](#forms)
         - [Get a list of forms](#get-a-list-of-forms)
         - [Get a form](#get-a-form)
@@ -1160,6 +1161,33 @@ class Example {
 		try {
 			
 			EmailEtagResponse response = this.getMailerLite().emails().deleteBlock("123456", "57", "etag-from-the-last-response");
+			
+			System.out.println(response.etag);
+			
+		} catch (MailerLiteException e) {
+			
+			e.printStackTrace();
+		}
+    }
+}
+```
+
+### Move a block
+
+Moves the block to a new position at the same level. The `BEFORE` and `AFTER` positions also need a `blockId`. The response has the block with its new `placement`.
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		try {
+			
+			EmailBlockPosition placement = new EmailBlockPosition(EmailBlockPositions.AFTER, "12");
+			
+			SingleEmailBlock response = this.getMailerLite().emails().moveBlock("123456", "57", "etag-from-the-last-response", placement);
 			
 			System.out.println(response.etag);
 			

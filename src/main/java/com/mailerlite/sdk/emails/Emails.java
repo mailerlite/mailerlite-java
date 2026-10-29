@@ -155,6 +155,32 @@ public class Emails {
 	}
 
 	/**
+	 * Moves a block to a new position at the same level. The nesting of the block does not change.
+	 * <p>
+	 * The positions {@link EmailBlockPositions#BEFORE} and {@link EmailBlockPositions#AFTER} need a block ID.
+	 *
+	 * @param emailId the email ID
+	 * @param blockId the ID of the block to move
+	 * @param etag the etag from the last response for the email
+	 * @param placement the new position
+	 * @return the block with its new placement, and the new etag
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 * @throws NullPointerException if the placement is null
+	 * @throws IllegalArgumentException if the placement position is empty
+	 */
+	public SingleEmailBlock moveBlock(String emailId, String blockId, String etag, EmailBlockPosition placement)
+			throws MailerLiteException
+	{
+		String endpoint = blockPath(emailId, blockId).concat("/move");
+
+		MoveBlockBody body = new MoveBlockBody();
+		body.etag = RequestChecks.etag(etag);
+		body.placement = placementBody(Objects.requireNonNull(placement, "placement"));
+
+		return send("POST", endpoint, toJson(body), SingleEmailBlock.class);
+	}
+
+	/**
 	 * Checks the email ID and makes the path of the email.
 	 *
 	 * @param emailId the email ID
@@ -317,6 +343,20 @@ public class Emails {
 	 * A request body that has only the etag.
 	 */
 	private static class EtagBody {
+
+		/** The etag. */
+		@SerializedName("etag")
+		String etag;
+	}
+
+	/**
+	 * The request body of a block move.
+	 */
+	private static class MoveBlockBody {
+
+		/** The placement. */
+		@SerializedName("placement")
+		PlacementBody placement;
 
 		/** The etag. */
 		@SerializedName("etag")

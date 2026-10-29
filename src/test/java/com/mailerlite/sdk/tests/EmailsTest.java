@@ -610,4 +610,55 @@ public class EmailsTest {
 		assertRejectsEtags(client, etag -> () -> emails.deleteBlock("123", "57", etag));
 	}
 
+
+	/**
+	 * moveBlock sends POST /emails/{email}/blocks/{block}/move with the placement and the etag.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void moveBlockSendsThePlacement() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_block_moved.json"));
+
+		SingleEmailBlock response = emails.moveBlock("123", "57", "45", new EmailBlockPosition(EmailBlockPositions.BEFORE, "1"));
+
+		assertRequest(client, "POST", "/emails/123/blocks/57/move",
+				"{\"placement\":{\"position\":\"before\",\"block_id\":\"1\"},\"etag\":\"45\"}", null);
+		assertEquals("46", response.etag);
+		assertEquals("57", response.block.id);
+		assertNull(response.block.placement.after);
+		assertEquals("1", response.block.placement.before);
+	}
+
+	/**
+	 * moveBlock checks the placement: blockId only for "before" and "after".
+	 *
+	 * @throws Throwable if a call fails
+	 */
+	@Test
+	public void moveBlockPlacementRules() throws Throwable
+	{
+		assertPlacementRules(client, Fixtures.read("email_block_moved.json"),
+				placement -> () -> emails.moveBlock("123", "57", "45", placement),
+				json -> "{\"placement\":" + json + ",\"etag\":\"45\"}");
+	}
+
+	/**
+	 * moveBlock checks the IDs, the etag and the placement, and sends no request when a check fails.
+	 */
+	@Test
+	public void moveBlockRejectsInvalidInput()
+	{
+		EmailBlockPosition start = new EmailBlockPosition(EmailBlockPositions.START);
+
+		assertRejectsIds(client, id -> () -> emails.moveBlock(id, "57", "45", start));
+		assertRejectsIds(client, id -> () -> emails.moveBlock("123", id, "45", start));
+		assertRejectsEtags(client, etag -> () -> emails.moveBlock("123", "57", etag, start));
+
+		NullPointerException e = assertThrows(NullPointerException.class, () -> emails.moveBlock("123", "57", "45", null));
+		assertTrue(e.getMessage().contains("placement"), e.getMessage());
+		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	}
+
 }

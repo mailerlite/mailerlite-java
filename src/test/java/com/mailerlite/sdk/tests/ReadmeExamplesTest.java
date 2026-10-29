@@ -172,6 +172,10 @@ public class ReadmeExamplesTest {
 				.respond(200, Fixtures.read("email_etag.json"))
 				.expect("DELETE /emails/123456/blocks/57"));
 
+		list.add(new Example("Move a block")
+				.respond(200, Fixtures.read("email_block_moved.json"))
+				.expect("POST /emails/123456/blocks/57/move"));
+
 		return list;
 	}
 
