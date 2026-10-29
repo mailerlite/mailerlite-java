@@ -7,6 +7,7 @@
  **************************************************/
 package com.mailerlite.sdk.emails;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
@@ -18,6 +19,7 @@ import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.MailerLite;
 import com.mailerlite.sdk.MailerLiteApi;
 import com.mailerlite.sdk.MailerLiteResponse;
+import com.mailerlite.sdk.RequestOptions;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.util.RequestChecks;
 
@@ -33,6 +35,9 @@ import com.mailerlite.sdk.util.RequestChecks;
  * The methods check the IDs and the etag before they send a request. An empty or null ID throws
  * {@link com.mailerlite.sdk.exceptions.EmptyIdException}. An ID that contains a character other than the
  * digits 0 to 9 throws {@link com.mailerlite.sdk.exceptions.InvalidIdException}.
+ * <p>
+ * The writes, createTemplate and createVersion have an overload with {@link RequestOptions} as the last argument.
+ * Use it to send an idempotency key, so that you can safely send a write again after a network error.
  */
 public class Emails {
 
@@ -113,10 +118,31 @@ public class Emails {
 	 */
 	public SingleEmailBlock createBlock(String emailId, String etag, EmailBlockInput block) throws MailerLiteException
 	{
+		return createBlock(emailId, etag, block, null);
+	}
+
+	/**
+	 * Inserts a block into an email.
+	 * <p>
+	 * Without a placement, the API puts the block at the end of the email. The response has the new block with
+	 * its placement and the new etag.
+	 *
+	 * @param emailId the email ID
+	 * @param etag the etag from the last response for the email
+	 * @param block the block to insert
+	 * @param options the request options, for example an idempotency key, or null for no options
+	 * @return the new block and the new etag
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 * @throws NullPointerException if the block or its editor content is null
+	 * @throws IllegalArgumentException if the block type or the placement position is empty
+	 */
+	public SingleEmailBlock createBlock(String emailId, String etag, EmailBlockInput block, RequestOptions options)
+			throws MailerLiteException
+	{
 		String endpoint = emailPath(emailId).concat("/blocks");
 		BlockBody body = blockBody(block, RequestChecks.etag(etag));
 
-		return send("POST", endpoint, toJson(body), SingleEmailBlock.class);
+		return send("POST", endpoint, toJson(body), options, SingleEmailBlock.class);
 	}
 
 	/**
@@ -136,13 +162,35 @@ public class Emails {
 	public SingleEmailBlock updateBlock(String emailId, String blockId, String etag, Map<String, Object> editorContent)
 			throws MailerLiteException
 	{
+		return updateBlock(emailId, blockId, etag, editorContent, null);
+	}
+
+	/**
+	 * Replaces the content of a block. The type and the position of the block do not change.
+	 * <p>
+	 * The new editor content replaces the whole content of the block. The API removes the keys that you do not
+	 * send. Read the block, change it, and send the full editor content.
+	 *
+	 * @param emailId the email ID
+	 * @param blockId the block ID
+	 * @param etag the etag from the last response for the email
+	 * @param editorContent the new editor document of the block. The keys are camelCase.
+	 * @param options the request options, for example an idempotency key, or null for no options
+	 * @return the block and the new etag
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 * @throws NullPointerException if the editor content is null
+	 */
+	public SingleEmailBlock updateBlock(String emailId, String blockId, String etag, Map<String, Object> editorContent,
+			RequestOptions options)
+			throws MailerLiteException
+	{
 		String endpoint = blockPath(emailId, blockId);
 
 		UpdateBlockBody body = new UpdateBlockBody();
 		body.etag = RequestChecks.etag(etag);
 		body.editorContent = Objects.requireNonNull(editorContent, "editorContent");
 
-		return send("PATCH", endpoint, toJson(body), SingleEmailBlock.class);
+		return send("PATCH", endpoint, toJson(body), options, SingleEmailBlock.class);
 	}
 
 	/**
@@ -156,9 +204,25 @@ public class Emails {
 	 */
 	public EmailEtagResponse deleteBlock(String emailId, String blockId, String etag) throws MailerLiteException
 	{
+		return deleteBlock(emailId, blockId, etag, null);
+	}
+
+	/**
+	 * Deletes a block of an email. The API also deletes the blocks in it.
+	 *
+	 * @param emailId the email ID
+	 * @param blockId the block ID
+	 * @param etag the etag from the last response for the email
+	 * @param options the request options, for example an idempotency key, or null for no options
+	 * @return the new etag
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 */
+	public EmailEtagResponse deleteBlock(String emailId, String blockId, String etag, RequestOptions options)
+			throws MailerLiteException
+	{
 		String endpoint = blockPath(emailId, blockId);
 
-		return send("DELETE", endpoint, etagBody(etag), EmailEtagResponse.class);
+		return send("DELETE", endpoint, etagBody(etag), options, EmailEtagResponse.class);
 	}
 
 	/**
@@ -178,13 +242,35 @@ public class Emails {
 	public SingleEmailBlock moveBlock(String emailId, String blockId, String etag, EmailBlockPosition placement)
 			throws MailerLiteException
 	{
+		return moveBlock(emailId, blockId, etag, placement, null);
+	}
+
+	/**
+	 * Moves a block to a new position at the same level. The nesting of the block does not change.
+	 * <p>
+	 * The positions {@link EmailBlockPositions#BEFORE} and {@link EmailBlockPositions#AFTER} need a block ID.
+	 *
+	 * @param emailId the email ID
+	 * @param blockId the ID of the block to move
+	 * @param etag the etag from the last response for the email
+	 * @param placement the new position
+	 * @param options the request options, for example an idempotency key, or null for no options
+	 * @return the block with its new placement, and the new etag
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 * @throws NullPointerException if the placement is null
+	 * @throws IllegalArgumentException if the placement position is empty
+	 */
+	public SingleEmailBlock moveBlock(String emailId, String blockId, String etag, EmailBlockPosition placement,
+			RequestOptions options)
+			throws MailerLiteException
+	{
 		String endpoint = blockPath(emailId, blockId).concat("/move");
 
 		MoveBlockBody body = new MoveBlockBody();
 		body.etag = RequestChecks.etag(etag);
 		body.placement = placementBody(Objects.requireNonNull(placement, "placement"));
 
-		return send("POST", endpoint, toJson(body), SingleEmailBlock.class);
+		return send("POST", endpoint, toJson(body), options, SingleEmailBlock.class);
 	}
 
 	/**
@@ -219,7 +305,31 @@ public class Emails {
 	 * @throws MailerLiteException if the API returns an error or the request fails
 	 * @throws NullPointerException if the settings are null
 	 */
-	public SingleEmailSettings updateSettings(String emailId, String etag, EmailSettings settings) throws MailerLiteException
+	public SingleEmailSettings updateSettings(String emailId, String etag, EmailSettings settings)
+			throws MailerLiteException
+	{
+		return updateSettings(emailId, etag, settings, null);
+	}
+
+	/**
+	 * Changes the design settings of an email.
+	 * <p>
+	 * Set only the fields that you want to change. A null field is not sent and does not change. An empty string
+	 * unsets the value. The API stores each value that you send, also a value that the email inherits from your
+	 * account. So do not send back all the settings that you read.
+	 * <p>
+	 * The SDK sends the etag at the top level of the body, next to the settings groups.
+	 *
+	 * @param emailId the email ID
+	 * @param etag the etag from the last response for the email
+	 * @param settings the settings to change
+	 * @param options the request options, for example an idempotency key, or null for no options
+	 * @return the settings after the update, the new etag, and the unsafe values that the API removed
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 * @throws NullPointerException if the settings are null
+	 */
+	public SingleEmailSettings updateSettings(String emailId, String etag, EmailSettings settings, RequestOptions options)
+			throws MailerLiteException
 	{
 		String endpoint = emailPath(emailId).concat("/settings");
 		String checkedEtag = RequestChecks.etag(etag);
@@ -227,7 +337,7 @@ public class Emails {
 		JsonObject body = settingsBody(settings);
 		body.addProperty("etag", checkedEtag);
 
-		return send("PATCH", endpoint, TREE_GSON.toJson(body), SingleEmailSettings.class);
+		return send("PATCH", endpoint, TREE_GSON.toJson(body), options, SingleEmailSettings.class);
 	}
 
 	/**
@@ -260,6 +370,22 @@ public class Emails {
 	 */
 	public SingleEmailTemplate createTemplate(String emailId, String name) throws MailerLiteException
 	{
+		return createTemplate(emailId, name, null);
+	}
+
+	/**
+	 * Copies an email to a new template. The API cannot delete templates.
+	 *
+	 * @param emailId the email ID
+	 * @param name the name of the new template
+	 * @param options the request options, for example an idempotency key, or null for no options
+	 * @return the new template
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 * @throws IllegalArgumentException if the name is null or empty
+	 */
+	public SingleEmailTemplate createTemplate(String emailId, String name, RequestOptions options)
+			throws MailerLiteException
+	{
 		String endpoint = emailPath(emailId).concat("/templates");
 
 		if (name == null || name.isEmpty()) {
@@ -269,7 +395,7 @@ public class Emails {
 		TemplateBody body = new TemplateBody();
 		body.name = name;
 
-		return send("POST", endpoint, toJson(body), SingleEmailTemplate.class);
+		return send("POST", endpoint, toJson(body), options, SingleEmailTemplate.class);
 	}
 
 	/**
@@ -296,7 +422,23 @@ public class Emails {
 	 */
 	public SingleEmailVersion createVersion(String emailId) throws MailerLiteException
 	{
-		return send("POST", emailPath(emailId).concat("/versions"), null, SingleEmailVersion.class);
+		return createVersion(emailId, null);
+	}
+
+	/**
+	 * Saves the email as a new version. The request has no body.
+	 * <p>
+	 * If nothing changed after the last version, the API saves no new version and returns the last version.
+	 * {@link SingleEmailVersion#isCreated()} tells the two cases apart.
+	 *
+	 * @param emailId the email ID
+	 * @param options the request options, for example an idempotency key, or null for no options
+	 * @return the new version, or the last version
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 */
+	public SingleEmailVersion createVersion(String emailId, RequestOptions options) throws MailerLiteException
+	{
+		return send("POST", emailPath(emailId).concat("/versions"), null, options, SingleEmailVersion.class);
 	}
 
 	/**
@@ -312,10 +454,28 @@ public class Emails {
 	 */
 	public SingleEmailDocument restoreVersion(String emailId, String versionId, String etag) throws MailerLiteException
 	{
+		return restoreVersion(emailId, versionId, etag, null);
+	}
+
+	/**
+	 * Puts an email back to a version, and returns the full email with the new etag.
+	 * <p>
+	 * Before the restore, the API saves the current state as a version, so you can undo the restore.
+	 *
+	 * @param emailId the email ID
+	 * @param versionId the version ID
+	 * @param etag the etag from the last response for the email
+	 * @param options the request options, for example an idempotency key, or null for no options
+	 * @return the email and the new etag
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 */
+	public SingleEmailDocument restoreVersion(String emailId, String versionId, String etag, RequestOptions options)
+			throws MailerLiteException
+	{
 		String endpoint = emailPath(emailId).concat("/versions/")
 				.concat(RequestChecks.pathId(versionId, "versionId")).concat("/restore");
 
-		return send("POST", endpoint, etagBody(etag), SingleEmailDocument.class);
+		return send("POST", endpoint, etagBody(etag), options, SingleEmailDocument.class);
 	}
 
 	/**
@@ -431,7 +591,7 @@ public class Emails {
 	}
 
 	/**
-	 * Sends a request.
+	 * Sends a request without options.
 	 *
 	 * @param <T> the response type
 	 * @param method the HTTP method
@@ -444,10 +604,34 @@ public class Emails {
 	private <T extends MailerLiteResponse> T send(String method, String endpoint, String body, Class<T> responseClass)
 			throws MailerLiteException
 	{
+		return send(method, endpoint, body, null, responseClass);
+	}
+
+	/**
+	 * Sends a request. If the options have an idempotency key, the request has the Idempotency-Key header.
+	 *
+	 * @param <T> the response type
+	 * @param method the HTTP method
+	 * @param endpoint the endpoint
+	 * @param body the JSON body, or null
+	 * @param options the request options, or null
+	 * @param responseClass the response class
+	 * @return the response
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 */
+	private <T extends MailerLiteResponse> T send(String method, String endpoint, String body, RequestOptions options,
+			Class<T> responseClass) throws MailerLiteException
+	{
+		Map<String, String> headers = null;
+
+		if (options != null && options.getIdempotencyKey() != null) {
+			headers = Collections.singletonMap("Idempotency-Key", options.getIdempotencyKey());
+		}
+
 		MailerLiteApi api = new MailerLiteApi();
 		api.setToken(apiObjectReference.getToken());
 
-		return api.sendRequest(method, endpoint, body, null, responseClass);
+		return api.sendRequest(method, endpoint, body, headers, responseClass);
 	}
 
 	/**

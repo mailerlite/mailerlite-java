@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -60,6 +61,7 @@ public class ReadmeExamplesTest {
 			"com.mailerlite.sdk.emails.*",
 			"com.mailerlite.sdk.exceptions.*",
 			"com.mailerlite.sdk.files.*",
+			"java.io.*",
 			"java.util.*");
 
 	/**
@@ -217,6 +219,12 @@ public class ReadmeExamplesTest {
 		list.add(new Example("Create a campaign with the simple editor")
 				.respond(201, Fixtures.read("campaign_simple_editor.json"))
 				.expect("POST /campaigns"));
+
+		list.add(new Example("Retry a write with an idempotency key")
+				.fail(new IOException("connection reset"))
+				.respond(201, Fixtures.read("email_block_created.json"), Collections.singletonMap("Idempotent-Replayed", "true"))
+				.expect("POST /emails/123456/blocks")
+				.expect("POST /emails/123456/blocks"));
 
 		return list;
 	}

@@ -61,6 +61,7 @@ MailerLite Java SDK
         - [List the versions of an email](#list-the-versions-of-an-email)
         - [Save a version of an email](#save-a-version-of-an-email)
         - [Restore a version of an email](#restore-a-version-of-an-email)
+        - [Retry a write with an idempotency key](#retry-a-write-with-an-idempotency-key)
     - [Brand styles](#brand-styles)
         - [Get the brand styles](#get-the-brand-styles)
     - [Files](#files)
@@ -1459,6 +1460,58 @@ class Example {
 			SingleEmailDocument response = this.getMailerLite().emails().restoreVersion("123456", "901", "etag-from-the-last-response");
 			
 			System.out.println(response.etag);
+			
+		} catch (MailerLiteException e) {
+			
+			e.printStackTrace();
+		}
+    }
+}
+```
+
+### Retry a write with an idempotency key
+
+If a write fails with a network error, you do not know if the API did the write. Give the write an idempotency key with `RequestOptions.idempotencyKey(key)`. Then send the write again with the same key, the same etag and the same arguments. If the first request was a success, the API returns the stored response and does not do the write two times. Then `response.isIdempotentReplay()` is `true`.
+
+- A network error is a `MailerLiteException` with the network error as the cause.
+- Use a new key for each write. The API keeps a key for 24 hours.
+- The key must be 1 to 255 printable ASCII characters, with no space at the start or the end. Otherwise `RequestOptions.idempotencyKey` throws `InvalidIdempotencyKeyException`, and the SDK sends no request.
+- The same key with different arguments gets a `422` error. If the first request is still running, the API returns `409` without an error code.
+- Without a key, a retry of a write that was a success gets `409` with `version_conflict`, because the etag is old.
+- These methods accept `RequestOptions` as the last argument: `createBlock`, `updateBlock`, `deleteBlock`, `moveBlock`, `updateSettings`, `createTemplate`, `createVersion` and `restoreVersion`.
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		Emails emails = this.getMailerLite().emails();
+		
+		String etag = "etag-from-the-last-response";
+		EmailBlockInput block = new EmailBlockInput(EmailBlockTypes.DIVIDER, Map.of());
+		RequestOptions options = RequestOptions.idempotencyKey(UUID.randomUUID().toString());
+		
+		try {
+			
+			SingleEmailBlock response;
+			
+			try {
+				
+				response = emails.createBlock("123456", etag, block, options);
+			} catch (MailerLiteException networkError) {
+				
+				if (!(networkError.getCause() instanceof IOException)) {
+					
+					throw networkError;
+				}
+				
+				// Send the write again with the same key, the same etag and the same block.
+				response = emails.createBlock("123456", etag, block, options);
+			}
+			
+			System.out.println(response.block.id + " " + response.isIdempotentReplay());
 			
 		} catch (MailerLiteException e) {
 			
