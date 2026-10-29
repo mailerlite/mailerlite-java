@@ -12,6 +12,7 @@ import java.util.Objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.MailerLite;
@@ -35,8 +36,14 @@ import com.mailerlite.sdk.util.RequestChecks;
  */
 public class Emails {
 
-	/** The Gson object for the request bodies. */
+	/** The Gson object for the request bodies. It does not send null fields. */
 	private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
+
+	/**
+	 * The Gson object that writes a JSON tree that GSON made. The tree has no null fields, except the null values
+	 * in the editor content maps, so this object writes them.
+	 */
+	private static final Gson TREE_GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
 
 	/** The api object reference. */
 	private MailerLite apiObjectReference;
@@ -197,6 +204,33 @@ public class Emails {
 	}
 
 	/**
+	 * Changes the design settings of an email.
+	 * <p>
+	 * Set only the fields that you want to change. A null field is not sent and does not change. An empty string
+	 * unsets the value. The API stores each value that you send, also a value that the email inherits from your
+	 * account. So do not send back all the settings that you read.
+	 * <p>
+	 * The SDK sends the etag at the top level of the body, next to the settings groups.
+	 *
+	 * @param emailId the email ID
+	 * @param etag the etag from the last response for the email
+	 * @param settings the settings to change
+	 * @return the settings after the update, the new etag, and the unsafe values that the API removed
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 * @throws NullPointerException if the settings are null
+	 */
+	public SingleEmailSettings updateSettings(String emailId, String etag, EmailSettings settings) throws MailerLiteException
+	{
+		String endpoint = emailPath(emailId).concat("/settings");
+		String checkedEtag = RequestChecks.etag(etag);
+
+		JsonObject body = settingsBody(settings);
+		body.addProperty("etag", checkedEtag);
+
+		return send("PATCH", endpoint, TREE_GSON.toJson(body), SingleEmailSettings.class);
+	}
+
+	/**
 	 * Checks the email ID and makes the path of the email.
 	 *
 	 * @param emailId the email ID
@@ -284,6 +318,17 @@ public class Emails {
 		body.etag = RequestChecks.etag(etag);
 
 		return toJson(body);
+	}
+
+	/**
+	 * Converts the settings to a JSON tree without the null fields.
+	 *
+	 * @param settings the settings
+	 * @return the JSON tree
+	 */
+	private static JsonObject settingsBody(EmailSettings settings)
+	{
+		return GSON.toJsonTree(Objects.requireNonNull(settings, "settings")).getAsJsonObject();
 	}
 
 	/**

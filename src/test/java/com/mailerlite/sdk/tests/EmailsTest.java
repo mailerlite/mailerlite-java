@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -36,7 +37,15 @@ import com.mailerlite.sdk.emails.EmailBlockPositions;
 import com.mailerlite.sdk.emails.EmailBlockTypes;
 import com.mailerlite.sdk.emails.EmailDocument;
 import com.mailerlite.sdk.emails.EmailEtagResponse;
+import com.mailerlite.sdk.emails.EmailBrandModes;
+import com.mailerlite.sdk.emails.EmailBrandSettings;
+import com.mailerlite.sdk.emails.EmailEditorText;
+import com.mailerlite.sdk.emails.EmailFooterSettings;
+import com.mailerlite.sdk.emails.EmailParagraphStyle;
 import com.mailerlite.sdk.emails.EmailSettings;
+import com.mailerlite.sdk.emails.EmailTextStyle;
+import com.mailerlite.sdk.emails.EmailTypographySettings;
+import com.mailerlite.sdk.emails.SingleEmailSettings;
 import com.mailerlite.sdk.emails.EmailSocialLink;
 import com.mailerlite.sdk.emails.EmailValidation;
 import com.mailerlite.sdk.emails.Emails;
@@ -732,6 +741,122 @@ public class EmailsTest {
 		assertThrows(IllegalArgumentException.class,
 				() -> emails.validateBlock(new EmailBlockInput("", new LinkedHashMap<String, Object>())));
 		assertThrows(NullPointerException.class, () -> emails.validateBlock(new EmailBlockInput(EmailBlockTypes.DIVIDER, null)));
+		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	}
+
+
+	/**
+	 * Makes settings that change the brand mode, the background color and the paragraph size.
+	 *
+	 * @return the settings
+	 */
+	static EmailSettings brandAndParagraphSettings()
+	{
+		EmailSettings settings = new EmailSettings();
+		settings.brand = new EmailBrandSettings();
+		settings.brand.mode = EmailBrandModes.CUSTOM;
+		settings.brand.backgroundColor = "#f4f4f4";
+		settings.typography = new EmailTypographySettings();
+		settings.typography.paragraph = new EmailParagraphStyle();
+		settings.typography.paragraph.p1 = new EmailTextStyle();
+		settings.typography.paragraph.p1.size = "18";
+
+		return settings;
+	}
+
+	/**
+	 * updateSettings sends PATCH /emails/{email}/settings with only the set fields, and the etag at the top level.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void updateSettingsSendsOnlyTheSetFields() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_settings.json"));
+
+		SingleEmailSettings response = emails.updateSettings("123", "46", brandAndParagraphSettings());
+
+		assertRequest(client, "PATCH", "/emails/123/settings",
+				"{\"brand\":{\"mode\":\"custom\",\"background_color\":\"#f4f4f4\"},"
+				+ "\"typography\":{\"paragraph\":{\"p1\":{\"size\":\"18\"}}},\"etag\":\"46\"}", null);
+		assertEquals("47", response.etag);
+		assertEquals("custom", response.settings.brand.mode);
+		assertEquals("#f4f4f4", response.settings.brand.backgroundColor);
+		assertEquals("16", response.settings.typography.paragraph.p1.size);
+		assertEquals(Long.valueOf(7), response.settings.footer.socialLinks.get(0).linkId);
+		assertEquals("Some attributes were rejected.", response.rejected.message);
+		assertArrayEquals(new String[] {"footer.social_links[0].url"}, response.rejected.keys);
+	}
+
+	/**
+	 * An empty string unsets a value, an empty list removes all the social links, an empty editor content unsets a
+	 * footer text, and a null inside an editor content is kept.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void updateSettingsSendsEmptyValues() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_settings.json"));
+
+		Map<String, Object> companyName = new LinkedHashMap<String, Object>();
+		companyName.put("content", Collections.emptyList());
+		companyName.put("attrs", null);
+
+		EmailSettings settings = new EmailSettings();
+		settings.brand = new EmailBrandSettings();
+		settings.brand.backgroundColor = "";
+		settings.footer = new EmailFooterSettings();
+		settings.footer.showPreferences = false;
+		settings.footer.infoText = new EmailEditorText();
+		settings.footer.infoText.editorContent = new LinkedHashMap<String, Object>();
+		settings.footer.companyName = new EmailEditorText();
+		settings.footer.companyName.editorContent = companyName;
+		settings.footer.socialLinks = new ArrayList<EmailSocialLink>();
+
+		emails.updateSettings("123", "46", settings);
+
+		assertEquals("{\"brand\":{\"background_color\":\"\"},\"footer\":{\"show_preferences\":false,"
+				+ "\"company_name\":{\"editor_content\":{\"content\":[],\"attrs\":null}},"
+				+ "\"info_text\":{\"editor_content\":{}},\"social_links\":[]},\"etag\":\"46\"}",
+				client.lastRequest().bodyString());
+	}
+
+	/**
+	 * A social link keeps its link ID as a whole number.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void updateSettingsKeepsTheLinkId() throws Exception
+	{
+		client.respond(200, Fixtures.read("email.json")).respond(200, Fixtures.read("email_settings.json"));
+
+		SingleEmailDocument email = emails.get("123");
+
+		EmailSettings settings = new EmailSettings();
+		settings.footer = new EmailFooterSettings();
+		settings.footer.socialLinks = email.email.settings.footer.socialLinks;
+
+		emails.updateSettings("123", email.etag, settings);
+
+		assertEquals("{\"footer\":{\"social_links\":[{\"url\":\"https://example.com\",\"type\":\"website\","
+				+ "\"label\":\"Website\",\"link_id\":7}]},\"etag\":\"42\"}", client.lastRequest().bodyString());
+	}
+
+	/**
+	 * updateSettings checks the ID, the etag and the settings, and sends no request when a check fails.
+	 */
+	@Test
+	public void updateSettingsRejectsInvalidInput()
+	{
+		EmailSettings settings = brandAndParagraphSettings();
+
+		assertRejectsIds(client, id -> () -> emails.updateSettings(id, "46", settings));
+		assertRejectsEtags(client, etag -> () -> emails.updateSettings("123", etag, settings));
+
+		NullPointerException e = assertThrows(NullPointerException.class, () -> emails.updateSettings("123", "46", null));
+		assertTrue(e.getMessage().contains("settings"), e.getMessage());
 		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
 	}
 

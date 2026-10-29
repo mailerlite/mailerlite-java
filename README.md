@@ -54,6 +54,7 @@ MailerLite Java SDK
         - [Delete a block](#delete-a-block)
         - [Move a block](#move-a-block)
         - [Validate a block](#validate-a-block)
+        - [Update the design settings](#update-the-design-settings)
     - [Forms](#forms)
         - [Get a list of forms](#get-a-list-of-forms)
         - [Get a form](#get-a-form)
@@ -1223,6 +1224,53 @@ class Example {
 					
 					System.out.println(error.getKey() + ": " + String.join(" ", error.getValue()));
 				}
+			}
+			
+		} catch (MailerLiteException e) {
+			
+			e.printStackTrace();
+		}
+    }
+}
+```
+
+### Update the design settings
+
+Set only the fields that you want to change. The groups are `brand`, `layout`, `typography`, `button` and `footer`.
+
+- A `null` field is not sent and does not change. An empty string unsets the value, and the email then uses the value of your account.
+- All style values are strings, for example `"16"` and not `16`.
+- The API stores each value that you send, also a value that the email inherits from your account. Then the email no longer follows your account for that value. So do not send back all the settings that you read.
+- `footer.socialLinks` replaces the whole list. An empty list removes all the links. Keep the `linkId` of each link to keep its click history.
+- `brand.mode` is one of `EmailBrandModes`. To apply a preset palette, set `brand.style` to the `identifier` of the preset from the brand styles.
+- The SDK sends the etag at the top level of the body. Do not put it in the settings.
+- If the API removed unsafe values, the response has `rejected` with the paths of these values.
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		try {
+			
+			EmailSettings settings = new EmailSettings();
+			settings.brand = new EmailBrandSettings();
+			settings.brand.mode = EmailBrandModes.CUSTOM;
+			settings.brand.backgroundColor = "#f4f4f4";
+			settings.typography = new EmailTypographySettings();
+			settings.typography.paragraph = new EmailParagraphStyle();
+			settings.typography.paragraph.p1 = new EmailTextStyle();
+			settings.typography.paragraph.p1.size = "18";
+			
+			SingleEmailSettings response = this.getMailerLite().emails().updateSettings("123456", "etag-from-the-last-response", settings);
+			
+			System.out.println(response.etag);
+			
+			if (response.rejected != null) {
+				
+				System.out.println(String.join(", ", response.rejected.keys));
 			}
 			
 		} catch (MailerLiteException e) {

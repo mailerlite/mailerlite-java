@@ -180,6 +180,10 @@ public class ReadmeExamplesTest {
 				.respond(200, Fixtures.read("email_block_validation_invalid.json"))
 				.expect("POST /emails/blocks/validate"));
 
+		list.add(new Example("Update the design settings")
+				.respond(200, Fixtures.read("email_settings.json"))
+				.expect("PATCH /emails/123456/settings"));
+
 		return list;
 	}
 
