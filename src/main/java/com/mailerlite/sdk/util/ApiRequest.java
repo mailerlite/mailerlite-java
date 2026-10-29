@@ -7,6 +7,8 @@
  **************************************************/
 package com.mailerlite.sdk.util;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 /**
@@ -20,12 +22,20 @@ public class ApiRequest {
 	
 	/**
 	 * Adds the query parameter.
+	 * <p>
+	 * A null value is not sent, and it removes a value that you set before. An empty value is sent as "name=".
 	 *
-	 * @param name the name
-	 * @param value the value
+	 * @param name the name, for example "filter[name]". The SDK sends it as it is.
+	 * @param value the value. The SDK encodes it, so a space is sent as "+".
 	 */
 	public void addQueryParameter(String name, String value)
 	{
+		if (value == null) {
+			
+			queryParameters.remove(name);
+			return;
+		}
+		
 		queryParameters.put(name, value);
 	}
 	
@@ -44,7 +54,7 @@ public class ApiRequest {
 				query = query.concat("&");
 			}
 			
-			query = query.concat(name).concat("=").concat(queryParameters.get(name));
+			query = query.concat(name).concat("=").concat(URLEncoder.encode(queryParameters.get(name), StandardCharsets.UTF_8));
 		}
 		
 		return "?".concat(query);
