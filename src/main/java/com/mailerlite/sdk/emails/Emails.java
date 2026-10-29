@@ -73,6 +73,19 @@ public class Emails {
 	}
 
 	/**
+	 * Gets one block of an email, with its placement.
+	 *
+	 * @param emailId the email ID
+	 * @param blockId the block ID
+	 * @return the block and the etag of the email
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 */
+	public SingleEmailBlock getBlock(String emailId, String blockId) throws MailerLiteException
+	{
+		return send("GET", blockPath(emailId, blockId), null, SingleEmailBlock.class);
+	}
+
+	/**
 	 * Checks the email ID and makes the path of the email.
 	 *
 	 * @param emailId the email ID
@@ -81,6 +94,18 @@ public class Emails {
 	private static String emailPath(String emailId)
 	{
 		return "/emails/".concat(RequestChecks.pathId(emailId, "emailId"));
+	}
+
+	/**
+	 * Checks the email ID and the block ID, and makes the path of the block.
+	 *
+	 * @param emailId the email ID
+	 * @param blockId the block ID
+	 * @return the path
+	 */
+	private static String blockPath(String emailId, String blockId)
+	{
+		return emailPath(emailId).concat("/blocks/").concat(RequestChecks.pathId(blockId, "blockId"));
 	}
 
 	/**

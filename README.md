@@ -48,6 +48,7 @@ MailerLite Java SDK
     - [Emails](#emails)
         - [Get an email](#get-an-email)
         - [Get the HTML of an email](#get-the-html-of-an-email)
+        - [Get a block](#get-a-block)
     - [Forms](#forms)
         - [Get a list of forms](#get-a-list-of-forms)
         - [Get a form](#get-a-form)
@@ -1030,6 +1031,35 @@ class Example {
 				
 				System.out.println("Try again later");
 			}
+			
+			e.printStackTrace();
+		}
+    }
+}
+```
+
+### Get a block
+
+Returns the block and its position. `placement.after` is the ID of the block before it, and `placement.before` is the ID of the block after it. Each one is `null` if there is no such block.
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		try {
+			
+			SingleEmailBlock response = this.getMailerLite().emails().getBlock("123456", "57");
+			
+			EmailBlock block = response.block;
+			
+			System.out.println(block.type);
+			System.out.println(block.editorContent);
+			System.out.println(block.placement.after);
+			
+		} catch (MailerLiteException e) {
 			
 			e.printStackTrace();
 		}

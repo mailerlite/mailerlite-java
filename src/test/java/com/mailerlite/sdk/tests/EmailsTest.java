@@ -32,6 +32,7 @@ import com.mailerlite.sdk.emails.EmailDocument;
 import com.mailerlite.sdk.emails.EmailSettings;
 import com.mailerlite.sdk.emails.EmailSocialLink;
 import com.mailerlite.sdk.emails.Emails;
+import com.mailerlite.sdk.emails.SingleEmailBlock;
 import com.mailerlite.sdk.emails.SingleEmailDocument;
 import com.mailerlite.sdk.emails.SingleEmailHtml;
 import com.mailerlite.sdk.exceptions.EmptyIdException;
@@ -288,6 +289,39 @@ public class EmailsTest {
 	public void getHtmlRejectsInvalidIds()
 	{
 		assertRejectsIds(client, id -> () -> emails.getHtml(id));
+	}
+
+
+	/**
+	 * getBlock sends GET /emails/{email}/blocks/{block} and decodes the block and its placement.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void getBlockDecodesTheBlock() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_block.json"));
+
+		SingleEmailBlock response = emails.getBlock("123", "57");
+
+		assertRequest(client, "GET", "/emails/123/blocks/57", null, null);
+		assertEquals("43", response.etag);
+		assertEquals("57", response.block.id);
+		assertEquals("paragraph", response.block.type);
+		assertEquals("left", map(response.block.editorContent, "attrs").get("textAlign"));
+		assertEquals("56", response.block.placement.after);
+		assertNull(response.block.placement.before);
+		assertNull(response.block.children);
+	}
+
+	/**
+	 * getBlock checks both IDs and sends no request for an invalid ID.
+	 */
+	@Test
+	public void getBlockRejectsInvalidIds()
+	{
+		assertRejectsIds(client, id -> () -> emails.getBlock(id, "57"));
+		assertRejectsIds(client, id -> () -> emails.getBlock("123", id));
 	}
 
 }
