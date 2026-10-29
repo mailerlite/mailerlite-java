@@ -55,6 +55,7 @@ MailerLite Java SDK
         - [Move a block](#move-a-block)
         - [Validate a block](#validate-a-block)
         - [Update the design settings](#update-the-design-settings)
+        - [Validate the design settings](#validate-the-design-settings)
     - [Forms](#forms)
         - [Get a list of forms](#get-a-list-of-forms)
         - [Get a form](#get-a-form)
@@ -1271,6 +1272,38 @@ class Example {
 			if (response.rejected != null) {
 				
 				System.out.println(String.join(", ", response.rejected.keys));
+			}
+			
+		} catch (MailerLiteException e) {
+			
+			e.printStackTrace();
+		}
+    }
+}
+```
+
+### Validate the design settings
+
+Checks a change with the rules of the update, and saves nothing. It needs no etag. Invalid settings are not an error: the response has `valid` set to `false` and the `errors` for each field. If the update would remove unsafe values, `rejected` has their paths.
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		try {
+			
+			EmailSettings settings = new EmailSettings();
+			settings.button = new EmailButtonSettings();
+			settings.button.borderRadius = "8";
+			
+			EmailValidation response = this.getMailerLite().emails().validateSettings("123456", settings);
+			
+			if (!response.valid) {
+				
+				System.out.println(response.errors.keySet());
 			}
 			
 		} catch (MailerLiteException e) {

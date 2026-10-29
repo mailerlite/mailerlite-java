@@ -860,4 +860,39 @@ public class EmailsTest {
 		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
 	}
 
+
+	/**
+	 * validateSettings sends POST /emails/{email}/settings/validate with the settings and no etag.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void validateSettingsSendsTheSettingsWithoutEtag() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_settings_validation.json"));
+
+		EmailValidation response = emails.validateSettings("123", brandAndParagraphSettings());
+
+		assertRequest(client, "POST", "/emails/123/settings/validate",
+				"{\"brand\":{\"mode\":\"custom\",\"background_color\":\"#f4f4f4\"},"
+				+ "\"typography\":{\"paragraph\":{\"p1\":{\"size\":\"18\"}}}}", null);
+		assertFalse(response.valid);
+		assertArrayEquals(new String[] {"The layout.width field cannot be changed."}, response.errors.get("layout.width"));
+		assertEquals("2.73.2", response.schema.version);
+		assertEquals("Some attributes were rejected.", response.rejected.message);
+		assertArrayEquals(new String[] {"footer.social_links[0].url"}, response.rejected.keys);
+	}
+
+	/**
+	 * validateSettings checks the ID and the settings, and sends no request when a check fails.
+	 */
+	@Test
+	public void validateSettingsRejectsInvalidInput()
+	{
+		assertRejectsIds(client, id -> () -> emails.validateSettings(id, brandAndParagraphSettings()));
+
+		assertThrows(NullPointerException.class, () -> emails.validateSettings("123", null));
+		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	}
+
 }

@@ -184,6 +184,10 @@ public class ReadmeExamplesTest {
 				.respond(200, Fixtures.read("email_settings.json"))
 				.expect("PATCH /emails/123456/settings"));
 
+		list.add(new Example("Validate the design settings")
+				.respond(200, Fixtures.read("email_settings_validation.json"))
+				.expect("POST /emails/123456/settings/validate"));
+
 		return list;
 	}
 

@@ -231,6 +231,25 @@ public class Emails {
 	}
 
 	/**
+	 * Checks a change to the design settings with the rules of an update, and saves nothing. It needs no etag.
+	 * <p>
+	 * Invalid settings are not an error: the response has valid set to false and the errors for each field. If the
+	 * update would remove unsafe values, the response has their paths in rejected.
+	 *
+	 * @param emailId the email ID
+	 * @param settings the settings to check
+	 * @return the result of the validation
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 * @throws NullPointerException if the settings are null
+	 */
+	public EmailValidation validateSettings(String emailId, EmailSettings settings) throws MailerLiteException
+	{
+		String endpoint = emailPath(emailId).concat("/settings/validate");
+
+		return send("POST", endpoint, TREE_GSON.toJson(settingsBody(settings)), EmailValidation.class);
+	}
+
+	/**
 	 * Checks the email ID and makes the path of the email.
 	 *
 	 * @param emailId the email ID
