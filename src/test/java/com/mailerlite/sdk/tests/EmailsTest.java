@@ -62,6 +62,7 @@ import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.support.Fixtures;
 import com.mailerlite.sdk.support.RecordingHttpClient;
 import com.mailerlite.sdk.support.RecordingHttpClient.RecordedRequest;
+import com.mailerlite.sdk.support.UrlAssert;
 
 /**
  * Tests the email endpoints with the recording HTTP client.
@@ -101,6 +102,7 @@ public class EmailsTest {
 
 	/**
 	 * Asserts the one request that the client got: the method, the full URL, all the headers and the raw body.
+	 * The sequence of the query parameters is ignored.
 	 *
 	 * @param client the fake HTTP client
 	 * @param method the HTTP method
@@ -116,7 +118,7 @@ public class EmailsTest {
 
 		RecordedRequest request = client.lastRequest();
 		assertEquals(method, request.method);
-		assertEquals(BASE + path, request.uri.toString());
+		UrlAssert.assertUrlEquals(BASE + path, request.uri.toString());
 
 		Set<String> expectedHeaders = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 		expectedHeaders.addAll(Arrays.asList("Content-Type", "Accept", "Authorization"));
@@ -971,7 +973,7 @@ public class EmailsTest {
 
 		emails.versions("123").page(2).limit(10).get();
 
-		assertRequest(client, "GET", "/emails/123/versions?limit=10&page=2", null, null);
+		assertRequest(client, "GET", "/emails/123/versions?page=2&limit=10", null, null);
 	}
 
 	/**

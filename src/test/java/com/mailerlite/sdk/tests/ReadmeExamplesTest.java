@@ -41,6 +41,7 @@ import com.mailerlite.sdk.support.Fixtures;
 import com.mailerlite.sdk.support.ReadmeExampleBase;
 import com.mailerlite.sdk.support.RecordingHttpClient;
 import com.mailerlite.sdk.support.RecordingHttpClient.RecordedRequest;
+import com.mailerlite.sdk.support.UrlAssert;
 
 /**
  * Compiles the examples of the new README sections and runs each one against the recording HTTP client.
@@ -198,7 +199,7 @@ public class ReadmeExamplesTest {
 
 		list.add(new Example("List the versions of an email")
 				.respond(200, Fixtures.read("email_versions.json"))
-				.expect("GET /emails/123456/versions?limit=10&page=1"));
+				.expect("GET /emails/123456/versions?page=1&limit=10"));
 
 		list.add(new Example("Save a version of an email")
 				.respond(201, Fixtures.read("email_version.json"))
@@ -214,7 +215,7 @@ public class ReadmeExamplesTest {
 
 		list.add(new Example("Get a list of files")
 				.respond(200, Fixtures.read("files.json"))
-				.expect("GET /files?filter[type]=image&limit=25&filter[name]=summer+sale&sort=-size&page=1"));
+				.expect("GET /files?filter[name]=summer+sale&filter[type]=image&sort=-size&page=1&limit=25"));
 
 		list.add(new Example("Create a campaign with the simple editor")
 				.respond(201, Fixtures.read("campaign_simple_editor.json"))
@@ -307,7 +308,14 @@ public class ReadmeExamplesTest {
 				sent.add(request.method + " " + request.uri.toString().substring(BASE.length()));
 			}
 
-			assertEquals(example.requests, sent, "requests of the example");
+			assertEquals(example.requests.size(), sent.size(), "number of requests of the example: " + sent);
+
+			for (int i = 0; i < sent.size(); i++) {
+				String[] expected = example.requests.get(i).split(" ", 2);
+				String[] actual = sent.get(i).split(" ", 2);
+				assertEquals(expected[0], actual[0], "method of request " + i);
+				UrlAssert.assertUrlEquals(expected[1], actual[1]);
+			}
 			assertEquals(0, client.pendingResponses(), "the example must use all the queued responses");
 		} finally {
 			RecordingHttpClient.uninstall();

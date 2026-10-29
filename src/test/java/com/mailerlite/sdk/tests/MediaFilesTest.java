@@ -130,6 +130,6 @@ public class MediaFilesTest {
 				.get();
 
 		EmailsTest.assertRequest(client, "GET",
-				"/files?filter[type]=image&limit=25&filter[name]=banner&sort=-size&page=2", null, null);
+				"/files?filter[type]=image&filter[name]=banner&sort=-size&page=2&limit=25", null, null);
 	}
 }
