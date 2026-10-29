@@ -273,6 +273,18 @@ public class Emails {
 	}
 
 	/**
+	 * Lists the versions of an email, newest first. Call get() on the result, after page() and limit() if you
+	 * want them.
+	 *
+	 * @param emailId the email ID
+	 * @return the retriever of the versions
+	 */
+	public EmailVersionsRetriever versions(String emailId)
+	{
+		return new EmailVersionsRetriever(apiObjectReference, emailPath(emailId).concat("/versions"));
+	}
+
+	/**
 	 * Checks the email ID and makes the path of the email.
 	 *
 	 * @param emailId the email ID

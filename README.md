@@ -57,6 +57,7 @@ MailerLite Java SDK
         - [Update the design settings](#update-the-design-settings)
         - [Validate the design settings](#validate-the-design-settings)
         - [Save an email as a template](#save-an-email-as-a-template)
+        - [List the versions of an email](#list-the-versions-of-an-email)
     - [Forms](#forms)
         - [Get a list of forms](#get-a-list-of-forms)
         - [Get a form](#get-a-form)
@@ -1331,6 +1332,34 @@ class Example {
 			SingleEmailTemplate response = this.getMailerLite().emails().createTemplate("123456", "Monthly newsletter");
 			
 			System.out.println(response.template.id);
+			
+		} catch (MailerLiteException e) {
+			
+			e.printStackTrace();
+		}
+    }
+}
+```
+
+### List the versions of an email
+
+A version is a saved copy of the content and the design settings of an email. The list starts with the newest version. `current` is `true` for the version that the email has now. Writes through the API do not save versions.
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		try {
+			
+			EmailVersionsList response = this.getMailerLite().emails().versions("123456").page(1).limit(10).get();
+			
+			for (EmailVersion version : response.versions) {
+				
+				System.out.println(version.id + " " + version.createdAt + " " + version.current);
+			}
 			
 		} catch (MailerLiteException e) {
 			

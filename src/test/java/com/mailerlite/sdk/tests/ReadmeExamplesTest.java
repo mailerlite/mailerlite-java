@@ -192,6 +192,10 @@ public class ReadmeExamplesTest {
 				.respond(201, Fixtures.read("email_template.json"))
 				.expect("POST /emails/123456/templates"));
 
+		list.add(new Example("List the versions of an email")
+				.respond(200, Fixtures.read("email_versions.json"))
+				.expect("GET /emails/123456/versions?limit=10&page=1"));
+
 		return list;
 	}
 

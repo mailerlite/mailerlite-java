@@ -49,6 +49,7 @@ import com.mailerlite.sdk.emails.SingleEmailSettings;
 import com.mailerlite.sdk.emails.SingleEmailTemplate;
 import com.mailerlite.sdk.emails.EmailSocialLink;
 import com.mailerlite.sdk.emails.EmailValidation;
+import com.mailerlite.sdk.emails.EmailVersionsList;
 import com.mailerlite.sdk.emails.Emails;
 import com.mailerlite.sdk.emails.SingleEmailBlock;
 import com.mailerlite.sdk.emails.SingleEmailDocument;
@@ -928,6 +929,76 @@ public class EmailsTest {
 		assertThrows(IllegalArgumentException.class, () -> emails.createTemplate("123", ""));
 		assertThrows(IllegalArgumentException.class, () -> emails.createTemplate("123", null));
 		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	}
+
+
+	/**
+	 * versions().get() sends GET /emails/{email}/versions without a query string, and decodes the list.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void versionsWithoutOptions() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_versions.json"));
+
+		EmailVersionsList response = emails.versions("123").get();
+
+		assertRequest(client, "GET", "/emails/123/versions", null, null);
+		assertEquals(2, response.versions.length);
+		assertEquals("902", response.versions[0].id);
+		assertEquals("2026-10-28 12:05:00", response.versions[0].createdAt);
+		assertTrue(response.versions[0].current);
+		assertEquals("901", response.versions[1].id);
+		assertFalse(response.versions[1].current);
+		assertNull(response.links.previous);
+		assertNull(response.links.next);
+		assertEquals(1, response.meta.from);
+		assertEquals(2, response.meta.to);
+		assertEquals(2, response.meta.total);
+	}
+
+	/**
+	 * versions() sends the page and the limit.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void versionsWithPageAndLimit() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_versions.json"));
+
+		emails.versions("123").page(2).limit(10).get();
+
+		assertRequest(client, "GET", "/emails/123/versions?limit=10&page=2", null, null);
+	}
+
+	/**
+	 * An empty page has null for meta.from and meta.to. The SDK reads them as 0.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void versionsEmptyPageReadsNullFromAndToAsZero() throws Exception
+	{
+		client.respond(200, "{\"data\":[],\"links\":{\"first\":null,\"last\":null,\"prev\":null,\"next\":null},"
+				+ "\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"per_page\":25,\"to\":null,\"total\":0}}");
+
+		EmailVersionsList response = emails.versions("123").get();
+
+		assertEquals(0, response.versions.length);
+		assertEquals(0, response.meta.from);
+		assertEquals(0, response.meta.to);
+		assertEquals(0, response.meta.total);
+	}
+
+	/**
+	 * versions() checks the ID, and sends no request for an invalid ID.
+	 */
+	@Test
+	public void versionsRejectsInvalidIds()
+	{
+		assertRejectsIds(client, id -> () -> emails.versions(id).get());
 	}
 
 }
