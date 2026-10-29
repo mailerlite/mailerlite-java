@@ -8,6 +8,7 @@
 package com.mailerlite.sdk;
 
 import com.mailerlite.sdk.automations.Automations;
+import com.mailerlite.sdk.brandstyles.BrandStyles;
 import com.mailerlite.sdk.campaigns.Campaigns;
 import com.mailerlite.sdk.emails.Emails;
 import com.mailerlite.sdk.fields.Fields;
@@ -52,6 +53,9 @@ public class MailerLite
 	
 	/** The emails. */
 	protected Emails emails;
+	
+	/** The brand styles. */
+	protected BrandStyles brandStyles;
 	
 	/**
 	 * Campaigns.
@@ -189,6 +193,21 @@ public class MailerLite
 		}
 		
 		return emails;
+	}
+	
+	
+	/**
+	 * Brand styles.
+	 *
+	 * @return the brand styles
+	 */
+	public BrandStyles brandStyles()
+	{
+		if (brandStyles == null) {
+			brandStyles = new BrandStyles(this);
+		}
+		
+		return brandStyles;
 	}
 	
 	

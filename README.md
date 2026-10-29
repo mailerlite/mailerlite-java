@@ -60,6 +60,8 @@ MailerLite Java SDK
         - [List the versions of an email](#list-the-versions-of-an-email)
         - [Save a version of an email](#save-a-version-of-an-email)
         - [Restore a version of an email](#restore-a-version-of-an-email)
+    - [Brand styles](#brand-styles)
+        - [Get the brand styles](#get-the-brand-styles)
     - [Forms](#forms)
         - [Get a list of forms](#get-a-list-of-forms)
         - [Get a form](#get-a-form)
@@ -1247,7 +1249,7 @@ Set only the fields that you want to change. The groups are `brand`, `layout`, `
 - All style values are strings, for example `"16"` and not `16`.
 - The API stores each value that you send, also a value that the email inherits from your account. Then the email no longer follows your account for that value. So do not send back all the settings that you read.
 - `footer.socialLinks` replaces the whole list. An empty list removes all the links. Keep the `linkId` of each link to keep its click history.
-- `brand.mode` is one of `EmailBrandModes`. To apply a preset palette, set `brand.style` to the `identifier` of the preset from the brand styles.
+- `brand.mode` is one of `EmailBrandModes`. To apply a preset palette, set `brand.style` to the `identifier` of the preset from [the brand styles](#get-the-brand-styles).
 - The SDK sends the etag at the top level of the body. Do not put it in the settings.
 - If the API removed unsafe values, the response has `rejected` with the paths of these values.
 
@@ -1412,6 +1414,36 @@ class Example {
 			SingleEmailDocument response = this.getMailerLite().emails().restoreVersion("123456", "901", "etag-from-the-last-response");
 			
 			System.out.println(response.etag);
+			
+		} catch (MailerLiteException e) {
+			
+			e.printStackTrace();
+		}
+    }
+}
+```
+
+## Brand styles
+
+### Get the brand styles
+
+Returns the palettes of your account: `brand` (your brand styles, or `null` if your account has none), `defaultStyle` (the JSON key `default`) and the `presets`. Match a palette on its `identifier`, not on its `name`. To apply a preset to an email, [update the design settings](#update-the-design-settings) with `brand.style` set to the `identifier`.
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		try {
+			
+			SingleBrandStyles response = this.getMailerLite().brandStyles().get();
+			
+			for (BrandStyle preset : response.brandStyles.presets) {
+				
+				System.out.println(preset.identifier + " " + preset.name);
+			}
 			
 		} catch (MailerLiteException e) {
 			

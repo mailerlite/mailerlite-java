@@ -55,6 +55,7 @@ public class ReadmeExamplesTest {
 	/** The imports that the README examples get. The README shows them as "// import ....". */
 	private static final List<String> IMPORTS = Arrays.asList(
 			"com.mailerlite.sdk.*",
+			"com.mailerlite.sdk.brandstyles.*",
 			"com.mailerlite.sdk.campaigns.*",
 			"com.mailerlite.sdk.emails.*",
 			"com.mailerlite.sdk.exceptions.*",
@@ -203,6 +204,10 @@ public class ReadmeExamplesTest {
 		list.add(new Example("Restore a version of an email")
 				.respond(200, Fixtures.read("email.json"))
 				.expect("POST /emails/123456/versions/901/restore"));
+
+		list.add(new Example("Get the brand styles")
+				.respond(200, Fixtures.read("brand_styles.json"))
+				.expect("GET /brand-styles"));
 
 		return list;
 	}
