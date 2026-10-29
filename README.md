@@ -56,6 +56,7 @@ MailerLite Java SDK
         - [Validate a block](#validate-a-block)
         - [Update the design settings](#update-the-design-settings)
         - [Validate the design settings](#validate-the-design-settings)
+        - [Save an email as a template](#save-an-email-as-a-template)
     - [Forms](#forms)
         - [Get a list of forms](#get-a-list-of-forms)
         - [Get a form](#get-a-form)
@@ -1305,6 +1306,31 @@ class Example {
 				
 				System.out.println(response.errors.keySet());
 			}
+			
+		} catch (MailerLiteException e) {
+			
+			e.printStackTrace();
+		}
+    }
+}
+```
+
+### Save an email as a template
+
+Copies the email to a new template. The API cannot delete templates.
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		try {
+			
+			SingleEmailTemplate response = this.getMailerLite().emails().createTemplate("123456", "Monthly newsletter");
+			
+			System.out.println(response.template.id);
 			
 		} catch (MailerLiteException e) {
 			

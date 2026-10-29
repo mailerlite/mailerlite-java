@@ -46,6 +46,7 @@ import com.mailerlite.sdk.emails.EmailSettings;
 import com.mailerlite.sdk.emails.EmailTextStyle;
 import com.mailerlite.sdk.emails.EmailTypographySettings;
 import com.mailerlite.sdk.emails.SingleEmailSettings;
+import com.mailerlite.sdk.emails.SingleEmailTemplate;
 import com.mailerlite.sdk.emails.EmailSocialLink;
 import com.mailerlite.sdk.emails.EmailValidation;
 import com.mailerlite.sdk.emails.Emails;
@@ -892,6 +893,40 @@ public class EmailsTest {
 		assertRejectsIds(client, id -> () -> emails.validateSettings(id, brandAndParagraphSettings()));
 
 		assertThrows(NullPointerException.class, () -> emails.validateSettings("123", null));
+		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	}
+
+
+	/**
+	 * createTemplate sends POST /emails/{email}/templates with the name, and decodes the template.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void createTemplateSendsTheName() throws Exception
+	{
+		client.respond(201, Fixtures.read("email_template.json"));
+
+		SingleEmailTemplate response = emails.createTemplate("123", "Newsletter");
+
+		assertRequest(client, "POST", "/emails/123/templates", "{\"name\":\"Newsletter\"}", null);
+		assertEquals(201, response.responseStatusCode);
+		assertEquals("789", response.template.id);
+		assertEquals("Newsletter", response.template.name);
+		assertEquals("email", response.template.type);
+		assertEquals("2026-10-28 12:00:00", response.template.createdAt);
+	}
+
+	/**
+	 * createTemplate checks the ID and the name, and sends no request when a check fails.
+	 */
+	@Test
+	public void createTemplateRejectsInvalidInput()
+	{
+		assertRejectsIds(client, id -> () -> emails.createTemplate(id, "Newsletter"));
+
+		assertThrows(IllegalArgumentException.class, () -> emails.createTemplate("123", ""));
+		assertThrows(IllegalArgumentException.class, () -> emails.createTemplate("123", null));
 		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
 	}
 

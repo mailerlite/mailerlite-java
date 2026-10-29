@@ -188,6 +188,10 @@ public class ReadmeExamplesTest {
 				.respond(200, Fixtures.read("email_settings_validation.json"))
 				.expect("POST /emails/123456/settings/validate"));
 
+		list.add(new Example("Save an email as a template")
+				.respond(201, Fixtures.read("email_template.json"))
+				.expect("POST /emails/123456/templates"));
+
 		return list;
 	}
 

@@ -250,6 +250,29 @@ public class Emails {
 	}
 
 	/**
+	 * Copies an email to a new template. The API cannot delete templates.
+	 *
+	 * @param emailId the email ID
+	 * @param name the name of the new template
+	 * @return the new template
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 * @throws IllegalArgumentException if the name is null or empty
+	 */
+	public SingleEmailTemplate createTemplate(String emailId, String name) throws MailerLiteException
+	{
+		String endpoint = emailPath(emailId).concat("/templates");
+
+		if (name == null || name.isEmpty()) {
+			throw new IllegalArgumentException("name must not be empty");
+		}
+
+		TemplateBody body = new TemplateBody();
+		body.name = name;
+
+		return send("POST", endpoint, toJson(body), SingleEmailTemplate.class);
+	}
+
+	/**
 	 * Checks the email ID and makes the path of the email.
 	 *
 	 * @param emailId the email ID
@@ -441,6 +464,16 @@ public class Emails {
 		/** The etag. */
 		@SerializedName("etag")
 		String etag;
+	}
+
+	/**
+	 * The request body of a template create.
+	 */
+	private static class TemplateBody {
+
+		/** The name. */
+		@SerializedName("name")
+		String name;
 	}
 
 	/**
