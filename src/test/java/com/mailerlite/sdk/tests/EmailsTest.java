@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +29,10 @@ import org.junit.jupiter.api.function.Executable;
 
 import com.mailerlite.sdk.MailerLite;
 import com.mailerlite.sdk.emails.EmailBlock;
+import com.mailerlite.sdk.emails.EmailBlockInput;
+import com.mailerlite.sdk.emails.EmailBlockPosition;
+import com.mailerlite.sdk.emails.EmailBlockPositions;
+import com.mailerlite.sdk.emails.EmailBlockTypes;
 import com.mailerlite.sdk.emails.EmailDocument;
 import com.mailerlite.sdk.emails.EmailSettings;
 import com.mailerlite.sdk.emails.EmailSocialLink;
@@ -35,6 +40,7 @@ import com.mailerlite.sdk.emails.Emails;
 import com.mailerlite.sdk.emails.SingleEmailBlock;
 import com.mailerlite.sdk.emails.SingleEmailDocument;
 import com.mailerlite.sdk.emails.SingleEmailHtml;
+import com.mailerlite.sdk.exceptions.EmptyEtagException;
 import com.mailerlite.sdk.exceptions.EmptyIdException;
 import com.mailerlite.sdk.exceptions.InvalidIdException;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
@@ -322,6 +328,197 @@ public class EmailsTest {
 	{
 		assertRejectsIds(client, id -> () -> emails.getBlock(id, "57"));
 		assertRejectsIds(client, id -> () -> emails.getBlock("123", id));
+	}
+
+
+	/**
+	 * Makes the editor content of a paragraph: {"attrs":{"textAlign":align},"content":[{"type":"text","text":text}]}.
+	 *
+	 * @param align the text alignment
+	 * @param text the text
+	 * @return the editor content
+	 */
+	static Map<String, Object> paragraph(String align, String text)
+	{
+		Map<String, Object> attrs = new LinkedHashMap<String, Object>();
+		attrs.put("textAlign", align);
+
+		Map<String, Object> node = new LinkedHashMap<String, Object>();
+		node.put("type", "text");
+		node.put("text", text);
+
+		Map<String, Object> content = new LinkedHashMap<String, Object>();
+		content.put("attrs", attrs);
+		content.put("content", Collections.singletonList(node));
+
+		return content;
+	}
+
+	/**
+	 * Asserts that each write rejects an empty or null etag, and sends no request.
+	 *
+	 * @param client the fake HTTP client
+	 * @param call makes the call for an etag
+	 */
+	static void assertRejectsEtags(RecordingHttpClient client, Function<String, Executable> call)
+	{
+		assertThrows(EmptyEtagException.class, call.apply(""));
+		assertThrows(EmptyEtagException.class, call.apply(null));
+		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	}
+
+	/**
+	 * Asserts the placement rules of a method that sends a placement.
+	 * <p>
+	 * The SDK checks blockId only for "before" and "after". For "start" and "end", it does not check blockId and
+	 * does not send it. For another position, it checks blockId if it is set, and sends it.
+	 * The SDK does not change the object of the caller.
+	 *
+	 * @param client the fake HTTP client
+	 * @param response the response body to queue for each request
+	 * @param call makes the call for a placement
+	 * @param expectedBody makes the expected raw body from the JSON of the placement
+	 * @throws Throwable if a call fails
+	 */
+	static void assertPlacementRules(RecordingHttpClient client, String response, Function<EmailBlockPosition, Executable> call,
+			Function<String, String> expectedBody) throws Throwable
+	{
+		Object[][] sent = {
+			{EmailBlockPositions.END, "", "{\"position\":\"end\"}"},
+			{EmailBlockPositions.START, "1/2", "{\"position\":\"start\"}"},
+			{EmailBlockPositions.AFTER, "57", "{\"position\":\"after\",\"block_id\":\"57\"}"},
+			{EmailBlockPositions.BEFORE, "1", "{\"position\":\"before\",\"block_id\":\"1\"}"},
+			{"middle", "5", "{\"position\":\"middle\",\"block_id\":\"5\"}"},
+			{"middle", null, "{\"position\":\"middle\"}"},
+		};
+
+		for (Object[] item : sent) {
+
+			client.requests().clear();
+			client.respond(200, response);
+
+			EmailBlockPosition placement = new EmailBlockPosition((String) item[0], (String) item[1]);
+			call.apply(placement).execute();
+
+			assertEquals(expectedBody.apply((String) item[2]), client.lastRequest().bodyString(), item[0] + " " + item[1]);
+			assertEquals(item[1], placement.blockId, "the SDK must not change the placement of the caller");
+		}
+
+		client.requests().clear();
+
+		Object[][] rejected = {
+			{EmailBlockPositions.AFTER, null, EmptyIdException.class},
+			{EmailBlockPositions.AFTER, "", EmptyIdException.class},
+			{EmailBlockPositions.BEFORE, null, EmptyIdException.class},
+			{EmailBlockPositions.BEFORE, "1/2", InvalidIdException.class},
+			{EmailBlockPositions.AFTER, "\u00b2", InvalidIdException.class},
+			{"middle", "1/2", InvalidIdException.class},
+			{"", "5", IllegalArgumentException.class},
+			{null, "5", IllegalArgumentException.class},
+		};
+
+		for (Object[] item : rejected) {
+
+			@SuppressWarnings("unchecked")
+			Class<? extends Throwable> type = (Class<? extends Throwable>) item[2];
+			assertThrows(type, call.apply(new EmailBlockPosition((String) item[0], (String) item[1])), item[0] + " " + item[1]);
+		}
+
+		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	}
+
+	/**
+	 * createBlock sends POST /emails/{email}/blocks with the block, the placement and the etag.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void createBlockSendsTheBlock() throws Exception
+	{
+		client.respond(201, Fixtures.read("email_block_created.json"));
+
+		EmailBlockInput block = new EmailBlockInput(EmailBlockTypes.PARAGRAPH, paragraph("center", "Hi"));
+		block.placement = new EmailBlockPosition(EmailBlockPositions.AFTER, "57");
+
+		SingleEmailBlock response = emails.createBlock("123", "42", block);
+
+		assertRequest(client, "POST", "/emails/123/blocks",
+				"{\"type\":\"paragraph\",\"editor_content\":{\"attrs\":{\"textAlign\":\"center\"},"
+				+ "\"content\":[{\"type\":\"text\",\"text\":\"Hi\"}]},"
+				+ "\"placement\":{\"position\":\"after\",\"block_id\":\"57\"},\"etag\":\"42\"}", null);
+		assertEquals(201, response.responseStatusCode);
+		assertEquals("43", response.etag);
+		assertEquals("58", response.block.id);
+		assertEquals("center", map(response.block.editorContent, "attrs").get("textAlign"));
+		assertEquals("57", response.block.placement.after);
+		assertNull(response.block.placement.before);
+	}
+
+	/**
+	 * createBlock sends an empty editor content and no placement when the caller sets none.
+	 * A null value inside the editor content is sent as null.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void createBlockWithoutPlacement() throws Exception
+	{
+		client.respond(201, Fixtures.read("email_block_created.json")).respond(201, Fixtures.read("email_block_created.json"));
+
+		emails.createBlock("123", "42", new EmailBlockInput(EmailBlockTypes.DIVIDER, new LinkedHashMap<String, Object>()));
+
+		assertEquals("{\"type\":\"divider\",\"editor_content\":{},\"etag\":\"42\"}", client.lastRequest().bodyString());
+
+		Map<String, Object> attrs = new LinkedHashMap<String, Object>();
+		attrs.put("url", null);
+		Map<String, Object> content = new LinkedHashMap<String, Object>();
+		content.put("attrs", attrs);
+
+		emails.createBlock("123", "42", new EmailBlockInput(EmailBlockTypes.BUTTON, content));
+
+		assertEquals("{\"type\":\"button\",\"editor_content\":{\"attrs\":{\"url\":null}},\"etag\":\"42\"}",
+				client.lastRequest().bodyString());
+	}
+
+	/**
+	 * createBlock checks the placement: blockId only for "before" and "after".
+	 *
+	 * @throws Throwable if a call fails
+	 */
+	@Test
+	public void createBlockPlacementRules() throws Throwable
+	{
+		assertPlacementRules(client, Fixtures.read("email_block_created.json"), placement -> () -> {
+			EmailBlockInput block = new EmailBlockInput(EmailBlockTypes.DIVIDER, new LinkedHashMap<String, Object>());
+			block.placement = placement;
+			emails.createBlock("123", "42", block);
+		}, json -> "{\"type\":\"divider\",\"editor_content\":{},\"placement\":" + json + ",\"etag\":\"42\"}");
+	}
+
+	/**
+	 * createBlock checks the IDs, the etag and the required values, and sends no request when a check fails.
+	 */
+	@Test
+	public void createBlockRejectsInvalidInput()
+	{
+		EmailBlockInput divider = new EmailBlockInput(EmailBlockTypes.DIVIDER, new LinkedHashMap<String, Object>());
+
+		assertRejectsIds(client, id -> () -> emails.createBlock(id, "42", divider));
+		assertRejectsEtags(client, etag -> () -> emails.createBlock("123", etag, divider));
+
+		NullPointerException noBlock = assertThrows(NullPointerException.class, () -> emails.createBlock("123", "42", null));
+		assertTrue(noBlock.getMessage().contains("block"), noBlock.getMessage());
+
+		assertThrows(IllegalArgumentException.class,
+				() -> emails.createBlock("123", "42", new EmailBlockInput("", new LinkedHashMap<String, Object>())));
+		assertThrows(IllegalArgumentException.class,
+				() -> emails.createBlock("123", "42", new EmailBlockInput(null, new LinkedHashMap<String, Object>())));
+
+		NullPointerException noContent = assertThrows(NullPointerException.class,
+				() -> emails.createBlock("123", "42", new EmailBlockInput(EmailBlockTypes.DIVIDER, null)));
+		assertTrue(noContent.getMessage().contains("editorContent"), noContent.getMessage());
+
+		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
 	}
 
 }

@@ -7,8 +7,13 @@
  **************************************************/
 package com.mailerlite.sdk.emails;
 
+import java.util.Map;
+import java.util.Objects;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.MailerLite;
 import com.mailerlite.sdk.MailerLiteApi;
 import com.mailerlite.sdk.MailerLiteResponse;
@@ -86,6 +91,28 @@ public class Emails {
 	}
 
 	/**
+	 * Inserts a block into an email.
+	 * <p>
+	 * Without a placement, the API puts the block at the end of the email. The response has the new block with
+	 * its placement and the new etag.
+	 *
+	 * @param emailId the email ID
+	 * @param etag the etag from the last response for the email
+	 * @param block the block to insert
+	 * @return the new block and the new etag
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 * @throws NullPointerException if the block or its editor content is null
+	 * @throws IllegalArgumentException if the block type or the placement position is empty
+	 */
+	public SingleEmailBlock createBlock(String emailId, String etag, EmailBlockInput block) throws MailerLiteException
+	{
+		String endpoint = emailPath(emailId).concat("/blocks");
+		BlockBody body = blockBody(block, RequestChecks.etag(etag));
+
+		return send("POST", endpoint, toJson(body), SingleEmailBlock.class);
+	}
+
+	/**
 	 * Checks the email ID and makes the path of the email.
 	 *
 	 * @param emailId the email ID
@@ -106,6 +133,59 @@ public class Emails {
 	private static String blockPath(String emailId, String blockId)
 	{
 		return emailPath(emailId).concat("/blocks/").concat(RequestChecks.pathId(blockId, "blockId"));
+	}
+
+	/**
+	 * Checks a block input and makes the request body.
+	 *
+	 * @param block the block input
+	 * @param etag the etag, or null for no etag
+	 * @return the request body
+	 */
+	private static BlockBody blockBody(EmailBlockInput block, String etag)
+	{
+		Objects.requireNonNull(block, "block");
+
+		if (block.type == null || block.type.isEmpty()) {
+			throw new IllegalArgumentException("block.type must not be empty");
+		}
+
+		BlockBody body = new BlockBody();
+		body.type = block.type;
+		body.editorContent = Objects.requireNonNull(block.editorContent, "block.editorContent");
+		body.placement = block.placement == null ? null : placementBody(block.placement);
+		body.etag = etag;
+
+		return body;
+	}
+
+	/**
+	 * Checks a placement and makes a copy to send.
+	 * <p>
+	 * The API uses the block ID only for "before" and "after". So for these positions the block ID must be valid.
+	 * For "start" and "end", the copy has no block ID. For another position, the block ID is checked if it is set.
+	 *
+	 * @param placement the placement of the caller
+	 * @return the copy to send
+	 */
+	private static PlacementBody placementBody(EmailBlockPosition placement)
+	{
+		String position = placement.position;
+
+		if (position == null || position.isEmpty()) {
+			throw new IllegalArgumentException("placement.position must not be empty");
+		}
+
+		if (EmailBlockPositions.START.equals(position) || EmailBlockPositions.END.equals(position)) {
+			return new PlacementBody(position, null);
+		}
+
+		if (EmailBlockPositions.BEFORE.equals(position) || EmailBlockPositions.AFTER.equals(position)
+				|| placement.blockId != null) {
+			RequestChecks.pathId(placement.blockId, "placement.blockId");
+		}
+
+		return new PlacementBody(position, placement.blockId);
 	}
 
 	/**
@@ -137,5 +217,54 @@ public class Emails {
 		api.setToken(apiObjectReference.getToken());
 
 		return api.sendRequest(method, endpoint, body, null, responseClass);
+	}
+
+	/**
+	 * The request body of a block insert or a block validation.
+	 */
+	private static class BlockBody {
+
+		/** The block type. */
+		@SerializedName("type")
+		String type;
+
+		/** The editor document. */
+		@SerializedName("editor_content")
+		@JsonAdapter(EditorContentAdapter.class)
+		Map<String, Object> editorContent;
+
+		/** The placement, or null. */
+		@SerializedName("placement")
+		PlacementBody placement;
+
+		/** The etag, or null. */
+		@SerializedName("etag")
+		String etag;
+	}
+
+	/**
+	 * The placement in a request body.
+	 */
+	private static class PlacementBody {
+
+		/** The position. */
+		@SerializedName("position")
+		final String position;
+
+		/** The block ID, or null. */
+		@SerializedName("block_id")
+		final String blockId;
+
+		/**
+		 * Instantiates a new placement body.
+		 *
+		 * @param position the position
+		 * @param blockId the block ID, or null
+		 */
+		PlacementBody(String position, String blockId)
+		{
+			this.position = position;
+			this.blockId = blockId;
+		}
 	}
 }

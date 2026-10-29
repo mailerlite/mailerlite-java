@@ -49,6 +49,7 @@ MailerLite Java SDK
         - [Get an email](#get-an-email)
         - [Get the HTML of an email](#get-the-html-of-an-email)
         - [Get a block](#get-a-block)
+        - [Insert a block](#insert-a-block)
     - [Forms](#forms)
         - [Get a list of forms](#get-a-list-of-forms)
         - [Get a form](#get-a-form)
@@ -1058,6 +1059,50 @@ class Example {
 			System.out.println(block.type);
 			System.out.println(block.editorContent);
 			System.out.println(block.placement.after);
+			
+		} catch (MailerLiteException e) {
+			
+			e.printStackTrace();
+		}
+    }
+}
+```
+
+### Insert a block
+
+Use the block types in `EmailBlockTypes`. You cannot insert the `TITLE` type. `editorContent` is required, but it can be an empty map. The SDK sends the map as it is, also its `null` values.
+
+Without `placement`, the API puts the block at the end of the email. The positions are in `EmailBlockPositions`. The `BEFORE` and `AFTER` positions also need a `blockId`. For `START` and `END`, the API does not use a `blockId`, so the SDK does not send it.
+
+A `null` block or `editorContent` throws `NullPointerException`. An empty block type throws `IllegalArgumentException`.
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		try {
+			
+			Emails emails = this.getMailerLite().emails();
+			
+			String emailId = "123456";
+			String etag = emails.get(emailId).etag;
+			
+			Map<String, Object> content = Map.of(
+					"attrs", Map.of("textAlign", "left"),
+					"content", List.of(Map.of("type", "text", "text", "Hello")));
+			
+			EmailBlockInput block = new EmailBlockInput(EmailBlockTypes.PARAGRAPH, content);
+			block.placement = new EmailBlockPosition(EmailBlockPositions.START);
+			
+			SingleEmailBlock response = emails.createBlock(emailId, etag, block);
+			
+			String blockId = response.block.id;
+			etag = response.etag;
+			
+			System.out.println(blockId + " " + etag);
 			
 		} catch (MailerLiteException e) {
 			
