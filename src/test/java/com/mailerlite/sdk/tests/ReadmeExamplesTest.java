@@ -162,6 +162,12 @@ public class ReadmeExamplesTest {
 				.expect("GET /emails/123456")
 				.expect("POST /emails/123456/blocks"));
 
+		list.add(new Example("Update a block")
+				.respond(200, Fixtures.read("email_block.json"))
+				.respond(200, Fixtures.read("email_block_updated.json"))
+				.expect("GET /emails/123456/blocks/57")
+				.expect("PATCH /emails/123456/blocks/57"));
+
 		return list;
 	}
 

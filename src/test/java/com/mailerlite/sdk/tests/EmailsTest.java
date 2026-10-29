@@ -521,4 +521,63 @@ public class EmailsTest {
 		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
 	}
 
+
+	/**
+	 * updateBlock sends PATCH /emails/{email}/blocks/{block} with the editor content and the etag.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void updateBlockSendsTheEditorContent() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_block_updated.json"));
+
+		SingleEmailBlock response = emails.updateBlock("123", "57", "43", paragraph("center", "Hello again"));
+
+		assertRequest(client, "PATCH", "/emails/123/blocks/57",
+				"{\"editor_content\":{\"attrs\":{\"textAlign\":\"center\"},"
+				+ "\"content\":[{\"type\":\"text\",\"text\":\"Hello again\"}]},\"etag\":\"43\"}", null);
+		assertEquals("44", response.etag);
+		assertEquals("57", response.block.id);
+		assertEquals("56", response.block.placement.after);
+		assertEquals("58", response.block.placement.before);
+	}
+
+	/**
+	 * A block that the SDK read is sent back with the same numbers and the same null values.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void updateBlockSendsBackTheEditorContentExactly() throws Exception
+	{
+		String editorContent = "{\"attrs\":{\"url\":\"https://example.com\",\"linkId\":7,\"size\":24,\"ratio\":1.5,\"title\":null}}";
+		client.respond(200, "{\"data\":{\"id\":\"57\",\"type\":\"button\",\"editor_content\":" + editorContent + "},\"etag\":\"43\"}")
+				.respond(200, Fixtures.read("email_block_updated.json"));
+
+		SingleEmailBlock read = emails.getBlock("123", "57");
+		assertEquals(Long.valueOf(7), map(read.block.editorContent, "attrs").get("linkId"));
+
+		emails.updateBlock("123", "57", read.etag, read.block.editorContent);
+
+		assertEquals("{\"editor_content\":" + editorContent + ",\"etag\":\"43\"}", client.lastRequest().bodyString());
+	}
+
+	/**
+	 * updateBlock checks the IDs, the etag and the editor content, and sends no request when a check fails.
+	 */
+	@Test
+	public void updateBlockRejectsInvalidInput()
+	{
+		Map<String, Object> content = paragraph("left", "Hi");
+
+		assertRejectsIds(client, id -> () -> emails.updateBlock(id, "57", "43", content));
+		assertRejectsIds(client, id -> () -> emails.updateBlock("123", id, "43", content));
+		assertRejectsEtags(client, etag -> () -> emails.updateBlock("123", "57", etag, content));
+
+		NullPointerException e = assertThrows(NullPointerException.class, () -> emails.updateBlock("123", "57", "43", null));
+		assertTrue(e.getMessage().contains("editorContent"), e.getMessage());
+		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	}
+
 }

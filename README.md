@@ -50,6 +50,7 @@ MailerLite Java SDK
         - [Get the HTML of an email](#get-the-html-of-an-email)
         - [Get a block](#get-a-block)
         - [Insert a block](#insert-a-block)
+        - [Update a block](#update-a-block)
     - [Forms](#forms)
         - [Get a list of forms](#get-a-list-of-forms)
         - [Get a form](#get-a-form)
@@ -1103,6 +1104,38 @@ class Example {
 			etag = response.etag;
 			
 			System.out.println(blockId + " " + etag);
+			
+		} catch (MailerLiteException e) {
+			
+			e.printStackTrace();
+		}
+    }
+}
+```
+
+### Update a block
+
+The new `editorContent` replaces the whole content of the block. The API removes the keys that you do not send. So get the block, change its `editorContent`, and send all of it. The type and the position of the block do not change.
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		try {
+			
+			Emails emails = this.getMailerLite().emails();
+			
+			SingleEmailBlock read = emails.getBlock("123456", "57");
+			
+			Map<String, Object> content = new HashMap<String, Object>(read.block.editorContent);
+			content.put("attrs", Map.of("textAlign", "center"));
+			
+			SingleEmailBlock response = emails.updateBlock("123456", "57", read.etag, content);
+			
+			System.out.println(response.etag);
 			
 		} catch (MailerLiteException e) {
 			

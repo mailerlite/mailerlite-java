@@ -113,6 +113,32 @@ public class Emails {
 	}
 
 	/**
+	 * Replaces the content of a block. The type and the position of the block do not change.
+	 * <p>
+	 * The new editor content replaces the whole content of the block. The API removes the keys that you do not
+	 * send. Read the block, change it, and send the full editor content.
+	 *
+	 * @param emailId the email ID
+	 * @param blockId the block ID
+	 * @param etag the etag from the last response for the email
+	 * @param editorContent the new editor document of the block. The keys are camelCase.
+	 * @return the block and the new etag
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 * @throws NullPointerException if the editor content is null
+	 */
+	public SingleEmailBlock updateBlock(String emailId, String blockId, String etag, Map<String, Object> editorContent)
+			throws MailerLiteException
+	{
+		String endpoint = blockPath(emailId, blockId);
+
+		UpdateBlockBody body = new UpdateBlockBody();
+		body.etag = RequestChecks.etag(etag);
+		body.editorContent = Objects.requireNonNull(editorContent, "editorContent");
+
+		return send("PATCH", endpoint, toJson(body), SingleEmailBlock.class);
+	}
+
+	/**
 	 * Checks the email ID and makes the path of the email.
 	 *
 	 * @param emailId the email ID
@@ -238,6 +264,21 @@ public class Emails {
 		PlacementBody placement;
 
 		/** The etag, or null. */
+		@SerializedName("etag")
+		String etag;
+	}
+
+	/**
+	 * The request body of a block update.
+	 */
+	private static class UpdateBlockBody {
+
+		/** The editor document. */
+		@SerializedName("editor_content")
+		@JsonAdapter(EditorContentAdapter.class)
+		Map<String, Object> editorContent;
+
+		/** The etag. */
 		@SerializedName("etag")
 		String etag;
 	}
