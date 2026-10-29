@@ -139,6 +139,22 @@ public class Emails {
 	}
 
 	/**
+	 * Deletes a block of an email. The API also deletes the blocks in it.
+	 *
+	 * @param emailId the email ID
+	 * @param blockId the block ID
+	 * @param etag the etag from the last response for the email
+	 * @return the new etag
+	 * @throws MailerLiteException if the API returns an error or the request fails
+	 */
+	public EmailEtagResponse deleteBlock(String emailId, String blockId, String etag) throws MailerLiteException
+	{
+		String endpoint = blockPath(emailId, blockId);
+
+		return send("DELETE", endpoint, etagBody(etag), EmailEtagResponse.class);
+	}
+
+	/**
 	 * Checks the email ID and makes the path of the email.
 	 *
 	 * @param emailId the email ID
@@ -215,6 +231,20 @@ public class Emails {
 	}
 
 	/**
+	 * Checks the etag and makes a request body that has only the etag.
+	 *
+	 * @param etag the etag
+	 * @return the JSON body
+	 */
+	private static String etagBody(String etag)
+	{
+		EtagBody body = new EtagBody();
+		body.etag = RequestChecks.etag(etag);
+
+		return toJson(body);
+	}
+
+	/**
 	 * Converts a request body to JSON.
 	 *
 	 * @param body the body
@@ -277,6 +307,16 @@ public class Emails {
 		@SerializedName("editor_content")
 		@JsonAdapter(EditorContentAdapter.class)
 		Map<String, Object> editorContent;
+
+		/** The etag. */
+		@SerializedName("etag")
+		String etag;
+	}
+
+	/**
+	 * A request body that has only the etag.
+	 */
+	private static class EtagBody {
 
 		/** The etag. */
 		@SerializedName("etag")

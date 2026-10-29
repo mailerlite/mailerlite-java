@@ -34,6 +34,7 @@ import com.mailerlite.sdk.emails.EmailBlockPosition;
 import com.mailerlite.sdk.emails.EmailBlockPositions;
 import com.mailerlite.sdk.emails.EmailBlockTypes;
 import com.mailerlite.sdk.emails.EmailDocument;
+import com.mailerlite.sdk.emails.EmailEtagResponse;
 import com.mailerlite.sdk.emails.EmailSettings;
 import com.mailerlite.sdk.emails.EmailSocialLink;
 import com.mailerlite.sdk.emails.Emails;
@@ -578,6 +579,35 @@ public class EmailsTest {
 		NullPointerException e = assertThrows(NullPointerException.class, () -> emails.updateBlock("123", "57", "43", null));
 		assertTrue(e.getMessage().contains("editorContent"), e.getMessage());
 		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	}
+
+
+	/**
+	 * deleteBlock sends DELETE /emails/{email}/blocks/{block} with the etag in the body, and returns the new etag.
+	 *
+	 * @throws Exception if the request fails
+	 */
+	@Test
+	public void deleteBlockSendsTheEtagInTheBody() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_etag.json"));
+
+		EmailEtagResponse response = emails.deleteBlock("123", "57", "44");
+
+		assertRequest(client, "DELETE", "/emails/123/blocks/57", "{\"etag\":\"44\"}", null);
+		assertEquals(200, response.responseStatusCode);
+		assertEquals("45", response.etag);
+	}
+
+	/**
+	 * deleteBlock checks the IDs and the etag, and sends no request when a check fails.
+	 */
+	@Test
+	public void deleteBlockRejectsInvalidInput()
+	{
+		assertRejectsIds(client, id -> () -> emails.deleteBlock(id, "57", "44"));
+		assertRejectsIds(client, id -> () -> emails.deleteBlock("123", id, "44"));
+		assertRejectsEtags(client, etag -> () -> emails.deleteBlock("123", "57", etag));
 	}
 
 }

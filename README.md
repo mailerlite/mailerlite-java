@@ -51,6 +51,7 @@ MailerLite Java SDK
         - [Get a block](#get-a-block)
         - [Insert a block](#insert-a-block)
         - [Update a block](#update-a-block)
+        - [Delete a block](#delete-a-block)
     - [Forms](#forms)
         - [Get a list of forms](#get-a-list-of-forms)
         - [Get a form](#get-a-form)
@@ -1134,6 +1135,31 @@ class Example {
 			content.put("attrs", Map.of("textAlign", "center"));
 			
 			SingleEmailBlock response = emails.updateBlock("123456", "57", read.etag, content);
+			
+			System.out.println(response.etag);
+			
+		} catch (MailerLiteException e) {
+			
+			e.printStackTrace();
+		}
+    }
+}
+```
+
+### Delete a block
+
+Deletes the block and the blocks in it. The response has only the new etag.
+
+```java
+
+// import ....
+
+class Example {
+
+    public void example() {
+		try {
+			
+			EmailEtagResponse response = this.getMailerLite().emails().deleteBlock("123456", "57", "etag-from-the-last-response");
 			
 			System.out.println(response.etag);
 			

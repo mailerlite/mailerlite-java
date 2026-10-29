@@ -168,6 +168,10 @@ public class ReadmeExamplesTest {
 				.expect("GET /emails/123456/blocks/57")
 				.expect("PATCH /emails/123456/blocks/57"));
 
+		list.add(new Example("Delete a block")
+				.respond(200, Fixtures.read("email_etag.json"))
+				.expect("DELETE /emails/123456/blocks/57"));
+
 		return list;
 	}
 
