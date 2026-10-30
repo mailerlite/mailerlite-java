@@ -42,6 +42,10 @@ public class SubscriberActivity {
 	@SerializedName("reason_description")
 	public String reasonDescription;
 	
+	/** The subscriber. */
+	@SerializedName("subscriber")
+	public ActivitySubscriber subscriber;
+	
 	/** The step runs. */
 	@SerializedName("stepRuns")
 	public StepRun[] stepRuns;
