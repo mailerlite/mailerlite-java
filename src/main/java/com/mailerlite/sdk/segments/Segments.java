@@ -7,14 +7,12 @@
  **************************************************/
 package com.mailerlite.sdk.segments;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.mailerlite.sdk.MailerLite;
 import com.mailerlite.sdk.MailerLiteApi;
 import com.mailerlite.sdk.MailerLiteResponse;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
-import com.mailerlite.sdk.groups.NameCreatorBody;
-import com.mailerlite.sdk.util.JsonSerializationDeserializationStrategy;
+import com.mailerlite.sdk.util.JsonBody;
 
 /**
  * The Class Segments.
@@ -65,18 +63,28 @@ public class Segments {
 	 */
 	public SingleSegment update(String segmentId, String newSegmentName) throws MailerLiteException
 	{
+		return update(segmentId, newSegmentName, null);
+	}
+	
+	/**
+	 * Updates the name and the filter rules of a segment.
+	 *
+	 * @param segmentId the segment id
+	 * @param newSegmentName the new segment name
+	 * @param filter the filter rules, in the same shape the API returns them
+	 * @return the single segment
+	 * @throws MailerLiteException the mailer lite exception
+	 */
+	public SingleSegment update(String segmentId, String newSegmentName, JsonArray filter) throws MailerLiteException
+	{
 		MailerLiteApi api = new MailerLiteApi();
         api.setToken(apiObjectReference.getToken());
         
-        NameCreatorBody requestBody = new NameCreatorBody();
+        SegmentUpdateBody requestBody = new SegmentUpdateBody();
         requestBody.name = newSegmentName;
+        requestBody.filter = filter;
         
-        Gson gson = new GsonBuilder()
-                .addSerializationExclusionStrategy(new JsonSerializationDeserializationStrategy(false))
-                .addDeserializationExclusionStrategy(new JsonSerializationDeserializationStrategy(true))
-                .create();
-       
-        String json = gson.toJson(requestBody);
+        String json = JsonBody.toJson(requestBody);
         
         SingleSegment segment = api.putRequest("/segments/".concat(segmentId), json, SingleSegment.class);
         

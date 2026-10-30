@@ -25,4 +25,20 @@ public class SegmentsSubscriberMeta {
 	/** The last. */
 	@SerializedName("last")
 	public int last;
+	
+	/** The path. */
+	@SerializedName("path")
+	public String path;
+	
+	/** The per page. */
+	@SerializedName("per_page")
+	public int perPage;
+	
+	/** The next cursor. */
+	@SerializedName("next_cursor")
+	public String nextCursor;
+	
+	/** The previous cursor. */
+	@SerializedName("prev_cursor")
+	public String previousCursor;
 }

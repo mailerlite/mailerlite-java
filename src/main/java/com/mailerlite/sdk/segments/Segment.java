@@ -9,6 +9,7 @@ package com.mailerlite.sdk.segments;
 
 import java.util.Date;
 
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.util.ApiResource;
 import com.mailerlite.sdk.util.ParseDate;
@@ -46,4 +47,12 @@ public class Segment extends ApiResource {
 	/** The created at. */
 	@ParseDate("createdAtStr")
 	public Date createdAt;
+	
+	/** The filter rules. Returned only when the list is requested with filters. */
+	@SerializedName("filter")
+	public JsonElement filter;
+	
+	/** The automations using segment count. */
+	@SerializedName("automations_using_segment_count")
+	public Integer automationsUsingSegmentCount;
 }
