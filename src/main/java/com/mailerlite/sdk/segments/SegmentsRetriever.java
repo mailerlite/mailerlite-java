@@ -72,6 +72,45 @@ public class SegmentsRetriever extends PaginatedRequest<SegmentsRetriever> {
 	}
 	
 	/**
+	 * Sets the page to return.
+	 *
+	 * @param page the page
+	 * @return the segments retriever
+	 */
+	public SegmentsRetriever page(int page)
+	{
+		this.addQueryParameter("page", Integer.toString(page));
+		
+		return this;
+	}
+	
+	/**
+	 * Sets the sort order.
+	 *
+	 * @param sort the sort
+	 * @return the segments retriever
+	 */
+	public SegmentsRetriever sort(String sort)
+	{
+		this.addQueryParameter("sort", sort);
+		
+		return this;
+	}
+	
+	/**
+	 * Includes the segment filter rules.
+	 *
+	 * @param withFilter the with filter
+	 * @return the segments retriever
+	 */
+	public SegmentsRetriever withFilter(boolean withFilter)
+	{
+		this.addQueryParameter("with_filter", withFilter ? "1" : "0");
+		
+		return this;
+	}	
+	
+	/**
 	 * Gets the single instance of SegmentsRetriever.
 	 *
 	 * @return single instance of SegmentsRetriever

@@ -10,12 +10,12 @@ package com.mailerlite.sdk.segments;
 import com.mailerlite.sdk.MailerLite;
 import com.mailerlite.sdk.MailerLiteApi;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
-import com.mailerlite.sdk.util.ApiRequest;
+import com.mailerlite.sdk.util.PaginatedRequest;
 
 /**
  * The Class SegmentSubscribers.
  */
-public class SegmentSubscribers extends ApiRequest {
+public class SegmentSubscribers extends PaginatedRequest<SegmentSubscribers> {
 
 	/** The api object reference. */
 	private MailerLite apiObjectReference;
@@ -41,9 +41,10 @@ public class SegmentSubscribers extends ApiRequest {
 	 * @param limit the limit
 	 * @return the segment subscribers
 	 */
+	@Override
 	public SegmentSubscribers limit(int limit)
 	{
-		this.addQueryParameter("limig", String.valueOf(limit));
+		this.addQueryParameter("limit", String.valueOf(limit));
 		return this;
 	}
 	
@@ -91,5 +92,15 @@ public class SegmentSubscribers extends ApiRequest {
 		list.postDeserialize();
 		
 		return list;
+	}
+	
+	/**
+	 * Gets the single instance of SegmentSubscribers.
+	 *
+	 * @return single instance of SegmentSubscribers
+	 */
+	@Override
+	protected SegmentSubscribers getInstance() {
+		return this;
 	}
 }

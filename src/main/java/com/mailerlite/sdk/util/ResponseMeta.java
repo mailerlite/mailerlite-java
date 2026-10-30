@@ -48,6 +48,14 @@ public class ResponseMeta {
 	@SerializedName("total")
 	public int total;
 	
+	/** The next cursor. */
+	@SerializedName("next_cursor")
+	public String nextCursor;
+	
+	/** The previous cursor. */
+	@SerializedName("prev_cursor")
+	public String previousCursor;
+	
 	/** The aggregations. */
 	@SerializedName("aggregations")
 	public HashMap<String, Object> aggregations = new HashMap<String, Object>();

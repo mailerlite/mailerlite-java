@@ -9,13 +9,16 @@ package com.mailerlite.sdk.automations.steps;
 
 import java.util.Date;
 
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
+import com.mailerlite.sdk.automations.AutomationStepDeserializer;
 import com.mailerlite.sdk.util.ApiResource;
 import com.mailerlite.sdk.util.ParseDate;
 
 /**
  * The Class AutomationStep.
  */
+@JsonAdapter(AutomationStepDeserializer.class)
 public abstract class AutomationStep extends ApiResource {
 
 	/** The id. */
@@ -54,4 +57,12 @@ public abstract class AutomationStep extends ApiResource {
 	/** The broken. */
 	@SerializedName("broken")
 	public Boolean broken;
+	
+	/** The description. */
+	@SerializedName("description")
+	public String description;
+	
+	/** The type count. */
+	@SerializedName("type_count")
+	public Integer typeCount;
 }

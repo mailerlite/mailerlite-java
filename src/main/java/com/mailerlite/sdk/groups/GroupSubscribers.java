@@ -110,6 +110,19 @@ public class GroupSubscribers extends PaginatedRequest<GroupSubscribers> {
 	}
 
 	/**
+	 * Sets the relations to include, for example "groups".
+	 *
+	 * @param include the include
+	 * @return the group subscribers
+	 */
+	public GroupSubscribers include(String include)
+	{
+		this.addQueryParameter("include", include);
+		
+		return this;
+	}	
+	
+	/**
 	 * Gets the single instance of GroupSubscribers.
 	 *
 	 * @return single instance of GroupSubscribers

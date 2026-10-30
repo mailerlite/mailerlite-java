@@ -20,21 +20,20 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mailerlite.sdk.automations.steps.AutomationStep;
 import com.mailerlite.sdk.automations.triggers.AutomationTrigger;
-import com.mailerlite.sdk.automations.triggers.TriggerAbandonedCart;
-import com.mailerlite.sdk.automations.triggers.TriggerClicksLink;
-import com.mailerlite.sdk.automations.triggers.TriggerDate;
-import com.mailerlite.sdk.automations.triggers.TriggerFieldUpdated;
-import com.mailerlite.sdk.automations.triggers.TriggerFormCompleted;
-import com.mailerlite.sdk.automations.triggers.TriggerPurchasedAnyProduct;
-import com.mailerlite.sdk.automations.triggers.TriggerPurchasedFromCategory;
-import com.mailerlite.sdk.automations.triggers.TriggerPurchasedSpecificProduct;
-import com.mailerlite.sdk.automations.triggers.TriggerSubscriberJoinsGroup;
 import com.mailerlite.sdk.util.JsonSerializationDeserializationStrategy;
+import com.mailerlite.sdk.util.SdkGson;
 
 /**
  * The Class AutomationDeserializer.
  */
 public class AutomationDeserializer implements JsonDeserializer<Automation> {
+
+	/** The gson instance that parses automations with this deserializer. */
+	private static final Gson AUTOMATION_GSON = new GsonBuilder()
+			.addSerializationExclusionStrategy(new JsonSerializationDeserializationStrategy(false))
+			.addDeserializationExclusionStrategy(new JsonSerializationDeserializationStrategy(true))
+			.registerTypeAdapter(Automation.class, new AutomationDeserializer())
+			.create();
 
 	/**
 	 * Deserialize.
@@ -51,12 +50,7 @@ public class AutomationDeserializer implements JsonDeserializer<Automation> {
 		
 		JsonObject jsonObject = json.getAsJsonObject();
 		
-		JsonArray automationSteps = jsonObject.get("steps").getAsJsonArray();
-		
-        Gson gson = new GsonBuilder()
-                .addSerializationExclusionStrategy(new JsonSerializationDeserializationStrategy(false))
-                .addDeserializationExclusionStrategy(new JsonSerializationDeserializationStrategy(true))
-                .create();
+        Gson gson = SdkGson.plain();
 		
 		Automation automation = gson.fromJson(json, Automation.class);
 		
@@ -66,7 +60,7 @@ public class AutomationDeserializer implements JsonDeserializer<Automation> {
 		
 		AutomationStepDeserializer stepDeserializer = new AutomationStepDeserializer();
 		
-		for (JsonElement jsonStep : automationSteps) {
+		for (JsonElement jsonStep : jsonArrayOrEmpty(jsonObject, "steps")) {
 			
 			JsonObject stepObj = jsonStep.getAsJsonObject();
 
@@ -76,63 +70,41 @@ public class AutomationDeserializer implements JsonDeserializer<Automation> {
 		automation.steps = steps.toArray();
 		
 		
-		JsonArray automationTriggers = jsonObject.get("triggers").getAsJsonArray();
-		
 		ArrayList<AutomationTrigger> triggers = new ArrayList<AutomationTrigger>();
 		
-		for (JsonElement jsonTrigger : automationTriggers) {
+		AutomationTriggerDeserializer triggerDeserializer = new AutomationTriggerDeserializer();
+		
+		for (JsonElement jsonTrigger : jsonArrayOrEmpty(jsonObject, "triggers")) {
 			
 			JsonObject triggerObj = jsonTrigger.getAsJsonObject();
 			
-			String type = triggerObj.get("type").getAsString();
-			
-			switch (type) {
-			
-				case "subscriber_joins_group":
-					triggers.add(gson.fromJson(jsonObject, TriggerSubscriberJoinsGroup.class));
-					break;
-					
-				case "clicks_link":
-					triggers.add(gson.fromJson(jsonObject, TriggerClicksLink.class));
-					break;
-					
-				case "field_updated":
-					triggers.add(gson.fromJson(jsonObject, TriggerFieldUpdated.class));
-					break;
-					
-				case "anniversary":
-					triggers.add(gson.fromJson(jsonObject, TriggerDate.class));
-					break;
-					
-				case "exact_date":
-					triggers.add(gson.fromJson(jsonObject, TriggerDate.class));
-					break;
-					
-				case "form_completed":
-					triggers.add(gson.fromJson(jsonObject, TriggerFormCompleted.class));
-					break;
-					
-				case "purchased_any_product":
-					triggers.add(gson.fromJson(jsonObject, TriggerPurchasedAnyProduct.class));
-					break;
-					
-				case "purchased_specific_product":
-					triggers.add(gson.fromJson(jsonObject, TriggerPurchasedSpecificProduct.class));
-					break;
-					
-				case "purchased_from_category":
-					triggers.add(gson.fromJson(jsonObject, TriggerPurchasedFromCategory.class));
-					break;
-					
-				case "abandoned_cart":
-					triggers.add(gson.fromJson(jsonObject, TriggerAbandonedCart.class));
-					break;
-			}
+			triggers.add(triggerDeserializer.deserializeTrigger(triggerObj));
 		}
 		
 		automation.triggers = triggers.toArray();
 		
 		return automation;
+	}
+	
+	/**
+	 * Gson that parses automations with this deserializer.
+	 *
+	 * @return the gson instance
+	 */
+	public static Gson automationGson()
+	{
+		return AUTOMATION_GSON;
+	}
+	
+	private JsonArray jsonArrayOrEmpty(JsonObject jsonObject, String memberName)
+	{
+		JsonElement element = jsonObject.get(memberName);
+		
+		if (element == null || !element.isJsonArray()) {
+			return new JsonArray();
+		}
+		
+		return element.getAsJsonArray();
 	}
 	
 

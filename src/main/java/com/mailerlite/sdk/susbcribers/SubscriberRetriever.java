@@ -106,6 +106,97 @@ public class SubscriberRetriever extends CursorPaginatedRequest<SubscriberRetrie
 	}
 
 	/**
+	 * Sets the cursor of the page to return.
+	 *
+	 * @param cursor the cursor
+	 * @return the subscriber retriever
+	 */
+	public SubscriberRetriever cursor(String cursor)
+	{
+		this.addQueryParameter("cursor", cursor);
+		
+		return this;
+	}
+	
+	/**
+	 * Sets the sort order.
+	 *
+	 * @param sort the sort
+	 * @return the subscriber retriever
+	 */
+	public SubscriberRetriever sort(String sort)
+	{
+		this.addQueryParameter("sort", sort);
+		
+		return this;
+	}
+	
+	/**
+	 * Sets the relations to include, for example "groups".
+	 *
+	 * @param include the include
+	 * @return the subscriber retriever
+	 */
+	public SubscriberRetriever include(String include)
+	{
+		this.addQueryParameter("include", include);
+		
+		return this;
+	}
+	
+	/**
+	 * Sets the start date.
+	 *
+	 * @param startDate the start date
+	 * @return the subscriber retriever
+	 */
+	public SubscriberRetriever startDate(String startDate)
+	{
+		this.addQueryParameter("start_date", startDate);
+		
+		return this;
+	}
+	
+	/**
+	 * Sets the end date.
+	 *
+	 * @param endDate the end date
+	 * @return the subscriber retriever
+	 */
+	public SubscriberRetriever endDate(String endDate)
+	{
+		this.addQueryParameter("end_date", endDate);
+		
+		return this;
+	}
+	
+	/**
+	 * Includes the subscriber fields.
+	 *
+	 * @param withFields the with fields
+	 * @return the subscriber retriever
+	 */
+	public SubscriberRetriever withFields(boolean withFields)
+	{
+		this.addQueryParameter("with_fields", withFields ? "1" : "0");
+		
+		return this;
+	}
+	
+	/**
+	 * Includes the subscriber groups.
+	 *
+	 * @param withGroups the with groups
+	 * @return the subscriber retriever
+	 */
+	public SubscriberRetriever withGroups(boolean withGroups)
+	{
+		this.addQueryParameter("with_groups", withGroups ? "1" : "0");
+		
+		return this;
+	}	
+	
+	/**
 	 * Gets the single instance of SubscriberRetriever.
 	 *
 	 * @return single instance of SubscriberRetriever

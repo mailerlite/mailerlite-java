@@ -15,9 +15,11 @@ import com.google.gson.annotations.SerializedName;
 public class AutomationStats {
 
 	/** The completed subscribers count. */
+	@SerializedName("completed_subscribers_count")
 	public int completedSubscribersCount;
 	
 	/** The subscribers in queue count. */
+	@SerializedName("subscribers_in_queue_count")
 	public int subscribersInQueueCount;
 	
 	/** The bounce rate. */

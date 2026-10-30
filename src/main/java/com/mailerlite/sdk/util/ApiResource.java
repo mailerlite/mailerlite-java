@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * The Class ApiResource.
@@ -38,8 +39,7 @@ public class ApiResource {
 											
 						String dateStr = dateStrField.get(this).toString();
 						
-						SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						Date date = formatter.parse(dateStr);
+						Date date = parseDate(dateStr);
 						
 			            field.setAccessible(true);
 			            
@@ -83,5 +83,17 @@ public class ApiResource {
 				}
 			}
 		}
+	}
+	
+	private Date parseDate(String dateStr) throws ParseException
+	{
+		if (dateStr.length() > 10 && dateStr.charAt(10) == 'T') {
+			SimpleDateFormat isoFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+			isoFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+			
+			return isoFormatter.parse(dateStr);
+		}
+		
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateStr);
 	}
 }

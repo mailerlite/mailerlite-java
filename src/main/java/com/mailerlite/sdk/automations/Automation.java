@@ -82,6 +82,18 @@ public class Automation extends ApiResource {
 	@ParseDate("createdAtStr")
 	public Date createdAt;
 	
+	/** The automation template id. */
+	@SerializedName("automation_template_id")
+	public String automationTemplateId;
+	
+	/** The automation template name. */
+	@SerializedName("automation_template_name")
+	public String automationTemplateName;
+	
+	/** The building in progress. */
+	@SerializedName("building_in_progress")
+	public Boolean buildingInProgress;
+	
 	
 
 }
