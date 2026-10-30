@@ -9,12 +9,16 @@ package com.mailerlite.sdk.exceptions;
 
 import java.util.HashMap;
 
-import com.mailerlite.sdk.emails.EmailErrorCodes;
-
 /**
  * The Class MailerLiteException.
  */
 public class MailerLiteException extends Exception  {
+
+    /**
+     * The value of {@link #errorCode} for a version conflict: the email changed after you read the etag that the
+     * write sent. {@code EmailErrorCodes.VERSION_CONFLICT} has the same value.
+     */
+    public static final String VERSION_CONFLICT = "version_conflict";
 
     /** The code. */
     public int code; // the response code
@@ -65,10 +69,10 @@ public class MailerLiteException extends Exception  {
      * Tells if the error is a version conflict: the email changed after you read the etag that the write sent.
      * Then {@link #etag} is the current etag of the email.
      *
-     * @return true if {@link #errorCode} is {@link EmailErrorCodes#VERSION_CONFLICT}
+     * @return true if {@link #errorCode} is {@link #VERSION_CONFLICT}
      */
     public boolean isVersionConflict() {
         
-        return EmailErrorCodes.VERSION_CONFLICT.equals(this.errorCode);
+        return VERSION_CONFLICT.equals(this.errorCode);
     }
 }
