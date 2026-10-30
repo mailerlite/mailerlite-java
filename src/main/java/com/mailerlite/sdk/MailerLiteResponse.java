@@ -44,4 +44,34 @@ public class MailerLiteResponse {
 	{
 		return responseStatusCode >= 200 && responseStatusCode < 300;
 	}
+	
+	/**
+	 * Tells if the API returned the stored response of an earlier request with the same idempotency key.
+	 * <p>
+	 * The SDK finds the header Idempotent-Replayed without case, and compares its value with "true" without case.
+	 *
+	 * @return true if the response is a replay
+	 */
+	public boolean isIdempotentReplay()
+	{
+		if (headers == null) {
+			return false;
+		}
+		
+		for (Map.Entry<String, List<String>> header : headers.entrySet()) {
+			
+			if (!"Idempotent-Replayed".equalsIgnoreCase(header.getKey()) || header.getValue() == null) {
+				continue;
+			}
+			
+			for (String value : header.getValue()) {
+				
+				if (value != null && "true".equalsIgnoreCase(value.trim())) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
 }

@@ -20,7 +20,7 @@ public class ResponseMeta {
 	@SerializedName("current_page")
 	public int currentPage;
 	
-	/** The from. */
+	/** The number of the first item on the page. It is 0 when the API sends null, for example for an empty page. */
 	@SerializedName("from")
 	public int from;
 	
@@ -40,7 +40,7 @@ public class ResponseMeta {
 	@SerializedName("per_page")
 	public int perPage;
 	
-	/** The to. */
+	/** The number of the last item on the page. It is 0 when the API sends null, for example for an empty page. */
 	@SerializedName("to")
 	public int to;
 	
