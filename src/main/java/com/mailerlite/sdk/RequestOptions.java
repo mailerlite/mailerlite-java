@@ -30,6 +30,10 @@ public final class RequestOptions {
 	 * {@link MailerLiteResponse#isIdempotentReplay()} is true. The API keeps a key for 24 hours.
 	 * <p>
 	 * The SDK sends the key as you give it, and the API checks it. A null or empty key sends no header.
+	 * <p>
+	 * The SDK rejects a key with a character that is not printable ASCII (0x20 to 0x7E), because the Java HTTP client
+	 * would send each character that is not ASCII as "?". Then the write method throws
+	 * {@link com.mailerlite.sdk.exceptions.InvalidIdempotencyKeyException} and sends no request.
 	 *
 	 * @param key the idempotency key, or null for no key
 	 * @return the options

@@ -35,6 +35,7 @@ import com.mailerlite.sdk.emails.EmailBlockPositions;
 import com.mailerlite.sdk.emails.EmailBlockTypes;
 import com.mailerlite.sdk.emails.Emails;
 import com.mailerlite.sdk.emails.SingleEmailBlock;
+import com.mailerlite.sdk.exceptions.InvalidIdempotencyKeyException;
 import com.mailerlite.sdk.support.Fixtures;
 import com.mailerlite.sdk.support.RecordingHttpClient;
 
@@ -126,13 +127,13 @@ public class IdempotencyTest {
 	}
 
 	/**
-	 * The SDK gives the key to the HTTP client as it is, and the API checks it. The HTTP client removes the spaces
-	 * and the tabs at the start and the end of a header value, as HTTP does.
+	 * The SDK gives a printable ASCII key to the HTTP client as it is, and the API checks it. The HTTP client removes
+	 * the spaces at the start and the end of a header value, as HTTP does.
 	 */
 	@Test
 	public void keysAreSentAsGiven() throws Exception
 	{
-		List<String> keys = Arrays.asList(" key", "key ", "key\t", "cl\u00e9", RequestChecksTest.repeat('k', 256), "a");
+		List<String> keys = Arrays.asList(" key", "key ", "k ~k", RequestChecksTest.repeat('k', 256), "a");
 
 		for (String key : keys) {
 
@@ -160,16 +161,23 @@ public class IdempotencyTest {
 		assertNull(client.lastRequest().header("Idempotency-Key"));
 	}
 
+	/**
+	 * The Java HTTP client sends each character that is not ASCII as "?", so "k-\u00e9-k" would reach the API as the
+	 * valid key "k-?-k". The SDK rejects each character outside 0x20 to 0x7E and sends no request.
+	 */
 	@Test
-	public void keysThatHttpCannotSendReturnTheHttpError()
+	public void keysOutsidePrintableAsciiAreRejected()
 	{
-		for (String key : Arrays.asList("key\n", "key\u007f")) {
+		List<String> keys = Arrays.asList("k-\u00e9-k", "cl\u00e9", "\u4e2d", "k\ud83d\ude00", "key\n", "key\t", "key\u007f",
+				"key\u001f");
+
+		for (String key : keys) {
 
 			RequestOptions options = RequestOptions.idempotencyKey(key);
 
-			IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-					() -> emails.createVersion("123", options), "key " + key.replace("\n", "\\n"));
-			assertTrue(e.getMessage().contains("header"), e.getMessage());
+			InvalidIdempotencyKeyException e = assertThrows(InvalidIdempotencyKeyException.class,
+					() -> emails.createVersion("123", options), "key of length " + key.length());
+			assertTrue(e.getMessage().contains("0x20 to 0x7E"), e.getMessage());
 		}
 
 		assertTrue(client.requests().isEmpty());

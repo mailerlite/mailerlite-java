@@ -9,9 +9,10 @@ package com.mailerlite.sdk.util;
 
 import com.mailerlite.sdk.exceptions.EmptyIdException;
 import com.mailerlite.sdk.exceptions.InvalidIdException;
+import com.mailerlite.sdk.exceptions.InvalidIdempotencyKeyException;
 
 /**
- * Checks the IDs in the URL path of a request before the SDK sends it.
+ * Checks the IDs in the URL path and the idempotency key of a request before the SDK sends it.
  * Each check throws an exception that extends IllegalArgumentException, and the SDK then sends no request.
  */
 public final class RequestChecks {
@@ -48,5 +49,35 @@ public final class RequestChecks {
 		}
 
 		return value;
+	}
+
+	/**
+	 * Checks an idempotency key.
+	 * <p>
+	 * The key must contain only printable ASCII characters (0x20 to 0x7E). The Java HTTP client sends each character
+	 * that is not ASCII as "?", so the API would get a different key, and two different keys could become the same
+	 * key. The API checks the length and the other rules of the key.
+	 *
+	 * @param key the idempotency key, or null
+	 * @return the key
+	 * @throws InvalidIdempotencyKeyException if the key contains a character outside 0x20 to 0x7E
+	 */
+	public static String idempotencyKey(String key)
+	{
+		if (key == null) {
+			return null;
+		}
+
+		for (int i = 0; i < key.length(); i++) {
+
+			char c = key.charAt(i);
+
+			if (c < 0x20 || c > 0x7E) {
+				throw new InvalidIdempotencyKeyException("idempotency key must contain only printable ASCII characters"
+						+ " (0x20 to 0x7E), because the Java HTTP client changes the other characters");
+			}
+		}
+
+		return key;
 	}
 }

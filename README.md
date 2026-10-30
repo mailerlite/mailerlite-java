@@ -1489,7 +1489,8 @@ If a write fails with a network error, you do not know if the API did the write.
 - A network error is a `MailerLiteException` with the network error as the cause.
 - Use a new key for each write. The API keeps a key for 24 hours.
 - The SDK sends the key as you give it, and the API checks it. An invalid key gets a `400` error. A `null` or empty key sends no header.
-- The Java HTTP client removes the spaces at the start and the end of the key. For a control character, for example a new line, it throws `IllegalArgumentException`.
+- The SDK rejects a key with a character that is not printable ASCII (`0x20` to `0x7E`), for example `é` or a new line. The Java HTTP client would send each character that is not ASCII as `?`, so the API would get a different key. The write method then throws `InvalidIdempotencyKeyException`, which extends `IllegalArgumentException`, and the SDK sends no request.
+- The Java HTTP client removes the spaces at the start and the end of the key.
 - The same key with different arguments gets a `422` error. If the first request is still running, the API returns `409` without an error code.
 - Without a key, a retry of a write that was a success gets `409` with `version_conflict`, because the etag is old.
 - These methods accept `RequestOptions` as the last argument: `createBlock`, `updateBlock`, `deleteBlock`, `moveBlock`, `updateSettings`, `createTemplate`, `createVersion` and `restoreVersion`.

@@ -515,8 +515,10 @@ public class Emails {
 	{
 		Map<String, String> headers = null;
 
-		if (options != null && options.getIdempotencyKey() != null && !options.getIdempotencyKey().isEmpty()) {
-			headers = Collections.singletonMap("Idempotency-Key", options.getIdempotencyKey());
+		String key = options == null ? null : RequestChecks.idempotencyKey(options.getIdempotencyKey());
+
+		if (key != null && !key.isEmpty()) {
+			headers = Collections.singletonMap("Idempotency-Key", key);
 		}
 
 		MailerLiteApi api = new MailerLiteApi();
