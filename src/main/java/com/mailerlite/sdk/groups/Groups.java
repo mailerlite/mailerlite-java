@@ -62,6 +62,17 @@ public class Groups {
 	}
 	
 	/**
+	 * Import builder.
+	 *
+	 * @param groupId the group id
+	 * @return the group import builder
+	 */
+	public GroupImportBuilder importBuilder(String groupId)
+	{
+		return new GroupImportBuilder(apiObjectReference, groupId);
+	}
+	
+	/**
 	 * Delete.
 	 *
 	 * @param groupId the group id

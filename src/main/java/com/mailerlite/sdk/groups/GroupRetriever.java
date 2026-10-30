@@ -97,6 +97,19 @@ public class GroupRetriever extends PaginatedRequest<GroupRetriever> {
 	}
 
 	/**
+	 * Sets the page to return.
+	 *
+	 * @param page the page
+	 * @return the group retriever
+	 */
+	public GroupRetriever page(int page)
+	{
+		this.addQueryParameter("page", Integer.toString(page));
+		
+		return this;
+	}	
+	
+	/**
 	 * Gets the single instance of GroupRetriever.
 	 *
 	 * @return single instance of GroupRetriever
