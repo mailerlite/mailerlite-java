@@ -123,7 +123,7 @@ public class SubscribersRequestTest extends MockTestBase {
 	public void TestGetSingleParsesNewFields() throws MailerLiteException
 	{
 		http.respondWith(200, "{\"data\":{\"id\":\"1\",\"email\":\"a@example.com\",\"deleted_at\":\"2024-01-02 03:04:05\",\"forget_at\":\"2024-02-02 03:04:05\","
-				+ "\"groups\":[{\"id\":\"5\",\"name\":\"Group\"}],"
+				+ "\"groups\":[{\"id\":\"5\",\"name\":\"Group\",\"created_at\":\"2024-03-02 03:04:05\"}],"
 				+ "\"location\":{\"id\":\"9\",\"title\":\"Vilnius\",\"country_name\":\"Lithuania\",\"continent_name\":\"Europe\",\"state_name\":null,\"time_zone\":\"Europe/Vilnius\"},"
 				+ "\"timezone\":{\"id\":\"3\",\"name\":\"Europe/Vilnius\",\"name_for_humans\":\"Vilnius\",\"offset_name\":\"+02:00\",\"offset\":120}}}");
 		
@@ -134,6 +134,7 @@ public class SubscribersRequestTest extends MockTestBase {
 		assertNotNull(subscriber.subscriber.deletedAt);
 		assertNotNull(subscriber.subscriber.forgetAt);
 		assertEquals("5", subscriber.subscriber.groups[0].id);
+		assertNotNull(subscriber.subscriber.groups[0].createdAt);
 		assertEquals("Lithuania", subscriber.subscriber.location.countryName);
 		assertEquals(120, (int) subscriber.subscriber.timezone.offset);
 	}

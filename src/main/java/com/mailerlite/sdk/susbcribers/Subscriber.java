@@ -135,4 +135,23 @@ public class Subscriber extends ApiResource {
 	/** The timezone. */
 	@SerializedName("timezone")
 	public SubscriberTimezone timezone;
+
+	/**
+	 * Parses the subscriber dates and the dates of its groups.
+	 */
+	@Override
+	public void parseDates()
+	{
+		super.parseDates();
+
+		if (groups == null) {
+			return;
+		}
+
+		for (Group group : groups) {
+			if (group != null) {
+				group.parseDates();
+			}
+		}
+	}
 }
