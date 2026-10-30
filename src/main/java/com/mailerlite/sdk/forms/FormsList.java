@@ -20,12 +20,28 @@ public class FormsList extends PaginatedResponse {
 	public Form[] forms;
 	
 	/**
-	 * Post deserialise.
+	 * Parses the dates of every item.
 	 */
-	public void postDeserialise()
+	@Override
+	public void postDeserialize()
 	{
+		if (forms == null) {
+			return;
+		}
+		
 		for (Form f : forms) {
 			f.parseDates();
 		}
+	}
+	
+	/**
+	 * Post deserialise.
+	 *
+	 * @deprecated misspelled, use {@link #postDeserialize()}
+	 */
+	@Deprecated
+	public void postDeserialise()
+	{
+		postDeserialize();
 	}
 }

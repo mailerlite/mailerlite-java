@@ -20,12 +20,28 @@ public class GroupsList extends PaginatedResponse {
 	public Group[] groups;
 	
 	/**
-	 * Post deserialise.
+	 * Parses the dates of every item.
 	 */
-	public void postDeserialise()
+	@Override
+	public void postDeserialize()
 	{
+		if (groups == null) {
+			return;
+		}
+		
 		for (Group g : groups) {
 			g.parseDates();
 		}
+	}
+	
+	/**
+	 * Post deserialise.
+	 *
+	 * @deprecated misspelled, use {@link #postDeserialize()}
+	 */
+	@Deprecated
+	public void postDeserialise()
+	{
+		postDeserialize();
 	}
 }

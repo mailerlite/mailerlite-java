@@ -21,12 +21,28 @@ public class GroupSubscribersList extends PaginatedResponse {
 	public Subscriber[] subscribers;
 	
 	/**
-	 * Post deserialise.
+	 * Parses the dates of every item.
 	 */
-	public void postDeserialise()
+	@Override
+	public void postDeserialize()
 	{
+		if (subscribers == null) {
+			return;
+		}
+		
 		for (Subscriber s : subscribers) {
 			s.parseDates();
 		}
+	}
+	
+	/**
+	 * Post deserialise.
+	 *
+	 * @deprecated misspelled, use {@link #postDeserialize()}
+	 */
+	@Deprecated
+	public void postDeserialise()
+	{
+		postDeserialize();
 	}
 }
