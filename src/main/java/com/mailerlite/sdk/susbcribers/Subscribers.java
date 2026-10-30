@@ -78,4 +78,38 @@ public class Subscribers {
 	{
 		return new SubscriberImportsRetriever(apiObjectReference);
 	}
+	
+	/**
+	 * Forgets a subscriber. The API deletes the subscriber data within 30 days.
+	 *
+	 * @param subscriberId the subscriber id
+	 * @return the forgotten subscriber
+	 * @throws MailerLiteException the mailer lite exception
+	 */
+	public ForgottenSubscriber forget(String subscriberId) throws MailerLiteException
+	{
+		String endpoint = "/subscribers/".concat(subscriberId).concat("/forget");
+		
+		MailerLiteApi api = new MailerLiteApi();
+		api.setToken(apiObjectReference.getToken());
+		
+		ForgottenSubscriber response = api.postRequest(endpoint, "", ForgottenSubscriber.class);
+		
+		if (response.subscriber != null) {
+			response.subscriber.parseDates();
+		}
+		
+		return response;
+	}
+	
+	/**
+	 * Activity log of a subscriber. Takes a subscriber id, not an email.
+	 *
+	 * @param subscriberId the subscriber id
+	 * @return the subscriber activity log retriever
+	 */
+	public SubscriberActivityLogRetriever activityLog(String subscriberId)
+	{
+		return new SubscriberActivityLogRetriever(apiObjectReference, subscriberId);
+	}
 }
