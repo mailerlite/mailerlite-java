@@ -66,8 +66,12 @@ public class AutomationStepDeserializer implements JsonDeserializer<AutomationSt
 	 */
 	public AutomationStep deserializeAutomationStep(JsonObject stepObj, Gson gson)
 	{
-		String type = stepObj.get("type").getAsString();
-		
+		String type = stringOrNull(stepObj, "type");
+
+		if (type == null) {
+			return gson.fromJson(stepObj, GenericAutomationStep.class);
+		}
+
 		switch (type) {
 		
 			case GenericAutomationStep.TYPE_EMAIL:
@@ -109,12 +113,12 @@ public class AutomationStepDeserializer implements JsonDeserializer<AutomationSt
 	 */
 	private AutomationStep deserializeActionStep(JsonObject stepObj, Gson gson)
 	{
-		if (stepObj.get("action_type") == null || stepObj.get("action_type").isJsonNull()) {
+		String actionType = stringOrNull(stepObj, "action_type");
+
+		if (actionType == null) {
 			return gson.fromJson(stepObj, GenericAutomationStep.class);
 		}
-		
-		String actionType = stepObj.get("action_type").getAsString();
-		
+
 		switch (actionType) {
 		
 			case GenericAutomationStep.ACTION_TYPE_UPDATE_CUSTOM_FIELD:
@@ -166,9 +170,9 @@ public class AutomationStepDeserializer implements JsonDeserializer<AutomationSt
 			
 			JsonObject conditionObj = el.getAsJsonObject();
 			
-			String conditionType = conditionObj.get("type").getAsString();
-			
-			switch (conditionType) {
+			String conditionType = stringOrNull(conditionObj, "type");
+
+			switch (conditionType == null ? "" : conditionType) {
 			
 			case "workflow_activity":
 				conditionItems.add(gson.fromJson(conditionObj, WorkflowActivityCondition.class));
@@ -198,7 +202,14 @@ public class AutomationStepDeserializer implements JsonDeserializer<AutomationSt
 		
 		
 		step.conditions = conditionItems.toArray();
-		
+
 		return step;
+	}
+
+	private static String stringOrNull(JsonObject obj, String key)
+	{
+		JsonElement value = obj.get(key);
+
+		return value == null || value.isJsonNull() ? null : value.getAsString();
 	}
 }

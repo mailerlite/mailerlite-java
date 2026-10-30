@@ -611,7 +611,25 @@ public class AutomationsRequestTest extends MockTestBase {
 		assertEquals("5", assertInstanceOf(CopyToGroupAction.class, steps[3]).groupIds[0]);
 		assertEquals(0, assertInstanceOf(ConditionStep.class, steps[4]).conditions.length);
 	}
-	
+
+	/**
+	 * Test list steps falls back to generic types when a type is missing.
+	 *
+	 * @throws MailerLiteException the mailer lite exception
+	 */
+	@Test
+	public void TestListStepsWithoutType() throws MailerLiteException
+	{
+		http.respondWith(200, "{\"data\":[{\"id\":\"20\"},{\"id\":\"21\",\"type\":null},"
+				+ "{\"id\":\"22\",\"type\":\"condition\",\"conditions\":[{\"id\":\"1\"}]}]}");
+
+		AutomationStep[] steps = this.getMailerLite().automations().steps("100").get().steps;
+
+		assertEquals("20", assertInstanceOf(GenericAutomationStep.class, steps[0]).id);
+		assertEquals("21", assertInstanceOf(GenericAutomationStep.class, steps[1]).id);
+		assertEquals(1, assertInstanceOf(ConditionStep.class, steps[2]).conditions.length);
+	}
+
 	/**
 	 * Test get step.
 	 *
