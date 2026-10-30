@@ -26,6 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
+import com.mailerlite.sdk.MailerLite;
 import com.mailerlite.sdk.MailerLiteApi;
 import com.mailerlite.sdk.MailerLiteResponse;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
@@ -320,4 +321,70 @@ public class MailerLiteApiTest {
 		assertTrue(Thread.interrupted());
 	}
 
+	@Test
+	public void apiErrorSetsTheMessageField()
+	{
+		Map<String, Executable> methods = oldRequestMethods();
+		methods.put("sendRequest", () -> api().sendRequest("POST", "/emails/123/versions", null, null, MailerLiteResponse.class));
+		methods.put("automation activity", () -> {
+			MailerLite ml = new MailerLite();
+			ml.setToken("test-token");
+			ml.automations().subscriberActivityRetriever().get("1");
+		});
+
+		for (Map.Entry<String, Executable> method : methods.entrySet()) {
+
+			client.respond(404, "{\"message\":\"Resource not found.\"}");
+
+			MailerLiteException e = assertThrows(MailerLiteException.class, method.getValue(), method.getKey());
+
+			assertEquals("Resource not found.", e.message, method.getKey());
+			assertEquals("Resource not found.", e.getMessage(), method.getKey());
+		}
+	}
+
+	@Test
+	public void apiErrorWithCodeSetsTheMessageFieldWithoutTheCode()
+	{
+		client.respond(409, "{\"message\":\"The email changed.\",\"code\":\"version_conflict\",\"etag\":\"43\"}");
+
+		MailerLiteException e = assertThrows(MailerLiteException.class,
+				() -> api().sendRequest("PATCH", "/emails/123/blocks/57", "{}", null, MailerLiteResponse.class));
+
+		assertEquals("The email changed.", e.message);
+		assertEquals("version_conflict: The email changed.", e.getMessage());
+	}
+
+	@Test
+	public void apiErrorWithoutMessageKeepsAnEmptyMessageField()
+	{
+		client.respond(409, "{\"code\":\"version_conflict\"}").respond(500, "{\"message\":null}");
+
+		MailerLiteException withCode = assertThrows(MailerLiteException.class,
+				() -> api().sendRequest("PATCH", "/emails/123/blocks/57", "{}", null, MailerLiteResponse.class));
+		MailerLiteException withNull = assertThrows(MailerLiteException.class,
+				() -> api().getRequest("/groups", MailerLiteResponse.class));
+
+		assertEquals("", withCode.message);
+		assertEquals("", withNull.message);
+	}
+
+	@Test
+	public void errorWithoutApiMessageSetsTheMessageFieldToGetMessage()
+	{
+		client.respond(503, "<html><body>503</body></html>");
+
+		MailerLiteException unreadable = assertThrows(MailerLiteException.class,
+				() -> api().getRequest("/groups", MailerLiteResponse.class));
+
+		assertEquals("Error parsing API response", unreadable.message);
+
+		client.fail(new IOException("connection reset"));
+
+		MailerLiteException network = assertThrows(MailerLiteException.class,
+				() -> api().sendRequest("GET", "/emails/123", null, null, MailerLiteResponse.class));
+
+		assertEquals("java.io.IOException: connection reset", network.message);
+		assertEquals(network.getMessage(), network.message);
+	}
 }

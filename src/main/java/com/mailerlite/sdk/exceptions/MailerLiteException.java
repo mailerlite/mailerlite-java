@@ -23,7 +23,10 @@ public class MailerLiteException extends Exception  {
     /** The code. */
     public int code; // the response code
     
-    /** The message. */
+    /**
+     * The {@code message} of the API error body, without the error code, or "" if the body has none.
+     * If the SDK cannot read the error body, or for a network error, the same text as {@link #getMessage()}.
+     */
     public String message = "";
     
     /** The response body. */
@@ -52,6 +55,11 @@ public class MailerLiteException extends Exception  {
     public MailerLiteException(String message) {
         
         super(message);
+        
+        if (message != null) {
+            
+            this.message = message;
+        }
     }
     
     /**
@@ -63,6 +71,11 @@ public class MailerLiteException extends Exception  {
     public MailerLiteException(String message, Throwable cause) {
         
         super(message, cause);
+        
+        if (message != null) {
+            
+            this.message = message;
+        }
     }
     
     /**

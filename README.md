@@ -105,6 +105,7 @@ Version 0.1.0 changes some behavior of the SDK. Before you upgrade from 0.0.4, d
 - The SDK now sends a `+` in a query value as a literal `+`. Before, the API read it as a space.
 - `EmailBase` now has the fields `replyTo` (`reply_to`), `editor` and `templateId` (`template_id`). If your subclass of `EmailBase` has its own field with one of these JSON names, Gson throws an error ("declares multiple JSON fields named ..."), and `CampaignBuilder.create()` and `update()` fail. Remove these fields from your subclass, and use the fields of `EmailBase`.
 - A network error is now a `MailerLiteException` with the network error as the cause. Before, the SDK threw a `ClassCastException`. To find a network error, examine `e.getCause()`, for example `e.getCause() instanceof IOException`.
+- The field `MailerLiteException.message` now has the message of the API error, without the error code. Before, it was always `""`. If the SDK cannot read the error body, or for a network error, it has the same text as `getMessage()`. `getMessage()` does not change.
 
 # Usage
 

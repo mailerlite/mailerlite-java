@@ -414,7 +414,8 @@ public class MailerLiteApi {
 	            }
 	            
 	            responseError = new MailerLiteException(message);
-	         
+	            
+	            responseError.message = error.message == null ? "" : error.message;
 	            responseError.errors = error.errors;
 	            responseError.errorCode = error.code;
 	            responseError.etag = error.etag;
