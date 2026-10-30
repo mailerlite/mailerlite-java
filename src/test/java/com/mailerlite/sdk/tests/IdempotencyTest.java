@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -34,7 +35,6 @@ import com.mailerlite.sdk.emails.EmailBlockPositions;
 import com.mailerlite.sdk.emails.EmailBlockTypes;
 import com.mailerlite.sdk.emails.Emails;
 import com.mailerlite.sdk.emails.SingleEmailBlock;
-import com.mailerlite.sdk.exceptions.InvalidIdempotencyKeyException;
 import com.mailerlite.sdk.support.Fixtures;
 import com.mailerlite.sdk.support.RecordingHttpClient;
 
@@ -125,17 +125,53 @@ public class IdempotencyTest {
 		assertNull(client.requests().get(1).header("Idempotency-Key"));
 	}
 
+	/**
+	 * The SDK gives the key to the HTTP client as it is, and the API checks it. The HTTP client removes the spaces
+	 * and the tabs at the start and the end of a header value, as HTTP does.
+	 */
 	@Test
-	public void invalidKeysThrowAtOnce()
+	public void keysAreSentAsGiven() throws Exception
 	{
-		for (String key : RequestChecksTest.INVALID_KEYS) {
-			assertThrows(InvalidIdempotencyKeyException.class, () -> RequestOptions.idempotencyKey(key),
-					"key of length " + key.length());
+		List<String> keys = Arrays.asList(" key", "key ", "key\t", "cl\u00e9", RequestChecksTest.repeat('k', 256), "a");
+
+		for (String key : keys) {
+
+			client.requests().clear();
+			client.respond(201, Fixtures.read("email_version.json"));
+
+			RequestOptions options = RequestOptions.idempotencyKey(key);
+			assertEquals(key, options.getIdempotencyKey());
+
+			emails.createVersion("123", options);
+
+			assertEquals(1, client.requests().size(), "key of length " + key.length());
+			assertEquals(key.trim(), client.lastRequest().header("Idempotency-Key"), "key of length " + key.length());
+		}
+	}
+
+	@Test
+	public void emptyKeySendsNoHeader() throws Exception
+	{
+		client.respond(201, Fixtures.read("email_version.json"));
+
+		emails.createVersion("123", RequestOptions.idempotencyKey(""));
+
+		assertEquals(1, client.requests().size());
+		assertNull(client.lastRequest().header("Idempotency-Key"));
+	}
+
+	@Test
+	public void keysThatHttpCannotSendReturnTheHttpError()
+	{
+		for (String key : Arrays.asList("key\n", "key\u007f")) {
+
+			RequestOptions options = RequestOptions.idempotencyKey(key);
+
+			IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+					() -> emails.createVersion("123", options), "key " + key.replace("\n", "\\n"));
+			assertTrue(e.getMessage().contains("header"), e.getMessage());
 		}
 
-		String longest = RequestChecksTest.repeat('k', 255);
-		assertEquals(longest, RequestOptions.idempotencyKey(longest).getIdempotencyKey());
-		assertNull(RequestOptions.idempotencyKey(null).getIdempotencyKey());
 		assertTrue(client.requests().isEmpty());
 	}
 

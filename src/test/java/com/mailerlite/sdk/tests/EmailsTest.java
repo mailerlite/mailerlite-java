@@ -41,6 +41,7 @@ import com.mailerlite.sdk.emails.EmailBrandModes;
 import com.mailerlite.sdk.emails.EmailBrandSettings;
 import com.mailerlite.sdk.emails.EmailEditorText;
 import com.mailerlite.sdk.emails.EmailFooterSettings;
+import com.mailerlite.sdk.emails.EmailLayoutSettings;
 import com.mailerlite.sdk.emails.EmailParagraphStyle;
 import com.mailerlite.sdk.emails.EmailSettings;
 import com.mailerlite.sdk.emails.EmailTextStyle;
@@ -55,7 +56,6 @@ import com.mailerlite.sdk.emails.Emails;
 import com.mailerlite.sdk.emails.SingleEmailBlock;
 import com.mailerlite.sdk.emails.SingleEmailDocument;
 import com.mailerlite.sdk.emails.SingleEmailHtml;
-import com.mailerlite.sdk.exceptions.EmptyEtagException;
 import com.mailerlite.sdk.exceptions.EmptyIdException;
 import com.mailerlite.sdk.exceptions.InvalidIdException;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
@@ -301,23 +301,46 @@ public class EmailsTest {
 		return content;
 	}
 
-	static void assertRejectsEtags(RecordingHttpClient client, Function<String, Executable> call)
-	{
-		assertThrows(EmptyEtagException.class, call.apply(""));
-		assertThrows(EmptyEtagException.class, call.apply(null));
-		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
-	}
-
-	static void assertPlacementRules(RecordingHttpClient client, String response, Function<EmailBlockPosition, Executable> call,
+	/**
+	 * The API checks the etag. The SDK sends an empty etag as it is, and sends no etag key for a null etag.
+	 */
+	static void assertSendsEtags(RecordingHttpClient client, String response, Function<String, Executable> call,
 			Function<String, String> expectedBody) throws Throwable
 	{
+		client.requests().clear();
+		client.respond(200, response).respond(200, response);
+
+		call.apply("").execute();
+		assertEquals(expectedBody.apply(",\"etag\":\"\""), client.lastRequest().bodyString(), "empty etag");
+
+		call.apply(null).execute();
+		assertEquals(expectedBody.apply(""), client.lastRequest().bodyString(), "null etag");
+		assertEquals(2, client.requests().size(), "number of requests");
+	}
+
+	/**
+	 * The API checks the placement. The SDK sends the placement exactly as the caller gives it.
+	 */
+	static void assertSendsThePlacement(RecordingHttpClient client, String response,
+			Function<EmailBlockPosition, Executable> call, Function<String, String> expectedBody) throws Throwable
+	{
 		Object[][] sent = {
-			{EmailBlockPositions.END, "", "{\"position\":\"end\"}"},
-			{EmailBlockPositions.START, "1/2", "{\"position\":\"start\"}"},
+			{EmailBlockPositions.END, null, "{\"position\":\"end\"}"},
+			{EmailBlockPositions.END, "", "{\"position\":\"end\",\"block_id\":\"\"}"},
+			{EmailBlockPositions.START, "5", "{\"position\":\"start\",\"block_id\":\"5\"}"},
+			{EmailBlockPositions.START, "1/2", "{\"position\":\"start\",\"block_id\":\"1/2\"}"},
 			{EmailBlockPositions.AFTER, "57", "{\"position\":\"after\",\"block_id\":\"57\"}"},
+			{EmailBlockPositions.AFTER, null, "{\"position\":\"after\"}"},
+			{EmailBlockPositions.AFTER, "", "{\"position\":\"after\",\"block_id\":\"\"}"},
+			{EmailBlockPositions.AFTER, "\u00b2", "{\"position\":\"after\",\"block_id\":\"\u00b2\"}"},
 			{EmailBlockPositions.BEFORE, "1", "{\"position\":\"before\",\"block_id\":\"1\"}"},
+			{EmailBlockPositions.BEFORE, null, "{\"position\":\"before\"}"},
+			{EmailBlockPositions.BEFORE, "1/2", "{\"position\":\"before\",\"block_id\":\"1/2\"}"},
 			{"middle", "5", "{\"position\":\"middle\",\"block_id\":\"5\"}"},
 			{"middle", null, "{\"position\":\"middle\"}"},
+			{"", "5", "{\"position\":\"\",\"block_id\":\"5\"}"},
+			{null, "5", "{\"block_id\":\"5\"}"},
+			{null, null, "{}"},
 		};
 
 		for (Object[] item : sent) {
@@ -328,31 +351,11 @@ public class EmailsTest {
 			EmailBlockPosition placement = new EmailBlockPosition((String) item[0], (String) item[1]);
 			call.apply(placement).execute();
 
+			assertEquals(1, client.requests().size(), item[0] + " " + item[1]);
 			assertEquals(expectedBody.apply((String) item[2]), client.lastRequest().bodyString(), item[0] + " " + item[1]);
+			assertEquals(item[0], placement.position, "the SDK must not change the placement of the caller");
 			assertEquals(item[1], placement.blockId, "the SDK must not change the placement of the caller");
 		}
-
-		client.requests().clear();
-
-		Object[][] rejected = {
-			{EmailBlockPositions.AFTER, null, EmptyIdException.class},
-			{EmailBlockPositions.AFTER, "", EmptyIdException.class},
-			{EmailBlockPositions.BEFORE, null, EmptyIdException.class},
-			{EmailBlockPositions.BEFORE, "1/2", InvalidIdException.class},
-			{EmailBlockPositions.AFTER, "\u00b2", InvalidIdException.class},
-			{"middle", "1/2", InvalidIdException.class},
-			{"", "5", IllegalArgumentException.class},
-			{null, "5", IllegalArgumentException.class},
-		};
-
-		for (Object[] item : rejected) {
-
-			@SuppressWarnings("unchecked")
-			Class<? extends Throwable> type = (Class<? extends Throwable>) item[2];
-			assertThrows(type, call.apply(new EmailBlockPosition((String) item[0], (String) item[1])), item[0] + " " + item[1]);
-		}
-
-		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
 	}
 
 	@Test
@@ -398,9 +401,9 @@ public class EmailsTest {
 	}
 
 	@Test
-	public void createBlockPlacementRules() throws Throwable
+	public void createBlockSendsThePlacementAsGiven() throws Throwable
 	{
-		assertPlacementRules(client, Fixtures.read("email_block_created.json"), placement -> () -> {
+		assertSendsThePlacement(client, Fixtures.read("email_block_created.json"), placement -> () -> {
 			EmailBlockInput block = new EmailBlockInput(EmailBlockTypes.DIVIDER, new LinkedHashMap<String, Object>());
 			block.placement = placement;
 			emails.createBlock("123", "42", block);
@@ -413,21 +416,44 @@ public class EmailsTest {
 		EmailBlockInput divider = new EmailBlockInput(EmailBlockTypes.DIVIDER, new LinkedHashMap<String, Object>());
 
 		assertRejectsIds(client, id -> () -> emails.createBlock(id, "42", divider));
-		assertRejectsEtags(client, etag -> () -> emails.createBlock("123", etag, divider));
 
 		NullPointerException noBlock = assertThrows(NullPointerException.class, () -> emails.createBlock("123", "42", null));
 		assertTrue(noBlock.getMessage().contains("block"), noBlock.getMessage());
 
-		assertThrows(IllegalArgumentException.class,
-				() -> emails.createBlock("123", "42", new EmailBlockInput("", new LinkedHashMap<String, Object>())));
-		assertThrows(IllegalArgumentException.class,
-				() -> emails.createBlock("123", "42", new EmailBlockInput(null, new LinkedHashMap<String, Object>())));
-
-		NullPointerException noContent = assertThrows(NullPointerException.class,
-				() -> emails.createBlock("123", "42", new EmailBlockInput(EmailBlockTypes.DIVIDER, null)));
-		assertTrue(noContent.getMessage().contains("editorContent"), noContent.getMessage());
-
 		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	}
+
+	@Test
+	public void createBlockSendsTheEtagAsGiven() throws Throwable
+	{
+		EmailBlockInput divider = new EmailBlockInput(EmailBlockTypes.DIVIDER, new LinkedHashMap<String, Object>());
+
+		assertSendsEtags(client, Fixtures.read("email_block_created.json"),
+				etag -> () -> emails.createBlock("123", etag, divider),
+				etag -> "{\"type\":\"divider\",\"editor_content\":{}" + etag + "}");
+	}
+
+	@Test
+	public void createBlockSendsTheBlockValuesAsGiven() throws Exception
+	{
+		client.respond(422, "{\"message\":\"The given data was invalid.\","
+				+ "\"errors\":{\"type\":[\"The type field is required.\"]}}")
+				.respond(201, Fixtures.read("email_block_created.json"))
+				.respond(201, Fixtures.read("email_block_created.json"));
+
+		MailerLiteException e = assertThrows(MailerLiteException.class,
+				() -> emails.createBlock("123", "42", new EmailBlockInput("", new LinkedHashMap<String, Object>())));
+
+		assertEquals("{\"type\":\"\",\"editor_content\":{},\"etag\":\"42\"}", client.lastRequest().bodyString());
+		assertEquals(422, e.code);
+		assertArrayEquals(new String[] {"The type field is required."}, e.errors.get("type"));
+
+		emails.createBlock("123", "42", new EmailBlockInput(null, new LinkedHashMap<String, Object>()));
+		assertEquals("{\"editor_content\":{},\"etag\":\"42\"}", client.lastRequest().bodyString());
+
+		emails.createBlock("123", "42", new EmailBlockInput(EmailBlockTypes.DIVIDER, null));
+		assertEquals("{\"type\":\"divider\",\"etag\":\"42\"}", client.lastRequest().bodyString());
+		assertEquals(3, client.requests().size());
 	}
 
 
@@ -469,11 +495,21 @@ public class EmailsTest {
 
 		assertRejectsIds(client, id -> () -> emails.updateBlock(id, "57", "43", content));
 		assertRejectsIds(client, id -> () -> emails.updateBlock("123", id, "43", content));
-		assertRejectsEtags(client, etag -> () -> emails.updateBlock("123", "57", etag, content));
+	}
 
-		NullPointerException e = assertThrows(NullPointerException.class, () -> emails.updateBlock("123", "57", "43", null));
-		assertTrue(e.getMessage().contains("editorContent"), e.getMessage());
-		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	@Test
+	public void updateBlockSendsTheValuesAsGiven() throws Throwable
+	{
+		assertSendsEtags(client, Fixtures.read("email_block_updated.json"),
+				etag -> () -> emails.updateBlock("123", "57", etag, new LinkedHashMap<String, Object>()),
+				etag -> "{\"editor_content\":{}" + etag + "}");
+
+		client.requests().clear();
+		client.respond(200, Fixtures.read("email_block_updated.json"));
+
+		emails.updateBlock("123", "57", "43", null);
+
+		assertRequest(client, "PATCH", "/emails/123/blocks/57", "{\"etag\":\"43\"}", null);
 	}
 
 
@@ -494,7 +530,14 @@ public class EmailsTest {
 	{
 		assertRejectsIds(client, id -> () -> emails.deleteBlock(id, "57", "44"));
 		assertRejectsIds(client, id -> () -> emails.deleteBlock("123", id, "44"));
-		assertRejectsEtags(client, etag -> () -> emails.deleteBlock("123", "57", etag));
+	}
+
+	@Test
+	public void deleteBlockSendsTheEtagAsGiven() throws Throwable
+	{
+		assertSendsEtags(client, Fixtures.read("email_etag.json"),
+				etag -> () -> emails.deleteBlock("123", "57", etag),
+				etag -> "{" + (etag.isEmpty() ? "" : etag.substring(1)) + "}");
 	}
 
 
@@ -514,9 +557,9 @@ public class EmailsTest {
 	}
 
 	@Test
-	public void moveBlockPlacementRules() throws Throwable
+	public void moveBlockSendsThePlacementAsGiven() throws Throwable
 	{
-		assertPlacementRules(client, Fixtures.read("email_block_moved.json"),
+		assertSendsThePlacement(client, Fixtures.read("email_block_moved.json"),
 				placement -> () -> emails.moveBlock("123", "57", "45", placement),
 				json -> "{\"placement\":" + json + ",\"etag\":\"45\"}");
 	}
@@ -528,11 +571,23 @@ public class EmailsTest {
 
 		assertRejectsIds(client, id -> () -> emails.moveBlock(id, "57", "45", start));
 		assertRejectsIds(client, id -> () -> emails.moveBlock("123", id, "45", start));
-		assertRejectsEtags(client, etag -> () -> emails.moveBlock("123", "57", etag, start));
+	}
 
-		NullPointerException e = assertThrows(NullPointerException.class, () -> emails.moveBlock("123", "57", "45", null));
-		assertTrue(e.getMessage().contains("placement"), e.getMessage());
-		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	@Test
+	public void moveBlockSendsTheValuesAsGiven() throws Throwable
+	{
+		EmailBlockPosition start = new EmailBlockPosition(EmailBlockPositions.START);
+
+		assertSendsEtags(client, Fixtures.read("email_block_moved.json"),
+				etag -> () -> emails.moveBlock("123", "57", etag, start),
+				etag -> "{\"placement\":{\"position\":\"start\"}" + etag + "}");
+
+		client.requests().clear();
+		client.respond(200, Fixtures.read("email_block_moved.json"));
+
+		emails.moveBlock("123", "57", "45", null);
+
+		assertRequest(client, "POST", "/emails/123/blocks/57/move", "{\"etag\":\"45\"}", null);
 	}
 
 
@@ -570,9 +625,9 @@ public class EmailsTest {
 	}
 
 	@Test
-	public void validateBlockPlacementRules() throws Throwable
+	public void validateBlockSendsThePlacementAsGiven() throws Throwable
 	{
-		assertPlacementRules(client, Fixtures.read("email_block_validation_valid.json"), placement -> () -> {
+		assertSendsThePlacement(client, Fixtures.read("email_block_validation_valid.json"), placement -> () -> {
 			EmailBlockInput block = new EmailBlockInput(EmailBlockTypes.DIVIDER, new LinkedHashMap<String, Object>());
 			block.placement = placement;
 			emails.validateBlock(block);
@@ -580,13 +635,21 @@ public class EmailsTest {
 	}
 
 	@Test
-	public void validateBlockRejectsInvalidInput()
+	public void validateBlockSendsAnInvalidBlock() throws Exception
 	{
-		assertThrows(NullPointerException.class, () -> emails.validateBlock(null));
-		assertThrows(IllegalArgumentException.class,
-				() -> emails.validateBlock(new EmailBlockInput("", new LinkedHashMap<String, Object>())));
-		assertThrows(NullPointerException.class, () -> emails.validateBlock(new EmailBlockInput(EmailBlockTypes.DIVIDER, null)));
-		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+		String invalid = Fixtures.read("email_block_validation_invalid.json");
+		client.respond(200, invalid).respond(200, invalid).respond(200, invalid);
+
+		EmailValidation response = emails.validateBlock(new EmailBlockInput("", new LinkedHashMap<String, Object>()));
+		assertEquals("{\"type\":\"\",\"editor_content\":{}}", client.lastRequest().bodyString());
+		assertFalse(response.valid);
+
+		emails.validateBlock(new EmailBlockInput(EmailBlockTypes.DIVIDER, null));
+		assertEquals("{\"type\":\"divider\"}", client.lastRequest().bodyString());
+
+		emails.validateBlock(null);
+		assertEquals("{}", client.lastRequest().bodyString());
+		assertEquals(3, client.requests().size());
 	}
 
 
@@ -674,11 +737,23 @@ public class EmailsTest {
 		EmailSettings settings = brandAndParagraphSettings();
 
 		assertRejectsIds(client, id -> () -> emails.updateSettings(id, "46", settings));
-		assertRejectsEtags(client, etag -> () -> emails.updateSettings("123", etag, settings));
 
 		NullPointerException e = assertThrows(NullPointerException.class, () -> emails.updateSettings("123", "46", null));
 		assertTrue(e.getMessage().contains("settings"), e.getMessage());
 		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	}
+
+
+	@Test
+	public void updateSettingsSendsTheEtagAsGiven() throws Throwable
+	{
+		EmailSettings settings = new EmailSettings();
+		settings.layout = new EmailLayoutSettings();
+		settings.layout.alignment = "left";
+
+		assertSendsEtags(client, Fixtures.read("email_settings.json"),
+				etag -> () -> emails.updateSettings("123", etag, settings),
+				etag -> "{\"layout\":{\"alignment\":\"left\"}" + etag + "}");
 	}
 
 
@@ -703,9 +778,16 @@ public class EmailsTest {
 	public void validateSettingsRejectsInvalidInput()
 	{
 		assertRejectsIds(client, id -> () -> emails.validateSettings(id, brandAndParagraphSettings()));
+	}
 
-		assertThrows(NullPointerException.class, () -> emails.validateSettings("123", null));
-		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	@Test
+	public void validateSettingsWithNullSettingsSendsAnEmptyBody() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_settings_validation.json"));
+
+		emails.validateSettings("123", null);
+
+		assertRequest(client, "POST", "/emails/123/settings/validate", "{}", null);
 	}
 
 
@@ -728,10 +810,24 @@ public class EmailsTest {
 	public void createTemplateRejectsInvalidInput()
 	{
 		assertRejectsIds(client, id -> () -> emails.createTemplate(id, "Newsletter"));
+	}
 
-		assertThrows(IllegalArgumentException.class, () -> emails.createTemplate("123", ""));
-		assertThrows(IllegalArgumentException.class, () -> emails.createTemplate("123", null));
-		assertTrue(client.requests().isEmpty(), "the SDK must send no request");
+	@Test
+	public void createTemplateSendsTheNameAsGiven() throws Exception
+	{
+		client.respond(422, "{\"message\":\"The given data was invalid.\","
+				+ "\"errors\":{\"name\":[\"The name field is required.\"]}}")
+				.respond(422, "{\"message\":\"The given data was invalid.\"}");
+
+		MailerLiteException e = assertThrows(MailerLiteException.class, () -> emails.createTemplate("123", ""));
+
+		assertRequest(client, "POST", "/emails/123/templates", "{\"name\":\"\"}", null);
+		assertEquals(422, e.code);
+		assertArrayEquals(new String[] {"The name field is required."}, e.errors.get("name"));
+
+		assertThrows(MailerLiteException.class, () -> emails.createTemplate("123", null));
+		assertEquals("{}", client.lastRequest().bodyString());
+		assertEquals(2, client.requests().size());
 	}
 
 
@@ -842,7 +938,14 @@ public class EmailsTest {
 	{
 		assertRejectsIds(client, id -> () -> emails.restoreVersion(id, "901", "47"));
 		assertRejectsIds(client, id -> () -> emails.restoreVersion("123", id, "47"));
-		assertRejectsEtags(client, etag -> () -> emails.restoreVersion("123", "901", etag));
+	}
+
+	@Test
+	public void restoreVersionSendsTheEtagAsGiven() throws Throwable
+	{
+		assertSendsEtags(client, Fixtures.read("email.json"),
+				etag -> () -> emails.restoreVersion("123", "901", etag),
+				etag -> "{" + (etag.isEmpty() ? "" : etag.substring(1)) + "}");
 	}
 
 }

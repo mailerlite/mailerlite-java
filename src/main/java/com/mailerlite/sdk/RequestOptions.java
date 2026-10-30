@@ -7,9 +7,6 @@
  **************************************************/
 package com.mailerlite.sdk;
 
-import com.mailerlite.sdk.exceptions.InvalidIdempotencyKeyException;
-import com.mailerlite.sdk.util.RequestChecks;
-
 /**
  * Options for one request, for example an idempotency key.
  * <p>
@@ -32,19 +29,13 @@ public final class RequestOptions {
 	 * success, the API returns the stored response and does not do the write two times. Then
 	 * {@link MailerLiteResponse#isIdempotentReplay()} is true. The API keeps a key for 24 hours.
 	 * <p>
-	 * The key must have 1 to 255 printable ASCII characters (0x20 to 0x7E), with no space at the start or the end.
-	 * A null key sends no header.
+	 * The SDK sends the key as you give it, and the API checks it. A null or empty key sends no header.
 	 *
 	 * @param key the idempotency key, or null for no key
 	 * @return the options
-	 * @throws InvalidIdempotencyKeyException if the key does not obey the rules
 	 */
 	public static RequestOptions idempotencyKey(String key)
 	{
-		if (key != null) {
-			RequestChecks.idempotencyKey(key);
-		}
-
 		return new RequestOptions(key);
 	}
 

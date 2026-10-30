@@ -28,19 +28,14 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.emails.EditorContentAdapter;
-import com.mailerlite.sdk.exceptions.EmptyEtagException;
 import com.mailerlite.sdk.exceptions.EmptyIdException;
 import com.mailerlite.sdk.exceptions.InvalidIdException;
-import com.mailerlite.sdk.exceptions.InvalidIdempotencyKeyException;
 import com.mailerlite.sdk.util.RequestChecks;
 
 public class RequestChecksTest {
 
 	public static final List<String> INVALID_IDS = Collections.unmodifiableList(Arrays.asList(
 			"123/html", "123%2Fhtml", "123\n", "\u00b2", "\u0661\u0662\u0663", "12a", " 123", "-1", "1.5"));
-
-	public static final List<String> INVALID_KEYS = Collections.unmodifiableList(Arrays.asList(
-			"", repeat('k', 256), "key\n", "key\t", "cl\u00e9", "key\u007f", " key", "key "));
 
 	public static String repeat(char c, int count)
 	{
@@ -76,45 +71,6 @@ public class RequestChecksTest {
 			tests.add(dynamicTest("rejects " + id.replace("\n", "\\n"), () -> {
 				InvalidIdException e = assertThrows(InvalidIdException.class, () -> RequestChecks.pathId(id, "versionId"));
 				assertTrue(e.getMessage().contains("versionId"), e.getMessage());
-				assertTrue(e instanceof IllegalArgumentException);
-			}));
-		}
-
-		return tests;
-	}
-
-	@Test
-	public void etagRejectsEmptyValues()
-	{
-		assertEquals("42", RequestChecks.etag("42"));
-		assertThrows(EmptyEtagException.class, () -> RequestChecks.etag(""));
-		EmptyEtagException e = assertThrows(EmptyEtagException.class, () -> RequestChecks.etag(null));
-		assertTrue(e instanceof IllegalArgumentException);
-	}
-
-	@Test
-	public void idempotencyKeyAcceptsPrintableAscii()
-	{
-		String longest = repeat('k', 255);
-
-		assertEquals(longest, RequestChecks.idempotencyKey(longest));
-		assertEquals("a", RequestChecks.idempotencyKey("a"));
-		assertEquals("retry 1 ~!@#$%^&*()", RequestChecks.idempotencyKey("retry 1 ~!@#$%^&*()"));
-	}
-
-	@TestFactory
-	public List<DynamicTest> idempotencyKeyRejectsInvalidKeys()
-	{
-		List<String> keys = new ArrayList<String>(INVALID_KEYS);
-		keys.add(null);
-
-		List<DynamicTest> tests = new ArrayList<DynamicTest>();
-
-		for (String key : keys) {
-			String name = key == null ? "null" : key.length() > 20 ? "length " + key.length() : key;
-			tests.add(dynamicTest("rejects " + name.replace("\n", "\\n").replace("\t", "\\t"), () -> {
-				InvalidIdempotencyKeyException e = assertThrows(InvalidIdempotencyKeyException.class,
-						() -> RequestChecks.idempotencyKey(key));
 				assertTrue(e instanceof IllegalArgumentException);
 			}));
 		}

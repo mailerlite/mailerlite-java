@@ -17,12 +17,12 @@ import com.google.gson.annotations.SerializedName;
  */
 public class EmailBlockInput {
 
-	/** The block type: one of the values in {@link EmailBlockTypes}, except TITLE. Required. */
+	/** The block type: one of the values in {@link EmailBlockTypes}, except TITLE. The API needs it. */
 	@SerializedName("type")
 	public String type;
 
 	/**
-	 * The editor document of the block. Required, but it can be an empty map, for example for a divider.
+	 * The editor document of the block. The API needs it, but it can be an empty map, for example for a divider.
 	 * The keys are camelCase, for example "textAlign". The SDK sends the map as it is, also its null values.
 	 */
 	@SerializedName("editor_content")

@@ -1038,7 +1038,8 @@ class Example {
 These methods read and change emails built with the simple editor. To make such an email, [create a campaign with the simple editor](#create-a-campaign-with-the-simple-editor). The ID of the email is in `campaign.emails[0].id`.
 
 - IDs are strings of the digits 0 to 9. An empty or `null` ID throws `EmptyIdException`. An ID with other characters throws `InvalidIdException`. Both extend `IllegalArgumentException`, and the SDK sends no request.
-- Each write needs the etag from the last response for the email, and each write returns a new etag. The etag covers the whole email, so send the writes to one email one after another. An empty or `null` etag throws `EmptyEtagException`, and the SDK sends no request.
+- The SDK sends all other values as you give them, and the API checks them. If a value is not valid, the write throws a `MailerLiteException`, for example with `code` `422` and the `errors` for each field.
+- Each write needs the etag from the last response for the email, and each write returns a new etag. The etag covers the whole email, so send the writes to one email one after another. An empty etag gets a `422` error.
 - If the email changed after you read it, the write throws a `MailerLiteException` with `code` `409`, and `e.isVersionConflict()` is `true`. Then `e.etag` is the current etag. Get the email again, and then send the write again with the current etag.
 - The API error code, for example `version_conflict`, is in `e.errorCode`. The field `e.code` is the HTTP status.
 - The keys of `editorContent` are camelCase, for example `textAlign`. The SDK sends them as you give them. In a response, whole numbers are `Long` values.
@@ -1140,9 +1141,9 @@ class Example {
 
 Use the block types in `EmailBlockTypes`. You cannot insert the `TITLE` type. `editorContent` is required, but it can be an empty map. The SDK sends the map as it is, also its `null` values.
 
-Without `placement`, the API puts the block at the end of the email. The positions are in `EmailBlockPositions`. The `BEFORE` and `AFTER` positions also need a `blockId`. For `START` and `END`, the API does not use a `blockId`, so the SDK does not send it.
+Without `placement`, the API puts the block at the end of the email. The positions are in `EmailBlockPositions`. The `BEFORE` and `AFTER` positions also need a `blockId`. The SDK sends the placement as you give it.
 
-A `null` block or `editorContent` throws `NullPointerException`. An empty block type throws `IllegalArgumentException`.
+A `null` block throws `NullPointerException`, and the SDK sends no request.
 
 ```java
 
@@ -1266,7 +1267,7 @@ class Example {
 
 ### Validate a block
 
-Checks a block before you insert it, and saves nothing. It needs no email and no etag. An invalid block is not an error: the response has `valid` set to `false` and the `errors` for each field.
+Checks a block before you insert it, and saves nothing. It needs no email and no etag. An invalid block is not an error: the response has `valid` set to `false` and the `errors` for each field. A `null` block sends an empty body.
 
 ```java
 
@@ -1348,7 +1349,7 @@ class Example {
 
 ### Validate the design settings
 
-Checks a change with the rules of the update, and saves nothing. It needs no etag. Invalid settings are not an error: the response has `valid` set to `false` and the `errors` for each field. If the update would remove unsafe values, `rejected` has their paths.
+Checks a change with the rules of the update, and saves nothing. It needs no etag. Invalid settings are not an error: the response has `valid` set to `false` and the `errors` for each field. If the update would remove unsafe values, `rejected` has their paths. `null` settings send an empty body.
 
 ```java
 
@@ -1487,7 +1488,8 @@ If a write fails with a network error, you do not know if the API did the write.
 
 - A network error is a `MailerLiteException` with the network error as the cause.
 - Use a new key for each write. The API keeps a key for 24 hours.
-- The key must be 1 to 255 printable ASCII characters, with no space at the start or the end. Otherwise `RequestOptions.idempotencyKey` throws `InvalidIdempotencyKeyException`, and the SDK sends no request.
+- The SDK sends the key as you give it, and the API checks it. An invalid key gets a `400` error. A `null` or empty key sends no header.
+- The Java HTTP client removes the spaces at the start and the end of the key. For a control character, for example a new line, it throws `IllegalArgumentException`.
 - The same key with different arguments gets a `422` error. If the first request is still running, the API returns `409` without an error code.
 - Without a key, a retry of a write that was a success gets `409` with `version_conflict`, because the etag is old.
 - These methods accept `RequestOptions` as the last argument: `createBlock`, `updateBlock`, `deleteBlock`, `moveBlock`, `updateSettings`, `createTemplate`, `createVersion` and `restoreVersion`.

@@ -32,9 +32,10 @@ import com.mailerlite.sdk.util.RequestChecks;
  * {@link MailerLiteException#isVersionConflict()} set to true and the current etag in
  * {@link MailerLiteException#etag}.
  * <p>
- * The methods check the IDs and the etag before they send a request. An empty or null ID throws
+ * The methods check the IDs in the URL path before they send a request. An empty or null ID throws
  * {@link com.mailerlite.sdk.exceptions.EmptyIdException}. An ID that contains a character other than the
- * digits 0 to 9 throws {@link com.mailerlite.sdk.exceptions.InvalidIdException}.
+ * digits 0 to 9 throws {@link com.mailerlite.sdk.exceptions.InvalidIdException}. The SDK sends all other values
+ * as you give them, and the API checks them. If a value is not valid, the API returns an error.
  * <p>
  * The writes, createTemplate and createVersion have an overload with {@link RequestOptions} as the last argument.
  * Use it to send an idempotency key, so that you can safely send a write again after a network error.
@@ -108,8 +109,7 @@ public class Emails {
 	 * @param block the block to insert
 	 * @return the new block and the new etag
 	 * @throws MailerLiteException if the API returns an error or the request fails
-	 * @throws NullPointerException if the block or its editor content is null
-	 * @throws IllegalArgumentException if the block type or the placement position is empty
+	 * @throws NullPointerException if the block is null
 	 */
 	public SingleEmailBlock createBlock(String emailId, String etag, EmailBlockInput block) throws MailerLiteException
 	{
@@ -128,14 +128,13 @@ public class Emails {
 	 * @param options the request options, for example an idempotency key, or null for no options
 	 * @return the new block and the new etag
 	 * @throws MailerLiteException if the API returns an error or the request fails
-	 * @throws NullPointerException if the block or its editor content is null
-	 * @throws IllegalArgumentException if the block type or the placement position is empty
+	 * @throws NullPointerException if the block is null
 	 */
 	public SingleEmailBlock createBlock(String emailId, String etag, EmailBlockInput block, RequestOptions options)
 			throws MailerLiteException
 	{
 		String endpoint = emailPath(emailId).concat("/blocks");
-		BlockBody body = blockBody(block, RequestChecks.etag(etag));
+		BlockBody body = blockBody(Objects.requireNonNull(block, "block"), etag);
 
 		return send("POST", endpoint, toJson(body), options, SingleEmailBlock.class);
 	}
@@ -152,7 +151,6 @@ public class Emails {
 	 * @param editorContent the new editor document of the block. The keys are camelCase.
 	 * @return the block and the new etag
 	 * @throws MailerLiteException if the API returns an error or the request fails
-	 * @throws NullPointerException if the editor content is null
 	 */
 	public SingleEmailBlock updateBlock(String emailId, String blockId, String etag, Map<String, Object> editorContent)
 			throws MailerLiteException
@@ -173,7 +171,6 @@ public class Emails {
 	 * @param options the request options, for example an idempotency key, or null for no options
 	 * @return the block and the new etag
 	 * @throws MailerLiteException if the API returns an error or the request fails
-	 * @throws NullPointerException if the editor content is null
 	 */
 	public SingleEmailBlock updateBlock(String emailId, String blockId, String etag, Map<String, Object> editorContent,
 			RequestOptions options)
@@ -182,8 +179,8 @@ public class Emails {
 		String endpoint = blockPath(emailId, blockId);
 
 		UpdateBlockBody body = new UpdateBlockBody();
-		body.etag = RequestChecks.etag(etag);
-		body.editorContent = Objects.requireNonNull(editorContent, "editorContent");
+		body.etag = etag;
+		body.editorContent = editorContent;
 
 		return send("PATCH", endpoint, toJson(body), options, SingleEmailBlock.class);
 	}
@@ -224,6 +221,7 @@ public class Emails {
 	 * Moves a block to a new position at the same level. The nesting of the block does not change.
 	 * <p>
 	 * The positions {@link EmailBlockPositions#BEFORE} and {@link EmailBlockPositions#AFTER} need a block ID.
+	 * The SDK sends the placement as you give it.
 	 *
 	 * @param emailId the email ID
 	 * @param blockId the ID of the block to move
@@ -231,8 +229,6 @@ public class Emails {
 	 * @param placement the new position
 	 * @return the block with its new placement, and the new etag
 	 * @throws MailerLiteException if the API returns an error or the request fails
-	 * @throws NullPointerException if the placement is null
-	 * @throws IllegalArgumentException if the placement position is empty
 	 */
 	public SingleEmailBlock moveBlock(String emailId, String blockId, String etag, EmailBlockPosition placement)
 			throws MailerLiteException
@@ -244,6 +240,7 @@ public class Emails {
 	 * Moves a block to a new position at the same level. The nesting of the block does not change.
 	 * <p>
 	 * The positions {@link EmailBlockPositions#BEFORE} and {@link EmailBlockPositions#AFTER} need a block ID.
+	 * The SDK sends the placement as you give it.
 	 *
 	 * @param emailId the email ID
 	 * @param blockId the ID of the block to move
@@ -252,8 +249,6 @@ public class Emails {
 	 * @param options the request options, for example an idempotency key, or null for no options
 	 * @return the block with its new placement, and the new etag
 	 * @throws MailerLiteException if the API returns an error or the request fails
-	 * @throws NullPointerException if the placement is null
-	 * @throws IllegalArgumentException if the placement position is empty
 	 */
 	public SingleEmailBlock moveBlock(String emailId, String blockId, String etag, EmailBlockPosition placement,
 			RequestOptions options)
@@ -262,8 +257,8 @@ public class Emails {
 		String endpoint = blockPath(emailId, blockId).concat("/move");
 
 		MoveBlockBody body = new MoveBlockBody();
-		body.etag = RequestChecks.etag(etag);
-		body.placement = placementBody(Objects.requireNonNull(placement, "placement"));
+		body.etag = etag;
+		body.placement = placement;
 
 		return send("POST", endpoint, toJson(body), options, SingleEmailBlock.class);
 	}
@@ -273,15 +268,15 @@ public class Emails {
 	 * <p>
 	 * An invalid block is not an error: the response has valid set to false and the errors for each field.
 	 *
-	 * @param block the block to check
+	 * @param block the block to check. A null block sends an empty body.
 	 * @return the result of the validation
 	 * @throws MailerLiteException if the API returns an error or the request fails
-	 * @throws NullPointerException if the block or its editor content is null
-	 * @throws IllegalArgumentException if the block type or the placement position is empty
 	 */
 	public EmailValidation validateBlock(EmailBlockInput block) throws MailerLiteException
 	{
-		return send("POST", "/emails/blocks/validate", toJson(blockBody(block, null)), EmailValidation.class);
+		String body = block == null ? "{}" : toJson(blockBody(block, null));
+
+		return send("POST", "/emails/blocks/validate", body, EmailValidation.class);
 	}
 
 	/**
@@ -327,10 +322,12 @@ public class Emails {
 			throws MailerLiteException
 	{
 		String endpoint = emailPath(emailId).concat("/settings");
-		String checkedEtag = RequestChecks.etag(etag);
 
-		JsonObject body = settingsBody(settings);
-		body.addProperty("etag", checkedEtag);
+		JsonObject body = settingsBody(Objects.requireNonNull(settings, "settings"));
+
+		if (etag != null) {
+			body.addProperty("etag", etag);
+		}
 
 		return send("PATCH", endpoint, TREE_GSON.toJson(body), options, SingleEmailSettings.class);
 	}
@@ -342,16 +339,17 @@ public class Emails {
 	 * update would remove unsafe values, the response has their paths in rejected.
 	 *
 	 * @param emailId the email ID
-	 * @param settings the settings to check
+	 * @param settings the settings to check. Null settings send an empty body.
 	 * @return the result of the validation
 	 * @throws MailerLiteException if the API returns an error or the request fails
-	 * @throws NullPointerException if the settings are null
 	 */
 	public EmailValidation validateSettings(String emailId, EmailSettings settings) throws MailerLiteException
 	{
 		String endpoint = emailPath(emailId).concat("/settings/validate");
 
-		return send("POST", endpoint, TREE_GSON.toJson(settingsBody(settings)), EmailValidation.class);
+		String body = settings == null ? "{}" : TREE_GSON.toJson(settingsBody(settings));
+
+		return send("POST", endpoint, body, EmailValidation.class);
 	}
 
 	/**
@@ -361,7 +359,6 @@ public class Emails {
 	 * @param name the name of the new template
 	 * @return the new template
 	 * @throws MailerLiteException if the API returns an error or the request fails
-	 * @throws IllegalArgumentException if the name is null or empty
 	 */
 	public SingleEmailTemplate createTemplate(String emailId, String name) throws MailerLiteException
 	{
@@ -376,16 +373,11 @@ public class Emails {
 	 * @param options the request options, for example an idempotency key, or null for no options
 	 * @return the new template
 	 * @throws MailerLiteException if the API returns an error or the request fails
-	 * @throws IllegalArgumentException if the name is null or empty
 	 */
 	public SingleEmailTemplate createTemplate(String emailId, String name, RequestOptions options)
 			throws MailerLiteException
 	{
 		String endpoint = emailPath(emailId).concat("/templates");
-
-		if (name == null || name.isEmpty()) {
-			throw new IllegalArgumentException("name must not be empty");
-		}
 
 		TemplateBody body = new TemplateBody();
 		body.name = name;
@@ -485,55 +477,26 @@ public class Emails {
 
 	private static BlockBody blockBody(EmailBlockInput block, String etag)
 	{
-		Objects.requireNonNull(block, "block");
-
-		if (block.type == null || block.type.isEmpty()) {
-			throw new IllegalArgumentException("block.type must not be empty");
-		}
-
 		BlockBody body = new BlockBody();
 		body.type = block.type;
-		body.editorContent = Objects.requireNonNull(block.editorContent, "block.editorContent");
-		body.placement = block.placement == null ? null : placementBody(block.placement);
+		body.editorContent = block.editorContent;
+		body.placement = block.placement;
 		body.etag = etag;
 
 		return body;
 	}
 
-	/**
-	 * The API uses the block ID only for "before" and "after". So the copy has no block ID for "start" and "end".
-	 */
-	private static PlacementBody placementBody(EmailBlockPosition placement)
-	{
-		String position = placement.position;
-
-		if (position == null || position.isEmpty()) {
-			throw new IllegalArgumentException("placement.position must not be empty");
-		}
-
-		if (EmailBlockPositions.START.equals(position) || EmailBlockPositions.END.equals(position)) {
-			return new PlacementBody(position, null);
-		}
-
-		if (EmailBlockPositions.BEFORE.equals(position) || EmailBlockPositions.AFTER.equals(position)
-				|| placement.blockId != null) {
-			RequestChecks.pathId(placement.blockId, "placement.blockId");
-		}
-
-		return new PlacementBody(position, placement.blockId);
-	}
-
 	private static String etagBody(String etag)
 	{
 		EtagBody body = new EtagBody();
-		body.etag = RequestChecks.etag(etag);
+		body.etag = etag;
 
 		return toJson(body);
 	}
 
 	private static JsonObject settingsBody(EmailSettings settings)
 	{
-		return GSON.toJsonTree(Objects.requireNonNull(settings, "settings")).getAsJsonObject();
+		return GSON.toJsonTree(settings).getAsJsonObject();
 	}
 
 	private static String toJson(Object body)
@@ -552,7 +515,7 @@ public class Emails {
 	{
 		Map<String, String> headers = null;
 
-		if (options != null && options.getIdempotencyKey() != null) {
+		if (options != null && options.getIdempotencyKey() != null && !options.getIdempotencyKey().isEmpty()) {
 			headers = Collections.singletonMap("Idempotency-Key", options.getIdempotencyKey());
 		}
 
@@ -572,7 +535,7 @@ public class Emails {
 		Map<String, Object> editorContent;
 
 		@SerializedName("placement")
-		PlacementBody placement;
+		EmailBlockPosition placement;
 
 		@SerializedName("etag")
 		String etag;
@@ -597,7 +560,7 @@ public class Emails {
 	private static class MoveBlockBody {
 
 		@SerializedName("placement")
-		PlacementBody placement;
+		EmailBlockPosition placement;
 
 		@SerializedName("etag")
 		String etag;
@@ -607,20 +570,5 @@ public class Emails {
 
 		@SerializedName("name")
 		String name;
-	}
-
-	private static class PlacementBody {
-
-		@SerializedName("position")
-		final String position;
-
-		@SerializedName("block_id")
-		final String blockId;
-
-		PlacementBody(String position, String blockId)
-		{
-			this.position = position;
-			this.blockId = blockId;
-		}
 	}
 }

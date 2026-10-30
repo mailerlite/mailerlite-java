@@ -14,16 +14,15 @@ import com.google.gson.annotations.SerializedName;
  */
 public class EmailBlockPosition {
 
-	/** The position: one of the values in {@link EmailBlockPositions}. Required. */
+	/** The position: one of the values in {@link EmailBlockPositions}. The API needs it. */
 	@SerializedName("position")
 	public String position;
 
 	/**
 	 * The ID of the block at the same level to put the block before or after.
 	 * <p>
-	 * It is required for {@link EmailBlockPositions#BEFORE} and {@link EmailBlockPositions#AFTER}, and it must
-	 * contain only the digits 0 to 9. For {@link EmailBlockPositions#START} and {@link EmailBlockPositions#END},
-	 * the API does not use it, so the SDK does not check it and does not send it.
+	 * The API needs it for {@link EmailBlockPositions#BEFORE} and {@link EmailBlockPositions#AFTER}. The SDK
+	 * sends the placement as you give it, and the API checks it.
 	 */
 	@SerializedName("block_id")
 	public String blockId;
