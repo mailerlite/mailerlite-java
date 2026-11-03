@@ -80,6 +80,12 @@ public class Subscribers {
 		return new SubscriberImportsRetriever(apiObjectReference);
 	}
 
+	/**
+	 * E-commerce revenue report of a subscriber. Takes a subscriber id, not an email.
+	 *
+	 * @param subscriberId the subscriber id
+	 * @return the ecommerce report retriever
+	 */
 	public EcommerceReportRetriever ecommerceReport(String subscriberId)
 	{
 		String endpoint = "/subscribers/".concat(subscriberId);

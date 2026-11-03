@@ -89,6 +89,12 @@ public class Campaigns {
         return response;
 	}
 
+	/**
+	 * E-commerce revenue report of a campaign.
+	 *
+	 * @param campaignId the campaign id
+	 * @return the ecommerce report retriever
+	 */
 	public EcommerceReportRetriever ecommerceReport(String campaignId)
 	{
 		String endpoint = "/campaigns/".concat(campaignId);

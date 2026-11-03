@@ -60,12 +60,25 @@ public class Automations {
 		return new AutomationSubscriberActivityRetriever(apiObjectReference);
 	}
 
+	/**
+	 * E-commerce revenue report of an automation.
+	 *
+	 * @param automationId the automation id
+	 * @return the ecommerce report retriever
+	 */
 	public EcommerceReportRetriever ecommerceReport(String automationId)
 	{
 		String endpoint = "/automations/".concat(automationId);
 		return new EcommerceReportRetriever(apiObjectReference, endpoint.concat("/monthly-totals/ecommerce"), endpoint.concat("/order-activity"), "ecommerce_shop_id");
 	}
 
+	/**
+	 * E-commerce revenue report of an automation email. Only stats() is available.
+	 *
+	 * @param automationId the automation id
+	 * @param emailId the automation email id
+	 * @return the ecommerce report retriever
+	 */
 	public EcommerceReportRetriever ecommerceEmailReport(String automationId, String emailId)
 	{
 		String endpoint = "/automations/".concat(automationId).concat("/emails/").concat(emailId).concat("/ecommerce-overview-stats");
