@@ -20,12 +20,28 @@ public class SubscriberImportList extends PaginatedResponse {
 	public SubscriberImport[] imports;
 	
 	/**
-	 * Post deserialise.
+	 * Parses the dates of every item.
 	 */
-	public void postDeserialise()
+	@Override
+	public void postDeserialize()
 	{
+		if (imports == null) {
+			return;
+		}
+		
 		for (SubscriberImport i : imports) {
 			i.parseDates();
 		}
+	}
+	
+	/**
+	 * Post deserialise.
+	 *
+	 * @deprecated misspelled, use {@link #postDeserialize()}
+	 */
+	@Deprecated
+	public void postDeserialise()
+	{
+		postDeserialize();
 	}
 }

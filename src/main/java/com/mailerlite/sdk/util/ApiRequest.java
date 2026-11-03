@@ -7,6 +7,8 @@
  **************************************************/
 package com.mailerlite.sdk.util;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 /**
@@ -30,6 +32,16 @@ public class ApiRequest {
 	}
 	
 	/**
+	 * Removes a query parameter.
+	 *
+	 * @param name the name
+	 */
+	public void removeQueryParameter(String name)
+	{
+		queryParameters.remove(name);
+	}
+	
+	/**
 	 * Gets the query parameters.
 	 *
 	 * @return the query parameters
@@ -44,7 +56,7 @@ public class ApiRequest {
 				query = query.concat("&");
 			}
 			
-			query = query.concat(name).concat("=").concat(queryParameters.get(name));
+			query = query.concat(name).concat("=").concat(URLEncoder.encode(queryParameters.get(name), StandardCharsets.UTF_8));
 		}
 		
 		return "?".concat(query);

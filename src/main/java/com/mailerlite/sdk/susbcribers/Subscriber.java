@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import com.google.gson.annotations.SerializedName;
+import com.mailerlite.sdk.groups.Group;
 import com.mailerlite.sdk.util.ApiResource;
 import com.mailerlite.sdk.util.ParseDate;
 
@@ -106,4 +107,51 @@ public class Subscriber extends ApiResource {
 	/** The fields. */
 	@SerializedName("fields")
 	public HashMap<String, Object> fields = new HashMap<String, Object>();
+	
+	/** The deleted at str. */
+	@SerializedName("deleted_at")
+	public String deletedAtStr;
+	
+	/** The deleted at. */
+	@ParseDate("deletedAtStr")
+	public Date deletedAt;
+	
+	/** The forget at str. */
+	@SerializedName("forget_at")
+	public String forgetAtStr;
+	
+	/** The forget at. */
+	@ParseDate("forgetAtStr")
+	public Date forgetAt;
+	
+	/** The groups. */
+	@SerializedName("groups")
+	public Group[] groups;
+	
+	/** The location. */
+	@SerializedName("location")
+	public SubscriberLocation location;
+	
+	/** The timezone. */
+	@SerializedName("timezone")
+	public SubscriberTimezone timezone;
+
+	/**
+	 * Parses the subscriber dates and the dates of its groups.
+	 */
+	@Override
+	public void parseDates()
+	{
+		super.parseDates();
+
+		if (groups == null) {
+			return;
+		}
+
+		for (Group group : groups) {
+			if (group != null) {
+				group.parseDates();
+			}
+		}
+	}
 }

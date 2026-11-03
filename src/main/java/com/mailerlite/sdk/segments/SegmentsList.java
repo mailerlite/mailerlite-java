@@ -20,12 +20,28 @@ public class SegmentsList extends PaginatedResponse {
 	public Segment[] segments;
 	
 	/**
-	 * Post deserialise.
+	 * Parses the dates of every item.
 	 */
-	public void postDeserialise()
+	@Override
+	public void postDeserialize()
 	{
+		if (segments == null) {
+			return;
+		}
+		
 		for (Segment s : segments) {
 			s.parseDates();
 		}
+	}
+	
+	/**
+	 * Post deserialise.
+	 *
+	 * @deprecated misspelled, use {@link #postDeserialize()}
+	 */
+	@Deprecated
+	public void postDeserialise()
+	{
+		postDeserialize();
 	}
 }

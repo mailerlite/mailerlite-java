@@ -133,6 +133,51 @@ public class AutomationSubscriberActivityRetriever extends PaginatedRequest<Auto
 	
 	
 	/**
+	 * Sets the page to return.
+	 *
+	 * @param page the page
+	 * @return the automation subscriber activity retriever
+	 */
+	public AutomationSubscriberActivityRetriever page(int page)
+	{
+		this.addQueryParameter("page", Integer.toString(page));
+		
+		return this;
+	}
+	
+	/**
+	 * Sets the sort order.
+	 *
+	 * @param sort the sort
+	 * @return the automation subscriber activity retriever
+	 */
+	public AutomationSubscriberActivityRetriever sort(String sort)
+	{
+		this.addQueryParameter("sort", sort);
+		
+		return this;
+	}	
+	
+	/**
+	 * Includes the id, email and name of each subscriber. Without it the API leaves out the subscriber.
+	 * The API checks only whether the param is present, so false removes it.
+	 *
+	 * @param withSubscribers the with subscribers
+	 * @return the automation subscriber activity retriever
+	 */
+	public AutomationSubscriberActivityRetriever withSubscribers(boolean withSubscribers)
+	{
+		if (withSubscribers) {
+			this.addQueryParameter("with_subscribers", "1");
+		} else {
+			this.removeQueryParameter("with_subscribers");
+		}
+		
+		return this;
+	}
+	
+	
+	/**
 	 * Gets the single instance of AutomationSubscriberActivityRetriever.
 	 *
 	 * @return single instance of AutomationSubscriberActivityRetriever

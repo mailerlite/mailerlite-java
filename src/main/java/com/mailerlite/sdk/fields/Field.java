@@ -30,4 +30,8 @@ public class Field extends ApiResource {
 	/** The type. */
 	@SerializedName("type")
 	public String type;
+	
+	/** The is default. */
+	@SerializedName("is_default")
+	public Boolean isDefault;
 }

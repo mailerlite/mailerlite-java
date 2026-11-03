@@ -7,17 +7,21 @@
  **************************************************/
 package com.mailerlite.sdk.automations;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.mailerlite.sdk.automations.steps.AbStep;
 import com.mailerlite.sdk.automations.steps.AutomationStep;
 import com.mailerlite.sdk.automations.steps.DelayStep;
 import com.mailerlite.sdk.automations.steps.EmailStep;
-import com.mailerlite.sdk.automations.steps.action.ActionStep;
+import com.mailerlite.sdk.automations.steps.GenericAutomationStep;
 import com.mailerlite.sdk.automations.steps.action.CopyToGroupAction;
 import com.mailerlite.sdk.automations.steps.action.GoToStepAction;
 import com.mailerlite.sdk.automations.steps.action.MarkUnsubscribedAction;
@@ -31,12 +35,28 @@ import com.mailerlite.sdk.automations.steps.condition.CustomFieldsCondition;
 import com.mailerlite.sdk.automations.steps.condition.GroupMembershipCondition;
 import com.mailerlite.sdk.automations.steps.condition.SegmentMembershipCondition;
 import com.mailerlite.sdk.automations.steps.condition.WorkflowActivityCondition;
+import com.mailerlite.sdk.util.SdkGson;
 
 /**
  * The Class AutomationStepDeserializer.
  */
-public class AutomationStepDeserializer {
+public class AutomationStepDeserializer implements JsonDeserializer<AutomationStep> {
 
+	/**
+	 * Deserializes any automation step into its typed class, or GenericAutomationStep for unknown types.
+	 *
+	 * @param json the json
+	 * @param typeOfT the type of T
+	 * @param context the context
+	 * @return the automation step
+	 * @throws JsonParseException the json parse exception
+	 */
+	@Override
+	public AutomationStep deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
+	{
+		return deserializeAutomationStep(json.getAsJsonObject(), SdkGson.plain());
+	}
+	
 	/**
 	 * Deserialize automation step.
 	 *
@@ -46,37 +66,41 @@ public class AutomationStepDeserializer {
 	 */
 	public AutomationStep deserializeAutomationStep(JsonObject stepObj, Gson gson)
 	{
-		String type = stepObj.get("type").getAsString();
-		
+		String type = stringOrNull(stepObj, "type");
+
+		if (type == null) {
+			return gson.fromJson(stepObj, GenericAutomationStep.class);
+		}
+
 		switch (type) {
 		
-			case "email":
+			case GenericAutomationStep.TYPE_EMAIL:
 				EmailStep emailStep = gson.fromJson(stepObj, EmailStep.class);
 				emailStep.parseDates();
 				return emailStep;
 				
-			case "delay":
+			case GenericAutomationStep.TYPE_DELAY:
 				DelayStep delayStep = gson.fromJson(stepObj, DelayStep.class);
 				delayStep.parseDates();
 				return delayStep;
 				
-			case "abtest":
+			case GenericAutomationStep.TYPE_AB_TEST:
 				AbStep abStep = gson.fromJson(stepObj, AbStep.class);
 				abStep.parseDates();
 				return abStep;
 
-			case "action":
-				ActionStep actionStep = deserializeActionStep(stepObj, gson);
+			case GenericAutomationStep.TYPE_ACTION:
+				AutomationStep actionStep = deserializeActionStep(stepObj, gson);
 				actionStep.parseDates();
 				return actionStep;
 
-			case "condition":
+			case GenericAutomationStep.TYPE_CONDITION:
 				ConditionStep conditionStep = deserializeConditionStep(stepObj, gson);
 				conditionStep.parseDates();
 				return conditionStep;
 		}
 		
-		return null;
+		return gson.fromJson(stepObj, GenericAutomationStep.class);
 	}
 	
 	
@@ -87,42 +111,42 @@ public class AutomationStepDeserializer {
 	 * @param gson the gson
 	 * @return the action step
 	 */
-	private ActionStep deserializeActionStep(JsonObject stepObj, Gson gson)
+	private AutomationStep deserializeActionStep(JsonObject stepObj, Gson gson)
 	{
-		if (stepObj == null || stepObj.get("action_type") == null) {
-			return null;
+		String actionType = stringOrNull(stepObj, "action_type");
+
+		if (actionType == null) {
+			return gson.fromJson(stepObj, GenericAutomationStep.class);
 		}
-		
-		String actionType = stepObj.get("action_type").getAsString();
-		
+
 		switch (actionType) {
 		
-			case "update_custom_field":
+			case GenericAutomationStep.ACTION_TYPE_UPDATE_CUSTOM_FIELD:
 				
 				return gson.fromJson(stepObj, UpdateCustomFieldAction.class);
 				
-			case "mark_as_unsubscribed":
+			case GenericAutomationStep.ACTION_TYPE_MARK_AS_UNSUBSCRIBED:
 				
 				return gson.fromJson(stepObj, MarkUnsubscribedAction.class);
 				
-			case "remove_from_group":
+			case GenericAutomationStep.ACTION_TYPE_REMOVE_FROM_GROUP:
 				
 				return gson.fromJson(stepObj, RemoveFromGroupAction.class);
 				
-			case "go_to_step":
+			case GenericAutomationStep.ACTION_TYPE_GO_TO_STEP:
 				
 				return gson.fromJson(stepObj, GoToStepAction.class);
 				
-			case "copy_to_group":
+			case GenericAutomationStep.ACTION_TYPE_COPY_TO_GROUP:
 				
 				return gson.fromJson(stepObj, CopyToGroupAction.class);
 				
-			case "move_to_group":
+			case GenericAutomationStep.ACTION_TYPE_MOVE_TO_GROUP:
 				
 				return gson.fromJson(stepObj, MoveToGroupAction.class);
 		}
 		
-		return null;
+		return gson.fromJson(stepObj, GenericAutomationStep.class);
 	}
 	
 	/**
@@ -137,7 +161,7 @@ public class AutomationStepDeserializer {
 		
 		ConditionStep step = gson.fromJson(stepObj, ConditionStep.class);
 		
-		JsonArray conditions = stepObj.get("conditions").getAsJsonArray();
+		JsonArray conditions = stepObj.has("conditions") && stepObj.get("conditions").isJsonArray() ? stepObj.getAsJsonArray("conditions") : new JsonArray();
 		
 		ArrayList<ConditionBase> conditionItems = new ArrayList<ConditionBase>();
 		
@@ -146,9 +170,9 @@ public class AutomationStepDeserializer {
 			
 			JsonObject conditionObj = el.getAsJsonObject();
 			
-			String conditionType = conditionObj.get("type").getAsString();
-			
-			switch (conditionType) {
+			String conditionType = stringOrNull(conditionObj, "type");
+
+			switch (conditionType == null ? "" : conditionType) {
 			
 			case "workflow_activity":
 				conditionItems.add(gson.fromJson(conditionObj, WorkflowActivityCondition.class));
@@ -169,12 +193,23 @@ public class AutomationStepDeserializer {
 			case "group_membership":
 				conditionItems.add(gson.fromJson(conditionObj, GroupMembershipCondition.class));
 				break;
+				
+			default:
+				conditionItems.add(gson.fromJson(conditionObj, ConditionBase.class));
+				break;
 			}
 		}
 		
 		
 		step.conditions = conditionItems.toArray();
-		
+
 		return step;
+	}
+
+	private static String stringOrNull(JsonObject obj, String key)
+	{
+		JsonElement value = obj.get(key);
+
+		return value == null || value.isJsonNull() ? null : value.getAsString();
 	}
 }
