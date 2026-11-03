@@ -98,6 +98,6 @@ public class Campaigns {
 	public EcommerceReportRetriever ecommerceReport(String campaignId)
 	{
 		String endpoint = "/campaigns/".concat(campaignId);
-		return new EcommerceReportRetriever(apiObjectReference, endpoint.concat("/reports/ecommerce"), endpoint.concat("/reports/ecommerce/orders"), "shop_id");
+		return new EcommerceReportRetriever(apiObjectReference, endpoint.concat("/reports/ecommerce"), endpoint.concat("/reports/ecommerce/orders"));
 	}
 }

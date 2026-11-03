@@ -17,4 +17,12 @@ public class SingleCart extends MailerLiteResponse {
 
 	@SerializedName("data")
 	public EcommerceCart cart;
+
+	@Override
+	public void postDeserialize()
+	{
+		if (cart != null) {
+			cart.parseDates();
+		}
+	}
 }

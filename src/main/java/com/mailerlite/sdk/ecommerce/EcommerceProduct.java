@@ -7,12 +7,16 @@
  **************************************************/
 package com.mailerlite.sdk.ecommerce;
 
+import java.util.Date;
+
 import com.google.gson.annotations.SerializedName;
+import com.mailerlite.sdk.util.ApiResource;
+import com.mailerlite.sdk.util.ParseDate;
 
 /**
  * The Class EcommerceProduct.
  */
-public class EcommerceProduct {
+public class EcommerceProduct extends ApiResource {
 
 	/** The id. */
 	@SerializedName("id")
@@ -59,5 +63,20 @@ public class EcommerceProduct {
 	public EcommerceProductVariant[] variants;
 
 	@SerializedName("created_at")
-	public String createdAt;
+	public String createdAtStr;
+
+	@ParseDate("createdAtStr")
+	public Date createdAt;
+
+	@Override
+	public void parseDates()
+	{
+		super.parseDates();
+
+		if (categories != null) {
+			for (EcommerceCategory category : categories) {
+				category.parseDates();
+			}
+		}
+	}
 }

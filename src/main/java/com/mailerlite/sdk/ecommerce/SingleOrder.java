@@ -17,4 +17,12 @@ public class SingleOrder extends MailerLiteResponse {
 
 	@SerializedName("data")
 	public EcommerceOrder order;
+
+	@Override
+	public void postDeserialize()
+	{
+		if (order != null) {
+			order.parseDates();
+		}
+	}
 }

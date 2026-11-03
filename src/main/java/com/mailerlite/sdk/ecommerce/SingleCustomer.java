@@ -17,4 +17,12 @@ public class SingleCustomer extends MailerLiteResponse {
 
 	@SerializedName("data")
 	public EcommerceCustomer customer;
+
+	@Override
+	public void postDeserialize()
+	{
+		if (customer != null) {
+			customer.parseDates();
+		}
+	}
 }

@@ -94,6 +94,6 @@ public class OrderBuilder {
 
 	public SingleOrder update(String orderId) throws MailerLiteException
 	{
-		return EcommerceApi.create(apiObjectReference).putRequest(EcommerceApi.shopPath(shopId, "/orders").concat("/").concat(orderId), EcommerceApi.json(builderBody), SingleOrder.class);
+		return EcommerceApi.create(apiObjectReference).putRequest(EcommerceApi.shopPath(shopId, "/orders").concat("/").concat(orderId), EcommerceApi.jsonWithout(builderBody, "customer", "cart"), SingleOrder.class);
 	}
 }

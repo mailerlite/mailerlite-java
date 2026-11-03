@@ -17,4 +17,12 @@ public class SingleProduct extends MailerLiteResponse {
 
 	@SerializedName("data")
 	public EcommerceProduct product;
+
+	@Override
+	public void postDeserialize()
+	{
+		if (product != null) {
+			product.parseDates();
+		}
+	}
 }

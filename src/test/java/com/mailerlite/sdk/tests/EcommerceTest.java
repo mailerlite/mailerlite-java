@@ -1,12 +1,14 @@
 package com.mailerlite.sdk.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.net.http.HttpRequest;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -18,10 +20,18 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonParser;
 import com.mailerlite.sdk.MailerLite;
+import com.mailerlite.sdk.automations.reports.OrderActivityList;
+import com.mailerlite.sdk.ecommerce.CartBuilder;
+import com.mailerlite.sdk.ecommerce.CartItemBuilderBody;
 import com.mailerlite.sdk.ecommerce.CategoryBuilderBody;
 import com.mailerlite.sdk.ecommerce.CustomerBuilderBody;
 import com.mailerlite.sdk.ecommerce.Ecommerce;
+import com.mailerlite.sdk.ecommerce.EcommerceReportRetriever;
+import com.mailerlite.sdk.ecommerce.OrderBuilderBody;
 import com.mailerlite.sdk.ecommerce.ProductBuilderBody;
+import com.mailerlite.sdk.ecommerce.ShopsList;
+import com.mailerlite.sdk.ecommerce.SingleEcommerceReport;
+import com.mailerlite.sdk.ecommerce.SingleOrder;
 import com.mailerlite.sdk.ecommerce.ProductVariantBuilderBody;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 import com.mailerlite.sdk.util.MailerLiteHttpClientFactory;
@@ -37,6 +47,8 @@ public class EcommerceTest extends TestBase {
 
 	private HttpRequest lastRequest;
 
+	private String responseBody;
+
 	private MailerLite ml;
 
 	private Ecommerce ecommerce;
@@ -48,6 +60,8 @@ public class EcommerceTest extends TestBase {
 	@BeforeEach
 	public void setupEach()
 	{
+		responseBody = "{}";
+
 		VcrTape capturingTape = new VcrTape() {
 			@Override
 			public HttpClientVcrResponse getRecordedResponse(HttpRequest request)
@@ -55,7 +69,7 @@ public class EcommerceTest extends TestBase {
 				lastRequest = request;
 				HttpClientVcrResponse response = new HttpClientVcrResponse();
 				response.statusCode = 200;
-				response.body = "{}";
+				response.body = responseBody;
 				response.headers = new HashMap<String, List<String>>();
 				return response;
 			}
@@ -155,12 +169,23 @@ public class EcommerceTest extends TestBase {
 
 		assertRequest(() -> ecommerce.orders("1").retriever().attributedFilter(true).emailIdFilter("55").get(), "GET", SHOP + "/orders?filter%5Battributed%5D=true&filter%5Bemail_id%5D=55", null);
 		assertRequest(() -> ecommerce.orders("1").retriever().getSingle("9"), "GET", SHOP + "/orders/9", null);
-		assertRequest(() -> ecommerce.orders("1").builder().status("complete").update("9"), "PUT", SHOP + "/orders/9", "{\"status\":\"complete\"}");
+		CustomerBuilderBody customer = new CustomerBuilderBody();
+		customer.email = "a@b.test";
+		CartItemBuilderBody item = new CartItemBuilderBody();
+		item.productId = "7";
+		item.quantity = 1;
+
+		assertRequest(() -> ecommerce.orders("1").builder().customer(customer).item(item).status("complete").create(), "POST", SHOP + "/orders", "{\"customer\":{\"email\":\"a@b.test\"},\"cart\":{\"items\":[{\"ecommerce_product_id\":\"7\",\"quantity\":1}]},\"status\":\"complete\"}");
+		assertRequest(() -> ecommerce.orders("1").builder().customer(customer).item(item).status("complete").update("9"), "PUT", SHOP + "/orders/9", "{\"status\":\"complete\"}");
 		assertRequest(() -> ecommerce.orders("1").delete("9"), "DELETE", SHOP + "/orders/9", null);
 
 		assertRequest(() -> ecommerce.carts("1").retriever().get(), "GET", SHOP + "/carts", null);
 		assertRequest(() -> ecommerce.carts("1").retriever().getSingle("4"), "GET", SHOP + "/carts/4", null);
-		assertRequest(() -> ecommerce.carts("1").builder().cartTotal(10.0).update("4"), "PUT", SHOP + "/carts/4", "{\"cart_total\":10.0}");
+		assertRequest(() -> {
+			CartBuilder cart = ecommerce.carts("1").builder().cartTotal(10.0);
+			cart.body().items = new ArrayList<CartItemBuilderBody>(Arrays.asList(item));
+			cart.update("4");
+		}, "PUT", SHOP + "/carts/4", "{\"cart_total\":10.0}");
 		assertRequest(() -> ecommerce.carts("1").items("4").retriever().get(), "GET", SHOP + "/carts/4/items", null);
 		assertRequest(() -> ecommerce.carts("1").items("4").retriever().getSingle("8"), "GET", SHOP + "/carts/4/items/8", null);
 		assertRequest(() -> ecommerce.carts("1").items("4").builder().productId("7").create(), "POST", SHOP + "/carts/4/items", "{\"ecommerce_product_id\":\"7\"}");
@@ -181,24 +206,58 @@ public class EcommerceTest extends TestBase {
 		assertRequest(() -> ecommerce.imports("1").products(Arrays.asList(product)), "POST", SHOP + "/products/import", "[{\"name\":\"Hat\"}]");
 		assertRequest(() -> ecommerce.imports("1").categories(Arrays.asList(category)), "POST", SHOP + "/categories/import", "[{\"name\":\"Hats\"}]");
 		assertRequest(() -> ecommerce.imports("1").customers(Arrays.asList(customer)), "POST", SHOP + "/customers/import", "[{\"email\":\"a@b.test\"}]");
+
+		OrderBuilderBody order = new OrderBuilderBody();
+		order.status = "complete";
+		order.customer = customer;
+
+		assertRequest(() -> ecommerce.imports("1").orders(Arrays.asList(order)), "POST", SHOP + "/orders/import", "{\"orders\":[{\"customer\":{\"email\":\"a@b.test\"},\"status\":\"complete\"}]}");
 	}
 
 	@Test
 	public void TestRevenueReports() throws MailerLiteException
 	{
 		assertRequest(() -> ml.campaigns().ecommerceReport("2").shopId("1").stats(), "GET", API + "/campaigns/2/reports/ecommerce?shop_id=1", null);
-		assertRequest(() -> ml.campaigns().ecommerceReport("2").shopId("1").page(2).orders(), "GET", API + "/campaigns/2/reports/ecommerce/orders?page=2&shop_id=1", null);
+		assertRequest(() -> ml.campaigns().ecommerceReport("2").shopId("1").page(2).orders(), "GET", API + "/campaigns/2/reports/ecommerce/orders?shop_id=1&page=2", null);
 		assertRequest(() -> ml.subscribers().ecommerceReport("6").shopId("1").stats(), "GET", API + "/subscribers/6/reports/ecommerce?shop_id=1", null);
 		assertRequest(() -> ml.subscribers().ecommerceReport("6").shopId("1").orders(), "GET", API + "/subscribers/6/reports/ecommerce/orders?shop_id=1", null);
-		assertRequest(() -> ml.automations().ecommerceReport("8").stats(), "GET", API + "/automations/8/monthly-totals/ecommerce", null);
-		assertRequest(() -> ml.automations().ecommerceReport("8").timeFrame("all_time").shopId("1").orders(), "GET", API + "/automations/8/order-activity?time_frame=all_time&ecommerce_shop_id=1", null);
-		assertRequest(() -> ml.automations().ecommerceEmailReport("8", "9").shopId("1").stats(), "GET", API + "/automations/8/emails/9/ecommerce-overview-stats?shop_id=1", null);
+		assertRequest(() -> {
+			EcommerceReportRetriever report = ml.campaigns().ecommerceReport("2").shopId("1").limit(10);
+			report.removeQueryParameter("limit");
+			report.stats();
+		}, "GET", API + "/campaigns/2/reports/ecommerce?shop_id=1", null);
 	}
 
 	@Test
 	public void TestReportsWithoutOrdersRejectOrders()
 	{
 		assertThrows(MailerLiteException.class, () -> ecommerce.shops().ecommerceReport("1").orders());
-		assertThrows(MailerLiteException.class, () -> ml.automations().ecommerceEmailReport("8", "9").orders());
+	}
+
+	@Test
+	public void TestResponsesAreParsed() throws MailerLiteException
+	{
+		responseBody = "{\"data\":{\"ecommerce\":{\"orders_count\":4,\"revenue\":100.5,\"average_order_value\":25.125,\"conversion_rate\":\"2.5%\"},\"best_performing_email\":null}}";
+		SingleEcommerceReport report = ml.campaigns().ecommerceReport("2").shopId("1").stats();
+		assertEquals("2.5%", report.report.ecommerce.conversionRate);
+		assertEquals(4, report.report.ecommerce.ordersCount);
+
+		responseBody = "{\"data\":[{\"subscriber\":{\"email\":\"a@b.test\",\"id\":\"6\"},\"total\":25.5,\"updated_at\":\"2026-10-01 10:00:00\",\"order\":\"Hat x1\"}]}";
+		OrderActivityList orders = ml.campaigns().ecommerceReport("2").shopId("1").orders();
+		assertEquals("a@b.test", orders.orders[0].subscriber.email);
+		assertNotNull(orders.orders[0].updatedAt);
+
+		responseBody = "{\"data\":{\"id\":\"9\",\"total\":25.5,\"status\":\"complete\",\"created_at\":\"2026-10-01T10:00:00.000000Z\",\"updated_at\":\"2026-10-01 10:00:00\",\"cart\":{\"items\":[{\"quantity\":1,\"product\":{\"name\":\"Hat\",\"created_at\":\"2026-09-01 10:00:00\",\"categories\":[{\"name\":\"Hats\",\"created_at\":\"2026-08-01 10:00:00\"}]}}]}}}";
+		SingleOrder order = ecommerce.orders("1").retriever().getSingle("9");
+		assertEquals("complete", order.order.status);
+		assertNotNull(order.order.createdAt);
+		assertNotNull(order.order.updatedAt);
+		assertNotNull(order.order.cart.items[0].product.createdAt);
+		assertNotNull(order.order.cart.items[0].product.categories[0].createdAt);
+
+		responseBody = "{\"data\":[{\"id\":\"1\",\"name\":\"Shop\",\"created_at\":\"2026-10-01 10:00:00\",\"group\":{\"id\":\"3\",\"created_at\":\"2026-10-01 10:00:00\"}}]}";
+		ShopsList shops = ecommerce.shops().retriever().get();
+		assertNotNull(shops.shops[0].createdAt);
+		assertNotNull(shops.shops[0].group.createdAt);
 	}
 }

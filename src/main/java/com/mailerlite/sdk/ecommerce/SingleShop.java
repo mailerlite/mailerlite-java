@@ -17,4 +17,12 @@ public class SingleShop extends MailerLiteResponse {
 
 	@SerializedName("data")
 	public EcommerceShop shop;
+
+	@Override
+	public void postDeserialize()
+	{
+		if (shop != null) {
+			shop.parseDates();
+		}
+	}
 }

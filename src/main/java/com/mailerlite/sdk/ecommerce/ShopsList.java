@@ -17,4 +17,16 @@ public class ShopsList extends PaginatedResponse {
 
 	@SerializedName("data")
 	public EcommerceShop[] shops;
+
+	@Override
+	public void postDeserialize()
+	{
+		if (shops == null) {
+			return;
+		}
+
+		for (EcommerceShop item : shops) {
+			item.parseDates();
+		}
+	}
 }

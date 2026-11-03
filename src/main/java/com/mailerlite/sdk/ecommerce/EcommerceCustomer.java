@@ -9,11 +9,12 @@ package com.mailerlite.sdk.ecommerce;
 
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.susbcribers.Subscriber;
+import com.mailerlite.sdk.util.ApiResource;
 
 /**
  * The Class EcommerceCustomer.
  */
-public class EcommerceCustomer {
+public class EcommerceCustomer extends ApiResource {
 
 	@SerializedName("id")
 	public String id;
@@ -35,4 +36,12 @@ public class EcommerceCustomer {
 
 	@SerializedName("subscriber")
 	public Subscriber subscriber;
+
+	@Override
+	public void parseDates()
+	{
+		if (subscriber != null) {
+			subscriber.parseDates();
+		}
+	}
 }

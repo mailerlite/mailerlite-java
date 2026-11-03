@@ -17,4 +17,16 @@ public class CartsList extends PaginatedResponse {
 
 	@SerializedName("data")
 	public EcommerceCart[] carts;
+
+	@Override
+	public void postDeserialize()
+	{
+		if (carts == null) {
+			return;
+		}
+
+		for (EcommerceCart item : carts) {
+			item.parseDates();
+		}
+	}
 }

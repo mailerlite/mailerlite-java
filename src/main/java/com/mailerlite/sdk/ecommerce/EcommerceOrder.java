@@ -7,12 +7,16 @@
  **************************************************/
 package com.mailerlite.sdk.ecommerce;
 
+import java.util.Date;
+
 import com.google.gson.annotations.SerializedName;
+import com.mailerlite.sdk.util.ApiResource;
+import com.mailerlite.sdk.util.ParseDate;
 
 /**
  * The Class EcommerceOrder.
  */
-public class EcommerceOrder {
+public class EcommerceOrder extends ApiResource {
 
 	@SerializedName("id")
 	public String id;
@@ -36,14 +40,37 @@ public class EcommerceOrder {
 	public String stage;
 
 	@SerializedName("created_at")
-	public String createdAt;
+	public String createdAtStr;
+
+	@ParseDate("createdAtStr")
+	public Date createdAt;
 
 	@SerializedName("updated_at")
-	public String updatedAt;
+	public String updatedAtStr;
+
+	@ParseDate("updatedAtStr")
+	public Date updatedAt;
 
 	@SerializedName("completed_at")
-	public String completedAt;
+	public String completedAtStr;
+
+	@ParseDate("completedAtStr")
+	public Date completedAt;
 
 	@SerializedName("attribution")
 	public EcommerceOrderAttribution attribution;
+
+	@Override
+	public void parseDates()
+	{
+		super.parseDates();
+
+		if (customer != null) {
+			customer.parseDates();
+		}
+
+		if (cart != null) {
+			cart.parseDates();
+		}
+	}
 }

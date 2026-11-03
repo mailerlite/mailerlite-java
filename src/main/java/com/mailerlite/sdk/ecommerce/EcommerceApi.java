@@ -7,11 +7,11 @@
  **************************************************/
 package com.mailerlite.sdk.ecommerce;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.mailerlite.sdk.MailerLite;
 import com.mailerlite.sdk.MailerLiteApi;
-import com.mailerlite.sdk.util.JsonSerializationDeserializationStrategy;
+import com.mailerlite.sdk.util.JsonBody;
+import com.mailerlite.sdk.util.SdkGson;
 
 /**
  * The Class EcommerceApi.
@@ -31,12 +31,18 @@ final class EcommerceApi {
 
 	static String json(Object body)
 	{
-		Gson gson = new GsonBuilder()
-				.addSerializationExclusionStrategy(new JsonSerializationDeserializationStrategy(false))
-				.addDeserializationExclusionStrategy(new JsonSerializationDeserializationStrategy(true))
-				.create();
+		return JsonBody.toJson(body);
+	}
 
-		return gson.toJson(body);
+	static String jsonWithout(Object body, String... fields)
+	{
+		JsonObject json = SdkGson.plain().toJsonTree(body).getAsJsonObject();
+
+		for (String field : fields) {
+			json.remove(field);
+		}
+
+		return json.toString();
 	}
 
 	static String shopPath(String shopId, String path)

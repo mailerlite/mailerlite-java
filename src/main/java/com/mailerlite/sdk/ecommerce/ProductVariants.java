@@ -8,7 +8,6 @@
 package com.mailerlite.sdk.ecommerce;
 
 import com.mailerlite.sdk.MailerLite;
-import com.mailerlite.sdk.MailerLiteResponse;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 import java.util.List;
 
@@ -46,9 +45,9 @@ public class ProductVariants {
 		return EcommerceApi.create(apiObjectReference).postRequest(endpoint, EcommerceApi.json(variants), SingleProduct.class);
 	}
 
-	public MailerLiteResponse delete(String variantId) throws MailerLiteException
+	public SingleProduct delete(String variantId) throws MailerLiteException
 	{
 		String endpoint = EcommerceApi.shopPath(shopId, "/products/").concat(productId).concat("/variants/").concat(variantId);
-		return EcommerceApi.create(apiObjectReference).deleteRequest(endpoint, MailerLiteResponse.class);
+		return EcommerceApi.create(apiObjectReference).deleteRequest(endpoint, SingleProduct.class);
 	}
 }

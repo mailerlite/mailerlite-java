@@ -8,11 +8,12 @@
 package com.mailerlite.sdk.ecommerce;
 
 import com.google.gson.annotations.SerializedName;
+import com.mailerlite.sdk.util.ApiResource;
 
 /**
  * The Class EcommerceCart.
  */
-public class EcommerceCart {
+public class EcommerceCart extends ApiResource {
 
 	@SerializedName("id")
 	public String id;
@@ -28,4 +29,14 @@ public class EcommerceCart {
 
 	@SerializedName("items")
 	public EcommerceCartItem[] items;
+
+	@Override
+	public void parseDates()
+	{
+		if (items != null) {
+			for (EcommerceCartItem item : items) {
+				item.parseDates();
+			}
+		}
+	}
 }

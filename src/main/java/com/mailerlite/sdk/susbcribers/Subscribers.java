@@ -89,7 +89,7 @@ public class Subscribers {
 	public EcommerceReportRetriever ecommerceReport(String subscriberId)
 	{
 		String endpoint = "/subscribers/".concat(subscriberId);
-		return new EcommerceReportRetriever(apiObjectReference, endpoint.concat("/reports/ecommerce"), endpoint.concat("/reports/ecommerce/orders"), "shop_id");
+		return new EcommerceReportRetriever(apiObjectReference, endpoint.concat("/reports/ecommerce"), endpoint.concat("/reports/ecommerce/orders"));
 	}
 	
 	/**

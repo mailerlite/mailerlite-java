@@ -58,6 +58,6 @@ public class CartBuilder {
 
 	public SingleCart update(String cartId) throws MailerLiteException
 	{
-		return EcommerceApi.create(apiObjectReference).putRequest(EcommerceApi.shopPath(shopId, "/carts/").concat(cartId), EcommerceApi.json(builderBody), SingleCart.class);
+		return EcommerceApi.create(apiObjectReference).putRequest(EcommerceApi.shopPath(shopId, "/carts/").concat(cartId), EcommerceApi.jsonWithout(builderBody, "items"), SingleCart.class);
 	}
 }

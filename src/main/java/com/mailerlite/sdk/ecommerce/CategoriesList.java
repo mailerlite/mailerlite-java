@@ -17,4 +17,16 @@ public class CategoriesList extends PaginatedResponse {
 
 	@SerializedName("data")
 	public EcommerceCategory[] categories;
+
+	@Override
+	public void postDeserialize()
+	{
+		if (categories == null) {
+			return;
+		}
+
+		for (EcommerceCategory item : categories) {
+			item.parseDates();
+		}
+	}
 }

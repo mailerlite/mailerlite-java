@@ -17,4 +17,16 @@ public class ProductsList extends PaginatedResponse {
 
 	@SerializedName("data")
 	public EcommerceProduct[] products;
+
+	@Override
+	public void postDeserialize()
+	{
+		if (products == null) {
+			return;
+		}
+
+		for (EcommerceProduct item : products) {
+			item.parseDates();
+		}
+	}
 }

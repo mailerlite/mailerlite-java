@@ -8,6 +8,7 @@
 package com.mailerlite.sdk.ecommerce;
 
 import com.mailerlite.sdk.MailerLite;
+import com.mailerlite.sdk.automations.reports.OrderActivityList;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 
 /**
@@ -21,21 +22,16 @@ public class EcommerceReportRetriever extends EcommerceRequest<EcommerceReportRe
 
 	private String ordersEndpoint;
 
-	private String ordersShopParameter;
-
-	private String shopId;
-
-	public EcommerceReportRetriever(MailerLite apiRef, String statsEndpoint, String ordersEndpoint, String ordersShopParameter)
+	public EcommerceReportRetriever(MailerLite apiRef, String statsEndpoint, String ordersEndpoint)
 	{
 		apiObjectReference = apiRef;
 		this.statsEndpoint = statsEndpoint;
 		this.ordersEndpoint = ordersEndpoint;
-		this.ordersShopParameter = ordersShopParameter;
 	}
 
 	public EcommerceReportRetriever shopId(String shopId)
 	{
-		this.shopId = shopId;
+		this.addQueryParameter("shop_id", shopId);
 		return this;
 	}
 
@@ -71,24 +67,16 @@ public class EcommerceReportRetriever extends EcommerceRequest<EcommerceReportRe
 
 	public SingleEcommerceReport stats() throws MailerLiteException
 	{
-		if (shopId != null) {
-			this.addQueryParameter("shop_id", shopId);
-		}
-
 		return EcommerceApi.create(apiObjectReference).getRequest(statsEndpoint.concat(this.getQueryParameters()), SingleEcommerceReport.class);
 	}
 
-	public EcommerceReportOrdersList orders() throws MailerLiteException
+	public OrderActivityList orders() throws MailerLiteException
 	{
 		if (ordersEndpoint == null) {
 			throw new MailerLiteException("This report has no orders list. Use stats() instead.");
 		}
 
-		if (shopId != null) {
-			this.addQueryParameter(ordersShopParameter, shopId);
-		}
-
-		return EcommerceApi.create(apiObjectReference).getRequest(ordersEndpoint.concat(this.getQueryParameters()), EcommerceReportOrdersList.class);
+		return EcommerceApi.create(apiObjectReference).getRequest(ordersEndpoint.concat(this.getQueryParameters()), OrderActivityList.class);
 	}
 
 	@Override

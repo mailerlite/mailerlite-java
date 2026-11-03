@@ -10,7 +10,6 @@ package com.mailerlite.sdk.automations;
 import java.util.List;
 
 import com.mailerlite.sdk.MailerLite;
-import com.mailerlite.sdk.ecommerce.EcommerceReportRetriever;
 import com.mailerlite.sdk.MailerLiteApi;
 import com.mailerlite.sdk.MailerLiteResponse;
 import com.mailerlite.sdk.automations.activity.AutomationSubscriberActivityRetriever;
@@ -58,31 +57,6 @@ public class Automations {
 	public AutomationSubscriberActivityRetriever subscriberActivityRetriever()
 	{
 		return new AutomationSubscriberActivityRetriever(apiObjectReference);
-	}
-
-	/**
-	 * E-commerce revenue report of an automation.
-	 *
-	 * @param automationId the automation id
-	 * @return the ecommerce report retriever
-	 */
-	public EcommerceReportRetriever ecommerceReport(String automationId)
-	{
-		String endpoint = "/automations/".concat(automationId);
-		return new EcommerceReportRetriever(apiObjectReference, endpoint.concat("/monthly-totals/ecommerce"), endpoint.concat("/order-activity"), "ecommerce_shop_id");
-	}
-
-	/**
-	 * E-commerce revenue report of an automation email. Only stats() is available.
-	 *
-	 * @param automationId the automation id
-	 * @param emailId the automation email id
-	 * @return the ecommerce report retriever
-	 */
-	public EcommerceReportRetriever ecommerceEmailReport(String automationId, String emailId)
-	{
-		String endpoint = "/automations/".concat(automationId).concat("/emails/").concat(emailId).concat("/ecommerce-overview-stats");
-		return new EcommerceReportRetriever(apiObjectReference, endpoint, null, null);
 	}
 	
 	/**

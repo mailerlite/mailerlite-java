@@ -36,16 +36,16 @@ public class Categories {
 		return new CategoryBuilder(apiObjectReference, shopId);
 	}
 
-	public MailerLiteResponse assignProduct(String categoryId, String productId) throws MailerLiteException
+	public SingleProduct assignProduct(String categoryId, String productId) throws MailerLiteException
 	{
 		String endpoint = EcommerceApi.shopPath(shopId, "/categories/").concat(categoryId).concat("/products/").concat(productId);
-		return EcommerceApi.create(apiObjectReference).putRequest(endpoint, "{}", MailerLiteResponse.class);
+		return EcommerceApi.create(apiObjectReference).putRequest(endpoint, "{}", SingleProduct.class);
 	}
 
-	public MailerLiteResponse unassignProduct(String categoryId, String productId) throws MailerLiteException
+	public SingleProduct unassignProduct(String categoryId, String productId) throws MailerLiteException
 	{
 		String endpoint = EcommerceApi.shopPath(shopId, "/categories/").concat(categoryId).concat("/products/").concat(productId);
-		return EcommerceApi.create(apiObjectReference).deleteRequest(endpoint, MailerLiteResponse.class);
+		return EcommerceApi.create(apiObjectReference).deleteRequest(endpoint, SingleProduct.class);
 	}
 
 	public MailerLiteResponse delete(String categoryId) throws MailerLiteException

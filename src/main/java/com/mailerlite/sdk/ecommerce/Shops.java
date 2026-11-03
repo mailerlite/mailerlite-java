@@ -35,7 +35,7 @@ public class Shops {
 
 	public EcommerceReportRetriever ecommerceReport(String shopId)
 	{
-		return new EcommerceReportRetriever(apiObjectReference, EcommerceApi.shopPath(shopId, "/reports/stats"), null, null);
+		return new EcommerceReportRetriever(apiObjectReference, EcommerceApi.shopPath(shopId, "/reports/stats"), null);
 	}
 
 	public MailerLiteResponse delete(String shopId) throws MailerLiteException

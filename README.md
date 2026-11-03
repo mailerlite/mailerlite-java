@@ -1332,13 +1332,13 @@ ecommerce.imports("shopId").products(List.of(product));
 SingleEcommerceReport shopStats = ecommerce.shops().ecommerceReport("shopId").startDate("2026-10-01").endDate("2026-10-31").stats();
 
 SingleEcommerceReport campaignStats = ml.campaigns().ecommerceReport("campaignId").shopId("shopId").stats();
-EcommerceReportOrdersList campaignOrders = ml.campaigns().ecommerceReport("campaignId").shopId("shopId").orders();
+OrderActivityList campaignOrders = ml.campaigns().ecommerceReport("campaignId").shopId("shopId").orders();
 
 SingleEcommerceReport subscriberStats = ml.subscribers().ecommerceReport("subscriberId").shopId("shopId").stats();
 
-SingleEcommerceReport automationStats = ml.automations().ecommerceReport("automationId").stats();
-EcommerceReportOrdersList automationOrders = ml.automations().ecommerceReport("automationId").timeFrame("all_time").orders();
-SingleEcommerceReport emailStats = ml.automations().ecommerceEmailReport("automationId", "emailId").stats();
+SingleAutomationEcommerceStats automationStats = ml.automations().reports("automationId").monthlyEcommerceTotals();
+OrderActivityList automationOrders = ml.automations().reports("automationId").orderActivity().timeFrame("all_time").get();
+SingleAutomationEcommerceStats emailStats = ml.automations().emails("automationId").ecommerceOverviewStats("emailId");
 
 SingleEcommerceSettings settings = ecommerce.getSettings();
 ```

@@ -24,5 +24,5 @@ public class EcommerceStats {
 	public Double averageOrderValue;
 
 	@SerializedName("conversion_rate")
-	public Double conversionRate;
+	public String conversionRate;
 }

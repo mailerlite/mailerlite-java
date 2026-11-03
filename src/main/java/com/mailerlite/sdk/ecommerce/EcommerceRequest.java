@@ -33,6 +33,12 @@ public abstract class EcommerceRequest<T extends EcommerceRequest<T>> extends Pa
 	}
 
 	@Override
+	public void removeQueryParameter(String name)
+	{
+		queryParameters.remove(name);
+	}
+
+	@Override
 	public String getQueryParameters()
 	{
 		String query = "";

@@ -7,12 +7,16 @@
  **************************************************/
 package com.mailerlite.sdk.ecommerce;
 
+import java.util.Date;
+
 import com.google.gson.annotations.SerializedName;
+import com.mailerlite.sdk.util.ApiResource;
+import com.mailerlite.sdk.util.ParseDate;
 
 /**
  * The Class EcommerceCategory.
  */
-public class EcommerceCategory {
+public class EcommerceCategory extends ApiResource {
 
 	/** The id. */
 	@SerializedName("id")
@@ -29,8 +33,14 @@ public class EcommerceCategory {
 	public Boolean excludeFromAutomations;
 
 	@SerializedName("created_at")
-	public String createdAt;
+	public String createdAtStr;
+
+	@ParseDate("createdAtStr")
+	public Date createdAt;
 
 	@SerializedName("updated_at")
-	public String updatedAt;
+	public String updatedAtStr;
+
+	@ParseDate("updatedAtStr")
+	public Date updatedAt;
 }

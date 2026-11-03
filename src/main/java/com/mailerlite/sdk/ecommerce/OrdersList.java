@@ -17,4 +17,16 @@ public class OrdersList extends PaginatedResponse {
 
 	@SerializedName("data")
 	public EcommerceOrder[] orders;
+
+	@Override
+	public void postDeserialize()
+	{
+		if (orders == null) {
+			return;
+		}
+
+		for (EcommerceOrder item : orders) {
+			item.parseDates();
+		}
+	}
 }

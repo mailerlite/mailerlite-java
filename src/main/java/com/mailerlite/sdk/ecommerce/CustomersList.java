@@ -17,4 +17,16 @@ public class CustomersList extends PaginatedResponse {
 
 	@SerializedName("data")
 	public EcommerceCustomer[] customers;
+
+	@Override
+	public void postDeserialize()
+	{
+		if (customers == null) {
+			return;
+		}
+
+		for (EcommerceCustomer item : customers) {
+			item.parseDates();
+		}
+	}
 }

@@ -17,4 +17,12 @@ public class SingleCategory extends MailerLiteResponse {
 
 	@SerializedName("data")
 	public EcommerceCategory category;
+
+	@Override
+	public void postDeserialize()
+	{
+		if (category != null) {
+			category.parseDates();
+		}
+	}
 }
