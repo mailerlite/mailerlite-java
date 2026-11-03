@@ -7,12 +7,16 @@
  **************************************************/
 package com.mailerlite.sdk.ecommerce;
 
+import java.util.Date;
+
 import com.google.gson.annotations.SerializedName;
+import com.mailerlite.sdk.util.ApiResource;
+import com.mailerlite.sdk.util.ParseDate;
 
 /**
  * The Class EcommerceProduct.
  */
-public class EcommerceProduct {
+public class EcommerceProduct extends ApiResource {
 
 	/** The id. */
 	@SerializedName("id")
@@ -21,4 +25,58 @@ public class EcommerceProduct {
 	/** The name. */
 	@SerializedName("name")
 	public String name;
+
+	@SerializedName("resource_id")
+	public String resourceId;
+
+	@SerializedName("price")
+	public Double price;
+
+	@SerializedName("currency")
+	public String currency;
+
+	@SerializedName("url")
+	public String url;
+
+	@SerializedName("image")
+	public String image;
+
+	@SerializedName("short_description")
+	public String shortDescription;
+
+	@SerializedName("description")
+	public String description;
+
+	@SerializedName("type")
+	public String type;
+
+	@SerializedName("enabled")
+	public Boolean enabled;
+
+	@SerializedName("exclude_from_automations")
+	public Boolean excludeFromAutomations;
+
+	@SerializedName("categories")
+	public EcommerceCategory[] categories;
+
+	@SerializedName("variants")
+	public EcommerceProductVariant[] variants;
+
+	@SerializedName("created_at")
+	public String createdAtStr;
+
+	@ParseDate("createdAtStr")
+	public Date createdAt;
+
+	@Override
+	public void parseDates()
+	{
+		super.parseDates();
+
+		if (categories != null) {
+			for (EcommerceCategory category : categories) {
+				category.parseDates();
+			}
+		}
+	}
 }
