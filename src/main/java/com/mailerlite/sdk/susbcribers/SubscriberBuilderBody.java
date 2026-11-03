@@ -52,4 +52,16 @@ public class SubscriberBuilderBody {
 	/** The unsubscribed at. */
 	@SerializedName("unsubscribed_at")
 	public String unsubscribedAt;
+	
+	/** The resubscribe. */
+	@SerializedName("resubscribe")
+	public Boolean resubscribe;
+	
+	/** The double optin. */
+	@SerializedName("double_optin")
+	public Boolean doubleOptin;
+	
+	/** The notes. */
+	@SerializedName("notes")
+	public ArrayList<String> notes;
 }

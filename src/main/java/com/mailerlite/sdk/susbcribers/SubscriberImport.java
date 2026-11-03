@@ -22,6 +22,10 @@ public class SubscriberImport extends ApiResource {
 	@SerializedName("id")
 	public String id;
 	
+	/** The account id. */
+	@SerializedName("account_id")
+	public String accountId;
+	
 	/** The total. */
 	@SerializedName("total")
 	public int total;
@@ -102,6 +106,30 @@ public class SubscriberImport extends ApiResource {
 	@SerializedName("role_based_count")
 	public int roleBasedCount;
 	
+	/** The suspicious format. */
+	@SerializedName("suspicious_format")
+	public SubscriberImportStatusEntry[] suspiciousFormat;
+	
+	/** The suspicious format count. */
+	@SerializedName("suspicious_format_count")
+	public int suspiciousFormatCount;
+	
+	/** The duplicate. */
+	@SerializedName("duplicate")
+	public SubscriberImportStatusEntry[] duplicate;
+	
+	/** The duplicate count. */
+	@SerializedName("duplicate_count")
+	public int duplicateCount;
+	
+	/** The subscriber limit. */
+	@SerializedName("subscriber_limit")
+	public SubscriberImportStatusEntry[] subscriberLimit;
+	
+	/** The subscriber limit count. */
+	@SerializedName("subscriber_limit_count")
+	public int subscriberLimitCount;
+	
 	/** The banned import emails count. */
 	@SerializedName("banned_import_emails_count")
 	public int bannedImportEmailsCount;
@@ -129,6 +157,10 @@ public class SubscriberImport extends ApiResource {
 	/** The undone at. */
 	@ParseDate("undoneAtStr")
 	public Date undoneAt;
+	
+	/** The is stopped due to free account limit exceeded. */
+	@SerializedName("is_stopped_due_to_free_account_limit_exceeded")
+	public Boolean isStoppedDueToFreeAccountLimitExceeded;
 	
 	/** The stopped at str. */
 	@SerializedName("stopped_at")

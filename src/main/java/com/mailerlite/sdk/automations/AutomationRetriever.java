@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -20,7 +19,6 @@ import com.mailerlite.sdk.MailerLite;
 import com.mailerlite.sdk.MailerLiteApi;
 import com.mailerlite.sdk.MailerLiteStringResponse;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
-import com.mailerlite.sdk.util.JsonSerializationDeserializationStrategy;
 import com.mailerlite.sdk.util.PaginatedRequest;
 
 /**
@@ -80,11 +78,7 @@ public class AutomationRetriever extends PaginatedRequest<AutomationRetriever> {
 		
 		ArrayList<Automation> automations = new ArrayList<Automation>();
 		
-        Gson gson = new GsonBuilder()
-                .addSerializationExclusionStrategy(new JsonSerializationDeserializationStrategy(false))
-                .addDeserializationExclusionStrategy(new JsonSerializationDeserializationStrategy(true))
-                .registerTypeAdapter(Automation.class, new AutomationDeserializer())
-                .create();
+        Gson gson = AutomationDeserializer.automationGson();
         
 		
 		for(JsonElement obj : data) {
@@ -120,15 +114,50 @@ public class AutomationRetriever extends PaginatedRequest<AutomationRetriever> {
         
 		JsonObject data = jsonObject.get("data").getAsJsonObject();
 		
-        Gson gson = new GsonBuilder()
-                .addSerializationExclusionStrategy(new JsonSerializationDeserializationStrategy(false))
-                .addDeserializationExclusionStrategy(new JsonSerializationDeserializationStrategy(true))
-                .registerTypeAdapter(Automation.class, new AutomationDeserializer())
-                .create();
+        Gson gson = AutomationDeserializer.automationGson();
         
         return gson.fromJson(data, Automation.class);
 	}
 
+	
+	/**
+	 * Sets the page to return.
+	 *
+	 * @param page the page
+	 * @return the automation retriever
+	 */
+	public AutomationRetriever page(int page)
+	{
+		this.addQueryParameter("page", Integer.toString(page));
+		
+		return this;
+	}
+	
+	/**
+	 * Sets the sort order.
+	 *
+	 * @param sort the sort
+	 * @return the automation retriever
+	 */
+	public AutomationRetriever sort(String sort)
+	{
+		this.addQueryParameter("sort", sort);
+		
+		return this;
+	}
+	
+	/**
+	 * Includes the automation steps. The API includes them by default.
+	 *
+	 * @param withSteps the with steps
+	 * @return the automation retriever
+	 */
+	public AutomationRetriever withSteps(boolean withSteps)
+	{
+		this.addQueryParameter("with_steps", withSteps ? "1" : "0");
+		
+		return this;
+	}	
 	
 	/**
 	 * Gets the single instance of AutomationRetriever.

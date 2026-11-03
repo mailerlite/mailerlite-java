@@ -10,6 +10,7 @@ package com.mailerlite.sdk.segments;
 import com.google.gson.annotations.SerializedName;
 import com.mailerlite.sdk.MailerLiteResponse;
 import com.mailerlite.sdk.susbcribers.Subscriber;
+import com.mailerlite.sdk.util.ResponseLinks;
 
 /**
  * The Class SegmentSubscribersList.
@@ -19,6 +20,10 @@ public class SegmentSubscribersList extends MailerLiteResponse {
 	/** The subscribers. */
 	@SerializedName("data")
 	public Subscriber[] subscribers;
+	
+	/** The links. */
+	@SerializedName("links")
+	public ResponseLinks links;
 	
 	/** The meta. */
 	@SerializedName("meta")

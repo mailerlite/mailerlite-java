@@ -77,6 +77,19 @@ public class FieldRetriever extends PaginatedRequest<FieldRetriever> {
 	}
 	
 	/**
+	 * Sets the page to return.
+	 *
+	 * @param page the page
+	 * @return the field retriever
+	 */
+	public FieldRetriever page(int page)
+	{
+		this.addQueryParameter("page", Integer.toString(page));
+		
+		return this;
+	}	
+	
+	/**
 	 * Gets the single instance of FieldRetriever.
 	 *
 	 * @return single instance of FieldRetriever

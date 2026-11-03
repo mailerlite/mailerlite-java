@@ -9,7 +9,9 @@ package com.mailerlite.sdk.automations.steps;
 
 import java.util.HashMap;
 
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
+import com.mailerlite.sdk.util.LenientStringArrayAdapter;
 
 /**
  * The Class AbStep.
@@ -42,6 +44,7 @@ public class AbStep extends AutomationStep {
 	
 	/** The split percentages. */
 	@SerializedName("split_percentages")
+	@JsonAdapter(LenientStringArrayAdapter.class)
 	public String[] splitPercentages;
 	
 	/** The stats. */

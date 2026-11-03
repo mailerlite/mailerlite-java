@@ -13,12 +13,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.mailerlite.sdk.MailerLite;
 import com.mailerlite.sdk.MailerLiteApi;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
-import com.mailerlite.sdk.util.JsonSerializationDeserializationStrategy;
+import com.mailerlite.sdk.util.JsonBody;
 
 /**
  * The Class SubscriberBuilder.
@@ -53,12 +51,7 @@ public class SubscriberBuilder {
 		MailerLiteApi api = new MailerLiteApi();
         api.setToken(apiObjectReference.getToken());
         
-        Gson gson = new GsonBuilder()
-                .addSerializationExclusionStrategy(new JsonSerializationDeserializationStrategy(false))
-                .addDeserializationExclusionStrategy(new JsonSerializationDeserializationStrategy(true))
-                .create();
-        
-        String json = gson.toJson(builderBody);
+        String json = JsonBody.toJson(builderBody);
         
         SingleSubscriber subscriber = api.postRequest("/subscribers", json, SingleSubscriber.class);
         
@@ -79,12 +72,7 @@ public class SubscriberBuilder {
 		MailerLiteApi api = new MailerLiteApi();
         api.setToken(apiObjectReference.getToken());
         
-        Gson gson = new GsonBuilder()
-                .addSerializationExclusionStrategy(new JsonSerializationDeserializationStrategy(false))
-                .addDeserializationExclusionStrategy(new JsonSerializationDeserializationStrategy(true))
-                .create();
-        
-        String json = gson.toJson(builderBody);
+        String json = JsonBody.toJson(builderBody);
         
         SingleSubscriber subscriber = api.putRequest("/subscribers/".concat(id), json, SingleSubscriber.class);
         
@@ -218,6 +206,46 @@ public class SubscriberBuilder {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		builderBody.unsubscribedAt = formatter.format(unsubscribedAt);
+		return this;
+	}
+	
+	/**
+	 * Reactivates an unsubscribed, bounced or junk subscriber on create.
+	 *
+	 * @param resubscribe the resubscribe
+	 * @return the subscriber builder
+	 */
+	public SubscriberBuilder resubscribe(Boolean resubscribe)
+	{
+		builderBody.resubscribe = resubscribe;
+		return this;
+	}
+	
+	/**
+	 * Double optin.
+	 *
+	 * @param doubleOptin the double optin
+	 * @return the subscriber builder
+	 */
+	public SubscriberBuilder doubleOptin(Boolean doubleOptin)
+	{
+		builderBody.doubleOptin = doubleOptin;
+		return this;
+	}
+	
+	/**
+	 * Adds a note. Notes are only saved when the subscriber is created.
+	 *
+	 * @param note the note
+	 * @return the subscriber builder
+	 */
+	public SubscriberBuilder addNote(String note)
+	{
+		if (builderBody.notes == null) {
+			builderBody.notes = new ArrayList<String>();
+		}
+		
+		builderBody.notes.add(note);
 		return this;
 	}
 }

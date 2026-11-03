@@ -20,10 +20,24 @@ public class SingleSubscriberImport extends MailerLiteResponse {
 	public SubscriberImport subscriberImport;
 	
 	/**
-	 * Post desirialize.
+	 * Parses the dates of the import.
 	 */
+	@Override
+	public void postDeserialize()
+	{
+		if (subscriberImport != null) {
+			subscriberImport.parseDates();
+		}
+	}
+	
+	/**
+	 * Post desirialize.
+	 *
+	 * @deprecated misspelled, use {@link #postDeserialize()}
+	 */
+	@Deprecated
 	public void postDesirialize()
 	{
-		subscriberImport.parseDates();
+		postDeserialize();
 	}
 }
