@@ -1,0 +1,15 @@
+{
+  "data": {
+    "id": "59",
+    "type": "paragraph",
+    "editor_content": {
+      "content": [{"text": "Hi", "type": "text"}]
+    },
+    "placement": {"after": "58", "before": null}
+  },
+  "etag": "44",
+  "rejected": {
+    "message": "Some attributes were rejected.",
+    "keys": ["editor_content.attrs.onclick"]
+  }
+}

@@ -22,4 +22,11 @@ public class SingleEmailBlock extends MailerLiteResponse {
 	/** The etag of the email. Send it with the next write to the email. */
 	@SerializedName("etag")
 	public String etag;
+
+	/**
+	 * The attributes that the API removed from the block, or null if there are none. Only createBlock and
+	 * updateBlock fill it. getBlock and moveBlock leave it null.
+	 */
+	@SerializedName("rejected")
+	public EmailRejected rejected;
 }

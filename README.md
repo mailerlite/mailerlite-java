@@ -1146,6 +1146,8 @@ Without `placement`, the API puts the block at the end of the email. The positio
 
 A `null` block throws `NullPointerException`, and the SDK sends no request.
 
+The API removes the attributes and the `mobile` keys that the block type does not declare, and the insert is still a success. Then the response has `rejected` with the paths of these values, for example `editor_content.attrs.onclick`. Otherwise `rejected` is `null`. Only `createBlock` and `updateBlock` fill `rejected`. `getBlock` and `moveBlock` leave it `null`.
+
 ```java
 
 // import ....
@@ -1174,6 +1176,11 @@ class Example {
 			
 			System.out.println(blockId + " " + etag);
 			
+			if (response.rejected != null) {
+				
+				System.out.println(String.join(", ", response.rejected.keys));
+			}
+			
 		} catch (MailerLiteException e) {
 			
 			e.printStackTrace();
@@ -1185,6 +1192,8 @@ class Example {
 ### Update a block
 
 The new `editorContent` replaces the whole content of the block. The API removes the keys that you do not send. So get the block, change its `editorContent`, and send all of it. The type and the position of the block do not change.
+
+The API removes the attributes and the `mobile` keys that the block type does not declare, and the update is still a success. Then the response has `rejected` with the paths of these values. Otherwise `rejected` is `null`.
 
 ```java
 
@@ -1205,6 +1214,11 @@ class Example {
 			SingleEmailBlock response = emails.updateBlock("123456", "57", read.etag, content);
 			
 			System.out.println(response.etag);
+			
+			if (response.rejected != null) {
+				
+				System.out.println(String.join(", ", response.rejected.keys));
+			}
 			
 		} catch (MailerLiteException e) {
 			
@@ -1268,7 +1282,7 @@ class Example {
 
 ### Validate a block
 
-Checks a block before you insert it, and saves nothing. It needs no email and no etag. An invalid block is not an error: the response has `valid` set to `false` and the `errors` for each field. A `null` block sends an empty body.
+Checks a block before you insert it, and saves nothing. It needs no email and no etag. An invalid block is not an error: the response has `valid` set to `false` and the `errors` for each field. If the block is valid and an insert would remove attributes, `rejected` has their paths. A `null` block sends an empty body.
 
 ```java
 
