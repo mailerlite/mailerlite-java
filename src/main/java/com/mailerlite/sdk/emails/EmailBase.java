@@ -47,8 +47,9 @@ public class EmailBase extends ApiResource {
 	public String editor;
 	
 	/**
-	 * The template ID: the template the new email starts from. Allowed only when {@code editor} is {@code simple},
-	 * accepts only a template from the shared gallery, and also has to be the same across every email.
+	 * The template ID: the simple editor template the new email starts from. It is a template from the shared
+	 * gallery, or a template that you saved from your own email with {@code Emails.createTemplate()}. Allowed only
+	 * when {@code editor} is {@code simple}, and also has to be the same across every email.
 	 * <p>
 	 * If it is null, the SDK does not send it. Only {@code CampaignBuilder.create()} accepts it. If it is set,
 	 * {@code CampaignBuilder.update()} gets a 422 error.

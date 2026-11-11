@@ -833,7 +833,7 @@ class Example {
 To build the email with the simple editor, set `editor` to `EmailEditors.SIMPLE`, and do not set `content`. Then change the email with [the email methods](#emails). The ID of the email is in `campaign.emails[0].id`.
 
 - `editor`: the only accepted value is `simple`, which selects the simple editor instead of the drag-and-drop builder. It has to be the same across every email in the payload; a mixed array is rejected. Setting it prohibits `emails.*.content`.
-- `templateId` (`template_id`): the template the new email starts from. Allowed only when `editor` is `simple`, accepts only a template from the shared gallery, and also has to be the same across every email.
+- `templateId` (`template_id`): the simple editor template the new email starts from. It is a template from the shared gallery, or a template that you saved from your own email with [`createTemplate`](#save-an-email-as-a-template). Allowed only when `editor` is `simple`, and also has to be the same across every email.
 - Only `create()` accepts `editor` and `templateId`. If an email has one of them set, `update()` gets a `422` error.
 - The SDK does not send `editor`, `templateId`, `replyTo` or `content` when they are `null`.
 
@@ -1397,6 +1397,8 @@ class Example {
 ### Save an email as a template
 
 Copies the email to a new template. The API cannot delete templates.
+
+To start a new campaign email from the template, send the `id` of the template as `templateId` (`template_id`) when you [create a campaign with the simple editor](#create-a-campaign-with-the-simple-editor).
 
 ```java
 

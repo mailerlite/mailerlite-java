@@ -367,6 +367,9 @@ public class Emails {
 
 	/**
 	 * Copies an email to a new template. The API cannot delete templates.
+	 * <p>
+	 * To start a new campaign email from the template, set the templateId of the email to the ID of the template
+	 * when you create a campaign with the simple editor.
 	 *
 	 * @param emailId the email ID
 	 * @param name the name of the new template
@@ -380,6 +383,9 @@ public class Emails {
 
 	/**
 	 * Copies an email to a new template. The API cannot delete templates.
+	 * <p>
+	 * To start a new campaign email from the template, set the templateId of the email to the ID of the template
+	 * when you create a campaign with the simple editor.
 	 *
 	 * @param emailId the email ID
 	 * @param name the name of the new template
