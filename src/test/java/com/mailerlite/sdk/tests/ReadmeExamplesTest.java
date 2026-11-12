@@ -113,13 +113,13 @@ public class ReadmeExamplesTest {
 
 		list.add(new Example("Insert a block")
 				.respond(200, Fixtures.read("email.json"))
-				.respond(201, Fixtures.read("email_block_created.json"))
+				.respond(201, Fixtures.read("email_block_created_rejected.json"))
 				.expect("GET /emails/123456")
 				.expect("POST /emails/123456/blocks"));
 
 		list.add(new Example("Update a block")
 				.respond(200, Fixtures.read("email_block.json"))
-				.respond(200, Fixtures.read("email_block_updated.json"))
+				.respond(200, Fixtures.read("email_block_updated_rejected.json"))
 				.expect("GET /emails/123456/blocks/57")
 				.expect("PATCH /emails/123456/blocks/57"));
 

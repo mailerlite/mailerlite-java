@@ -275,6 +275,7 @@ public class EmailsTest {
 		assertEquals("56", response.block.placement.after);
 		assertNull(response.block.placement.before);
 		assertNull(response.block.children);
+		assertNull(response.rejected);
 	}
 
 	@Test
@@ -378,6 +379,24 @@ public class EmailsTest {
 		assertEquals("center", map(response.block.editorContent, "attrs").get("textAlign"));
 		assertEquals("57", response.block.placement.after);
 		assertNull(response.block.placement.before);
+		assertNull(response.rejected);
+	}
+
+	@Test
+	public void createBlockReadsTheRejectedAttributes() throws Exception
+	{
+		client.respond(201, Fixtures.read("email_block_created_rejected.json"));
+
+		Map<String, Object> content = paragraph("left", "Hi");
+		map(content, "attrs").put("onclick", "x");
+
+		SingleEmailBlock response = emails.createBlock("123", "43", new EmailBlockInput(EmailBlockTypes.PARAGRAPH, content));
+
+		assertEquals(201, response.responseStatusCode);
+		assertEquals("44", response.etag);
+		assertEquals("59", response.block.id);
+		assertEquals("Some attributes were rejected.", response.rejected.message);
+		assertArrayEquals(new String[] {"editor_content.attrs.onclick"}, response.rejected.keys);
 	}
 
 	@Test
@@ -471,6 +490,26 @@ public class EmailsTest {
 		assertEquals("57", response.block.id);
 		assertEquals("56", response.block.placement.after);
 		assertEquals("58", response.block.placement.before);
+		assertNull(response.rejected);
+	}
+
+	@Test
+	public void updateBlockReadsTheRejectedAttributes() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_block_updated_rejected.json"));
+
+		Map<String, Object> content = paragraph("left", "Hello again");
+		map(content, "attrs").put("onclick", "y");
+		content.put("mobile", Collections.singletonMap("onclick", "y"));
+
+		SingleEmailBlock response = emails.updateBlock("123", "57", "44", content);
+
+		assertEquals(200, response.responseStatusCode);
+		assertEquals("45", response.etag);
+		assertEquals("57", response.block.id);
+		assertEquals("Some attributes were rejected.", response.rejected.message);
+		assertArrayEquals(new String[] {"editor_content.attrs.onclick", "editor_content.mobile.onclick"},
+				response.rejected.keys);
 	}
 
 	@Test
@@ -554,6 +593,7 @@ public class EmailsTest {
 		assertEquals("57", response.block.id);
 		assertNull(response.block.placement.after);
 		assertEquals("1", response.block.placement.before);
+		assertNull(response.rejected);
 	}
 
 	@Test
@@ -609,6 +649,21 @@ public class EmailsTest {
 		assertEquals("2.73.2", response.schema.version);
 		assertEquals("0f3a9c", response.schema.hash);
 		assertNull(response.rejected);
+	}
+
+	@Test
+	public void validateBlockReadsTheRejectedAttributes() throws Exception
+	{
+		client.respond(200, Fixtures.read("email_block_validation_rejected.json"));
+
+		Map<String, Object> content = paragraph("left", "Hi");
+		map(content, "attrs").put("onclick", "x");
+
+		EmailValidation response = emails.validateBlock(new EmailBlockInput(EmailBlockTypes.PARAGRAPH, content));
+
+		assertTrue(response.valid);
+		assertEquals("Some attributes were rejected.", response.rejected.message);
+		assertArrayEquals(new String[] {"editor_content.attrs.onclick"}, response.rejected.keys);
 	}
 
 	@Test

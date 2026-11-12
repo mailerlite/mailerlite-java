@@ -833,7 +833,7 @@ class Example {
 To build the email with the simple editor, set `editor` to `EmailEditors.SIMPLE`, and do not set `content`. Then change the email with [the email methods](#emails). The ID of the email is in `campaign.emails[0].id`.
 
 - `editor`: the only accepted value is `simple`, which selects the simple editor instead of the drag-and-drop builder. It has to be the same across every email in the payload; a mixed array is rejected. Setting it prohibits `emails.*.content`.
-- `templateId` (`template_id`): the template the new email starts from. Allowed only when `editor` is `simple`, accepts only a template from the shared gallery, and also has to be the same across every email.
+- `templateId` (`template_id`): the simple editor template the new email starts from. It is a template from the shared gallery, or a template that you saved from your own email with [`createTemplate`](#save-an-email-as-a-template). Allowed only when `editor` is `simple`, and also has to be the same across every email.
 - Only `create()` accepts `editor` and `templateId`. If an email has one of them set, `update()` gets a `422` error.
 - The SDK does not send `editor`, `templateId`, `replyTo` or `content` when they are `null`.
 
@@ -1146,6 +1146,8 @@ Without `placement`, the API puts the block at the end of the email. The positio
 
 A `null` block throws `NullPointerException`, and the SDK sends no request.
 
+The API removes the attributes and the `mobile` keys that the block type does not declare, and the insert is still a success. Then the response has `rejected` with the paths of these values, for example `editor_content.attrs.onclick`. Otherwise `rejected` is `null`. Only `createBlock` and `updateBlock` fill `rejected`. `getBlock` and `moveBlock` leave it `null`.
+
 ```java
 
 // import ....
@@ -1174,6 +1176,11 @@ class Example {
 			
 			System.out.println(blockId + " " + etag);
 			
+			if (response.rejected != null) {
+				
+				System.out.println(String.join(", ", response.rejected.keys));
+			}
+			
 		} catch (MailerLiteException e) {
 			
 			e.printStackTrace();
@@ -1185,6 +1192,8 @@ class Example {
 ### Update a block
 
 The new `editorContent` replaces the whole content of the block. The API removes the keys that you do not send. So get the block, change its `editorContent`, and send all of it. The type and the position of the block do not change.
+
+The API removes the attributes and the `mobile` keys that the block type does not declare, and the update is still a success. Then the response has `rejected` with the paths of these values. Otherwise `rejected` is `null`.
 
 ```java
 
@@ -1205,6 +1214,11 @@ class Example {
 			SingleEmailBlock response = emails.updateBlock("123456", "57", read.etag, content);
 			
 			System.out.println(response.etag);
+			
+			if (response.rejected != null) {
+				
+				System.out.println(String.join(", ", response.rejected.keys));
+			}
 			
 		} catch (MailerLiteException e) {
 			
@@ -1268,7 +1282,7 @@ class Example {
 
 ### Validate a block
 
-Checks a block before you insert it, and saves nothing. It needs no email and no etag. An invalid block is not an error: the response has `valid` set to `false` and the `errors` for each field. A `null` block sends an empty body.
+Checks a block before you insert it, and saves nothing. It needs no email and no etag. An invalid block is not an error: the response has `valid` set to `false` and the `errors` for each field. If the block is valid and an insert would remove attributes, `rejected` has their paths. A `null` block sends an empty body.
 
 ```java
 
@@ -1383,6 +1397,8 @@ class Example {
 ### Save an email as a template
 
 Copies the email to a new template. The API cannot delete templates.
+
+To start a new campaign email from the template, send the `id` of the template as `templateId` (`template_id`) when you [create a campaign with the simple editor](#create-a-campaign-with-the-simple-editor).
 
 ```java
 

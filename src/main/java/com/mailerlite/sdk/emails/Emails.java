@@ -103,6 +103,9 @@ public class Emails {
 	 * <p>
 	 * Without a placement, the API puts the block at the end of the email. The response has the new block with
 	 * its placement and the new etag.
+	 * <p>
+	 * The API removes the attributes and the mobile keys that the block type does not declare, and the insert is
+	 * still a success. Then the rejected field of the response has their paths. Otherwise it is null.
 	 *
 	 * @param emailId the email ID
 	 * @param etag the etag from the last response for the email
@@ -121,6 +124,9 @@ public class Emails {
 	 * <p>
 	 * Without a placement, the API puts the block at the end of the email. The response has the new block with
 	 * its placement and the new etag.
+	 * <p>
+	 * The API removes the attributes and the mobile keys that the block type does not declare, and the insert is
+	 * still a success. Then the rejected field of the response has their paths. Otherwise it is null.
 	 *
 	 * @param emailId the email ID
 	 * @param etag the etag from the last response for the email
@@ -144,6 +150,9 @@ public class Emails {
 	 * <p>
 	 * The new editor content replaces the whole content of the block. The API removes the keys that you do not
 	 * send. Read the block, change it, and send the full editor content.
+	 * <p>
+	 * The API removes the attributes and the mobile keys that the block type does not declare, and the update is
+	 * still a success. Then the rejected field of the response has their paths. Otherwise it is null.
 	 *
 	 * @param emailId the email ID
 	 * @param blockId the block ID
@@ -163,6 +172,9 @@ public class Emails {
 	 * <p>
 	 * The new editor content replaces the whole content of the block. The API removes the keys that you do not
 	 * send. Read the block, change it, and send the full editor content.
+	 * <p>
+	 * The API removes the attributes and the mobile keys that the block type does not declare, and the update is
+	 * still a success. Then the rejected field of the response has their paths. Otherwise it is null.
 	 *
 	 * @param emailId the email ID
 	 * @param blockId the block ID
@@ -267,6 +279,7 @@ public class Emails {
 	 * Checks a block with the rules of an insert, and saves nothing. It needs no email and no etag.
 	 * <p>
 	 * An invalid block is not an error: the response has valid set to false and the errors for each field.
+	 * If the block is valid and an insert would remove attributes, rejected has their paths.
 	 *
 	 * @param block the block to check. A null block sends an empty body.
 	 * @return the result of the validation
@@ -354,6 +367,9 @@ public class Emails {
 
 	/**
 	 * Copies an email to a new template. The API cannot delete templates.
+	 * <p>
+	 * To start a new campaign email from the template, set the templateId of the email to the ID of the template
+	 * when you create a campaign with the simple editor.
 	 *
 	 * @param emailId the email ID
 	 * @param name the name of the new template
@@ -367,6 +383,9 @@ public class Emails {
 
 	/**
 	 * Copies an email to a new template. The API cannot delete templates.
+	 * <p>
+	 * To start a new campaign email from the template, set the templateId of the email to the ID of the template
+	 * when you create a campaign with the simple editor.
 	 *
 	 * @param emailId the email ID
 	 * @param name the name of the new template

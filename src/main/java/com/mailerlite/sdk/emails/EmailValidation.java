@@ -33,7 +33,9 @@ public class EmailValidation extends MailerLiteResponse {
 	public EmailSchema schema;
 
 	/**
-	 * The unsafe values that an update would remove, or null if there are none. Only the validation of settings has it.
+	 * The values that the write would remove, or null if there are none. The API sends it only when valid is true.
+	 * For settings, these are unsafe values. For a block, these are the attributes and the mobile keys that the
+	 * block type does not declare.
 	 */
 	@SerializedName("rejected")
 	public EmailRejected rejected;
