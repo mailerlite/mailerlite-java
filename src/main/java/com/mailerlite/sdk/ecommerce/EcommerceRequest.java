@@ -29,6 +29,11 @@ public abstract class EcommerceRequest<T extends EcommerceRequest<T>> extends Pa
 	@Override
 	public void addQueryParameter(String name, String value)
 	{
+		if (value == null) {
+			queryParameters.remove(name);
+			return;
+		}
+
 		queryParameters.put(name, value);
 	}
 

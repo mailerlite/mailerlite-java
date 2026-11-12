@@ -226,6 +226,7 @@ public class EcommerceTest extends TestBase {
 			report.removeQueryParameter("limit");
 			report.stats();
 		}, "GET", API + "/campaigns/2/reports/ecommerce?shop_id=1", null);
+		assertRequest(() -> ml.campaigns().ecommerceReport("2").shopId("1").timeFrame("all_time").shopId(null).stats(), "GET", API + "/campaigns/2/reports/ecommerce?time_frame=all_time", null);
 	}
 
 	@Test
