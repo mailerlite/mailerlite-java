@@ -10,6 +10,7 @@ package com.mailerlite.sdk.susbcribers;
 import com.mailerlite.sdk.MailerLite;
 import com.mailerlite.sdk.MailerLiteApi;
 import com.mailerlite.sdk.MailerLiteResponse;
+import com.mailerlite.sdk.ecommerce.EcommerceReportRetriever;
 import com.mailerlite.sdk.exceptions.MailerLiteException;
 
 /**
@@ -77,6 +78,18 @@ public class Subscribers {
 	public SubscriberImportsRetriever imports()
 	{
 		return new SubscriberImportsRetriever(apiObjectReference);
+	}
+
+	/**
+	 * E-commerce revenue report of a subscriber. Takes a subscriber id, not an email.
+	 *
+	 * @param subscriberId the subscriber id
+	 * @return the ecommerce report retriever
+	 */
+	public EcommerceReportRetriever ecommerceReport(String subscriberId)
+	{
+		String endpoint = "/subscribers/".concat(subscriberId);
+		return new EcommerceReportRetriever(apiObjectReference, endpoint.concat("/reports/ecommerce"), endpoint.concat("/reports/ecommerce/orders"));
 	}
 	
 	/**

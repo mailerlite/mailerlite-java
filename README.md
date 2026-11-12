@@ -81,6 +81,13 @@ MailerLite Java SDK
         - [Create a webhook](#update-a-webhook)
         - [Update a webhook](#update-a-webhook)
         - [Delete a webhook](#delete-a-webhook)
+    - [E-commerce](#e-commerce)
+        - [Shops](#shops)
+        - [Products and variants](#products-and-variants)
+        - [Categories](#categories)
+        - [Customers, orders and carts](#customers-orders-and-carts)
+        - [Imports](#imports)
+        - [Revenue reports and settings](#revenue-reports-and-settings)
 
 # Installation
 
@@ -1896,6 +1903,107 @@ class Example {
 		}
     }
 }
+```
+
+## E-commerce
+
+Shop-level resources hang off `ecommerce()`, and everything inside a shop takes the shop ID first. Each resource follows the same pattern as the rest of the SDK: `retriever()` for reads, `builder()` for creates and updates, and `delete()`. Every call throws `MailerLiteException`.
+
+```java
+MailerLite ml = new MailerLite();
+ml.setToken("Your API Token");
+Ecommerce ecommerce = ml.ecommerce();
+```
+
+### Shops
+
+```java
+ShopsList shops = ecommerce.shops().retriever().limit(25).get();
+SingleShop shop = ecommerce.shops().retriever().getSingle("shopId");
+ecommerce.shops().builder().name("My shop").url("https://shop.example.com").currency("EUR").create();
+ecommerce.shops().builder().name("New name").update("shopId");
+ecommerce.shops().delete("shopId");
+```
+
+### Products and variants
+
+```java
+ProductsList products = ecommerce.products("shopId").retriever().enabledFilter(true).sort("-created_at").get();
+SingleProduct product = ecommerce.products("shopId").retriever().getSingle("productId");
+ecommerce.products("shopId").builder().name("Red T-shirt").price(19.99).categoryId("categoryId").create();
+ecommerce.products("shopId").builder().price(24.99).update("productId");
+ecommerce.products("shopId").delete("productId");
+ecommerce.products("shopId").changeStatus("productId", false);
+ecommerce.products("shopId").assignCategories("productId", new String[] {"categoryId"}, true);
+
+ProductVariantsList variants = ecommerce.products("shopId").variants("productId").retriever().get();
+ecommerce.products("shopId").variants("productId").builder().name("Extra large").attribute("size", "XL").update("variantId");
+ecommerce.products("shopId").variants("productId").delete("variantId");
+```
+
+### Categories
+
+```java
+CategoriesList categories = ecommerce.categories("shopId").retriever().get();
+ecommerce.categories("shopId").builder().name("Hats").create();
+ecommerce.categories("shopId").builder().name("Caps").update("categoryId");
+ecommerce.categories("shopId").delete("categoryId");
+ecommerce.categories("shopId").retriever().getProducts("categoryId");
+ecommerce.categories("shopId").assignProduct("categoryId", "productId");
+ecommerce.categories("shopId").unassignProduct("categoryId", "productId");
+```
+
+### Customers, orders and carts
+
+```java
+CustomersList customers = ecommerce.customers("shopId").retriever().emailFilter("customer@example.com").get();
+ecommerce.customers("shopId").builder().email("customer@example.com").createSubscriber(true).create();
+ecommerce.customers("shopId").builder().name("Jane").update("customerId");
+ecommerce.customers("shopId").delete("customerId");
+
+OrdersList orders = ecommerce.orders("shopId").retriever().attributedFilter(true).emailIdFilter("emailId").get();
+
+CustomerBuilderBody customer = new CustomerBuilderBody();
+customer.email = "customer@example.com";
+CartItemBuilderBody item = new CartItemBuilderBody();
+item.productId = "productId";
+item.quantity = 1;
+ecommerce.orders("shopId").builder().customer(customer).item(item).status("complete").create();
+ecommerce.orders("shopId").builder().status("complete").update("orderId");
+ecommerce.orders("shopId").delete("orderId");
+
+CartsList carts = ecommerce.carts("shopId").retriever().get();
+ecommerce.carts("shopId").builder().checkoutUrl("https://shop.example.com/cart").update("cartId");
+ecommerce.carts("shopId").items("cartId").retriever().get();
+ecommerce.carts("shopId").items("cartId").builder().quantity(2).update("itemId");
+ecommerce.carts("shopId").items("cartId").delete("itemId");
+```
+
+### Imports
+
+```java
+ProductBuilderBody product = new ProductBuilderBody();
+product.name = "Red T-shirt";
+ecommerce.imports("shopId").products(List.of(product));
+```
+
+`categories()`, `customers()` and `orders()` work the same way with their builder bodies.
+
+### Revenue reports and settings
+
+```java
+SingleEcommerceReport shopStats = ecommerce.shops().ecommerceReport("shopId").startDate("2026-10-01").endDate("2026-10-31").stats();
+
+SingleEcommerceReport campaignStats = ml.campaigns().ecommerceReport("campaignId").shopId("shopId").stats();
+OrderActivityList campaignOrders = ml.campaigns().ecommerceReport("campaignId").shopId("shopId").orders();
+
+SingleEcommerceReport subscriberStats = ml.subscribers().ecommerceReport("subscriberId").shopId("shopId").stats();
+
+SingleAutomationEcommerceStats automationStats = ml.automations().reports("automationId").monthlyEcommerceTotals();
+OrderActivityList automationOrders = ml.automations().reports("automationId").orderActivity().timeFrame("all_time").get();
+SingleAutomationEcommerceStats emailStats = ml.automations().emails("automationId").ecommerceOverviewStats("emailId");
+
+SingleEcommerceSettings settings = ecommerce.getSettings();
 ```
 
 # Testing

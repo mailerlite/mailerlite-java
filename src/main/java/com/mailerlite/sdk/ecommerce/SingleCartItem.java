@@ -1,0 +1,28 @@
+/*************************************************
+ * MailerLite Java SDK
+ * https://github.com/mailerlite/mailerlite-java
+ *
+ * @author MailerLite <support@mailerlite.com>
+ * https://mailerlite.com
+ **************************************************/
+package com.mailerlite.sdk.ecommerce;
+
+import com.google.gson.annotations.SerializedName;
+import com.mailerlite.sdk.MailerLiteResponse;
+
+/**
+ * The Class SingleCartItem.
+ */
+public class SingleCartItem extends MailerLiteResponse {
+
+	@SerializedName("data")
+	public EcommerceCartItem item;
+
+	@Override
+	public void postDeserialize()
+	{
+		if (item != null) {
+			item.parseDates();
+		}
+	}
+}
