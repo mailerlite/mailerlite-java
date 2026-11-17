@@ -1,0 +1,32 @@
+/*************************************************
+ * MailerLite Java SDK
+ * https://github.com/mailerlite/mailerlite-java
+ *
+ * @author MailerLite <support@mailerlite.com>
+ * https://mailerlite.com
+ **************************************************/
+package com.mailerlite.sdk.ecommerce;
+
+import com.google.gson.annotations.SerializedName;
+import com.mailerlite.sdk.util.PaginatedResponse;
+
+/**
+ * The Class ProductsList.
+ */
+public class ProductsList extends PaginatedResponse {
+
+	@SerializedName("data")
+	public EcommerceProduct[] products;
+
+	@Override
+	public void postDeserialize()
+	{
+		if (products == null) {
+			return;
+		}
+
+		for (EcommerceProduct item : products) {
+			item.parseDates();
+		}
+	}
+}
